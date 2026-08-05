@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tienda', [ShopController::class, 'index'])->name('shop');
 Route::get('/producto/{slug}', [ShopController::class, 'show'])->name('product.show');
+Route::get('/buscar-sugerencias', [ShopController::class, 'suggest'])->name('shop.suggest');
 
 Route::post('/carrito/agregar', [CartController::class, 'add'])->name('cart.add');
 Route::delete('/carrito/quitar/{key}', [CartController::class, 'remove'])->name('cart.remove');

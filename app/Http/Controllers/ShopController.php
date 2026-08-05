@@ -33,6 +33,34 @@ class ShopController extends Controller
         return view('shop', compact('products'));
     }
 
+    public function suggest(Request $request)
+    {
+        $term = trim((string) $request->get('q', ''));
+
+        if (mb_strlen($term) < 2) {
+            return response()->json(['results' => []]);
+        }
+
+        $products = Product::where('status', 'active')
+            ->where('name', 'like', '%'.$term.'%')
+            ->with('category')
+            ->orderByDesc('created_at')
+            ->limit(6)
+            ->get();
+
+        return response()->json([
+            'results' => $products->map(fn ($p) => [
+                'name' => $p->name,
+                'category' => $p->category->name,
+                'url' => route('product.show', $p->slug),
+                'image' => $p->image_url,
+                'price' => $p->currency === 'USD'
+                    ? '$'.number_format($p->price, 2)
+                    : 'Bs '.number_format($p->price, 2),
+            ]),
+        ]);
+    }
+
     public function show(string $slug)
     {
         $rate = ExchangeRate::current();
