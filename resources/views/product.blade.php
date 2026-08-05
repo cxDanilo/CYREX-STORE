@@ -23,6 +23,7 @@
      x-data="{
         variant: {{ $product->variants->first()?->id ?? 'null' }},
         showBob: {{ $currencyMode === 'bob_only' || ($currencyMode === 'both' && $defaultCurrency === 'BOB') ? 'true' : 'false' }},
+        toggled: false,
         rate: {{ $rate }},
         basePrice: {{ $product->currency === 'USD' ? $product->price : $product->price / $rate }},
         variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'name' => $v->variant_value, 'stock' => $v->stock])->toJson() }}
@@ -53,10 +54,10 @@
 
     <div class="price-block">
       @if($currencyMode === 'both')
-        <div class="currency-toggle" :class="showBob && 'is-bob'" style="margin-bottom:14px;">
-          <div class="toggle-thumb"></div>
-          <button type="button" @click="showBob = false" :class="!showBob && 'active'">USD</button>
-          <button type="button" @click="showBob = true" :class="showBob && 'active'">BOB</button>
+        <div class="currency-toggle" style="margin-bottom:14px;">
+          <div class="toggle-thumb" :class="toggled ? (showBob ? 'to-bob' : 'to-usd') : (showBob ? 'at-bob' : 'at-usd')"></div>
+          <button type="button" @click="toggled = true; showBob = false" :class="!showBob && 'active'">USD</button>
+          <button type="button" @click="toggled = true; showBob = true" :class="showBob && 'active'">BOB</button>
         </div>
       @endif
       <div class="price-main" x-text="showBob ? 'Bs ' + (basePrice * rate).toFixed(2) : '$' + basePrice.toFixed(2)">{{ $priceMainInitial }}</div>
@@ -65,12 +66,11 @@
       @endif
     </div>
 
-    <form method="POST" action="{{ route('cart.add') }}">
-      @csrf
-      <input type="hidden" name="product_id" value="{{ $product->id }}">
-      <input type="hidden" name="variant_id" :value="variant">
-      <button type="submit" class="btn-cta">Agregar al carrito</button>
-    </form>
+    <button type="button" class="btn-cta"
+            :class="$store.cart.has({{ $product->id }}, variant) && 'in-cart'"
+            @click="$store.cart.has({{ $product->id }}, variant) ? $store.cart.remove({{ $product->id }} + ':' + (variant ?? '')) : $store.cart.add({{ $product->id }}, variant)">
+      <span x-text="$store.cart.has({{ $product->id }}, variant) ? 'En el carrito ✓' : 'Agregar al carrito'">Agregar al carrito</span>
+    </button>
 
     @if($product->description)
       <p style="color:var(--text-secondary);font-size:15px;line-height:1.7;margin-bottom:24px;">{{ $product->description }}</p>

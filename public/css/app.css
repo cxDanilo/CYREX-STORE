@@ -95,15 +95,31 @@ footer{padding:56px 0 32px;border-top:1px solid var(--border);}
 .variant-swatch.selected{border-color:var(--gold);background:var(--gold-dim);color:var(--gold);}
 .price-block{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:24px;}
 .currency-toggle{position:relative;display:inline-flex;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:100px;padding:3px;gap:2px;width:132px;}
-.currency-toggle .toggle-thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:var(--gold);border-radius:100px;transition:transform .45s cubic-bezier(.65,0,.35,1);z-index:0;}
-.currency-toggle.is-bob .toggle-thumb{transform:translateX(100%);}
+.currency-toggle .toggle-thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:var(--gold);border-radius:100px;z-index:0;}
+.currency-toggle .toggle-thumb.at-usd{transform:translateX(0%);}
+.currency-toggle .toggle-thumb.at-bob{transform:translateX(100%);}
+.currency-toggle .toggle-thumb.to-bob{animation:drop-to-bob .5s cubic-bezier(.4,0,.2,1) forwards;}
+.currency-toggle .toggle-thumb.to-usd{animation:drop-to-usd .5s cubic-bezier(.4,0,.2,1) forwards;}
+
+@keyframes drop-to-bob{
+  0%{transform:translateX(0%) scaleX(1);border-radius:100px;}
+  45%{transform:translateX(45%) scaleX(1.35);border-radius:45% 55% 55% 45% / 60% 60% 40% 40%;}
+  100%{transform:translateX(100%) scaleX(1);border-radius:100px;}
+}
+@keyframes drop-to-usd{
+  0%{transform:translateX(100%) scaleX(1);border-radius:100px;}
+  45%{transform:translateX(55%) scaleX(1.35);border-radius:55% 45% 45% 55% / 60% 60% 40% 40%;}
+  100%{transform:translateX(0%) scaleX(1);border-radius:100px;}
+}
 .currency-toggle button{position:relative;z-index:1;flex:1;font-family:var(--font-mono);font-size:12px;font-weight:600;padding:7px 0;border-radius:100px;border:none;background:none;color:var(--text-muted);cursor:pointer;transition:color .3s;}
 .currency-toggle button.active{color:#0A0A0B;}
 .currency-toggle button:not(.active):hover{color:var(--text-secondary);}
 .price-main{font-family:var(--font-mono);font-size:38px;font-weight:500;color:var(--gold);line-height:1;transition:opacity .15s;}
 .price-alt{font-family:var(--font-mono);font-size:13px;color:var(--text-muted);margin-top:8px;}
-.btn-cta{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--gold);color:#0A0A0B;font-weight:600;font-size:15px;padding:16px;border-radius:100px;border:none;cursor:pointer;width:100%;margin-bottom:24px;text-decoration:none;transition:background .15s;}
+.btn-cta{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--gold);color:#0A0A0B;font-weight:600;font-size:15px;padding:16px;border-radius:100px;border:1px solid var(--gold);cursor:pointer;width:100%;margin-bottom:24px;text-decoration:none;transition:background .15s,color .15s,border-color .15s;}
 .btn-cta:hover{background:#e6c400;}
+.btn-cta.in-cart{background:var(--bg-elevated-2);color:var(--gold);border-color:var(--border-strong);}
+.btn-cta.in-cart:hover{border-color:var(--red);color:var(--red);}
 .spec-table{width:100%;border-collapse:collapse;}
 .spec-table tr{border-bottom:1px solid var(--border);}
 .spec-table td{padding:12px 16px;font-size:14px;}

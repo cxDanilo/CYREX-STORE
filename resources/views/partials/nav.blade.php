@@ -1,4 +1,52 @@
-<div x-data="{ mobileOpen: false, cartOpen: false }" x-on:keydown.escape.window="mobileOpen = false; cartOpen = false">
+<script>
+document.addEventListener('alpine:init', () => {
+  Alpine.store('cart', {
+    keys: @json($cartItems->pluck('key')->values()),
+    count: {{ $cartCount }},
+    open: false,
+
+    has(productId, variantId) {
+      return this.keys.includes(productId + ':' + (variantId ?? ''));
+    },
+
+    async add(productId, variantId) {
+      const res = await fetch('{{ route('cart.add') }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        },
+        body: JSON.stringify({ product_id: productId, variant_id: variantId }),
+      });
+      const data = await res.json();
+      this.apply(data);
+      this.open = true;
+    },
+
+    async remove(key) {
+      const res = await fetch('/carrito/quitar/' + encodeURIComponent(key), {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        },
+      });
+      const data = await res.json();
+      this.apply(data);
+    },
+
+    apply(data) {
+      this.keys = data.keys;
+      this.count = data.count;
+      const el = document.getElementById('cart-drawer-content');
+      if (el) el.innerHTML = data.html;
+    },
+  });
+});
+</script>
+
+<div x-data="{ mobileOpen: false }" x-on:keydown.escape.window="mobileOpen = false; $store.cart.open = false">
 
 <nav>
   <div class="wrap nav-inner">
@@ -14,15 +62,13 @@
     </form>
 
     <div class="nav-actions">
-      <button type="button" class="cart-icon-btn" x-on:click="cartOpen = true" aria-label="Ver carrito">
+      <button type="button" class="cart-icon-btn" x-on:click="$store.cart.open = true" aria-label="Ver carrito">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
           <path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.6L20 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           <circle cx="10" cy="20" r="1.4" fill="currentColor"/>
           <circle cx="17" cy="20" r="1.4" fill="currentColor"/>
         </svg>
-        @if($cartCount > 0)
-          <span class="cart-badge">{{ $cartCount }}</span>
-        @endif
+        <span class="cart-badge" x-show="$store.cart.count > 0" x-text="$store.cart.count" x-cloak></span>
       </button>
       <a href="{{ route('shop') }}" class="btn-gold" style="text-decoration:none;">Ver tienda</a>
     </div>
