@@ -6,6 +6,7 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 
@@ -34,6 +35,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('productos/{product}', [AdminProductController::class, 'update'])->name('productos.update');
         Route::delete('productos/{product}', [AdminProductController::class, 'destroy'])->name('productos.destroy');
         Route::patch('productos/{product}/estado', [AdminProductController::class, 'toggleStatus'])->name('productos.toggle-status');
+
+        Route::get('categorias', [AdminCategoryController::class, 'index'])->name('categorias.index');
+        Route::get('categorias/nueva', [AdminCategoryController::class, 'create'])->name('categorias.create');
+        Route::post('categorias', [AdminCategoryController::class, 'store'])->name('categorias.store');
+        Route::get('categorias/{category}/editar', [AdminCategoryController::class, 'edit'])->name('categorias.edit');
+        Route::put('categorias/{category}', [AdminCategoryController::class, 'update'])->name('categorias.update');
+        Route::delete('categorias/{category}', [AdminCategoryController::class, 'destroy'])->name('categorias.destroy');
 
         Route::get('usuarios', [AdminUserController::class, 'index'])->name('usuarios.index');
 

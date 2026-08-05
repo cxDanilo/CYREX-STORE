@@ -17,6 +17,7 @@
     <div class="admin-logo"><a href="{{ route('admin.productos.index') }}" style="color:inherit;">CYREX<span>.</span> ADMIN</a></div>
     <nav class="admin-nav">
       <a href="{{ route('admin.productos.index') }}" class="{{ request()->routeIs('admin.productos.*') ? 'active' : '' }}">Productos</a>
+      <a href="{{ route('admin.categorias.index') }}" class="{{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">Categorías</a>
       <a href="{{ route('admin.usuarios.index') }}" class="{{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">Usuarios</a>
       <a href="{{ route('admin.settings.edit') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">Ajustes</a>
     </nav>
@@ -39,6 +40,9 @@
     <div class="admin-content">
       @if(session('status'))
         <div class="admin-flash">{{ session('status') }}</div>
+      @endif
+      @if(session('error'))
+        <div class="admin-flash admin-flash-error">{{ session('error') }}</div>
       @endif
       @yield('content')
     </div>
