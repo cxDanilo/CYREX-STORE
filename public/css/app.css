@@ -17,7 +17,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,10,11,0.92);backdrop-fi
 .logo{font-family:var(--font-display);font-weight:700;font-size:20px;letter-spacing:-0.02em;flex-shrink:0;display:flex;align-items:center;gap:9px;}
 .logo a{display:flex;align-items:center;gap:9px;}
 .logo span{color:var(--gold);}
-.logo-full{height:var(--logo-height, 48px);width:auto;display:block;flex-shrink:0;}
+.logo-full{height:var(--logo-height, 60px);width:auto;display:block;flex-shrink:0;}
 .search-wrap{position:relative;flex:1;max-width:400px;}
 .nav-search{width:100%;height:44px;display:flex;align-items:stretch;border:1px solid var(--border);border-radius:100px;overflow:hidden;background:var(--bg-elevated);transition:border-color .15s;}
 .nav-search:focus-within{border-color:var(--border-strong);}

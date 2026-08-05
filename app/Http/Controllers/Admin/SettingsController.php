@@ -16,7 +16,7 @@ class SettingsController extends Controller
         $defaultCurrency = Setting::get('default_currency', 'USD');
         $whatsappNumber = Setting::get('whatsapp_number', '59177947379');
         $categoryMenuScope = Setting::get('category_menu_scope', 'shop');
-        $logoHeight = Setting::get('logo_height', '48');
+        $logoHeight = Setting::get('logo_height', '60');
 
         return view('admin.settings.edit', compact('currentRate', 'currencyMode', 'defaultCurrency', 'whatsappNumber', 'categoryMenuScope', 'logoHeight'));
     }
