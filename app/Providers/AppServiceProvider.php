@@ -38,7 +38,12 @@ class AppServiceProvider extends ServiceProvider
                 'cartCurrency' => $currency,
                 'cartTotal' => Cart::total($rate, $currency),
                 'cartWhatsappUrl' => Cart::whatsappMessage($whatsappNumber, $rate, $currency),
+                'logoHeight' => Setting::get('logo_height', '48'),
             ]);
+        });
+
+        View::composer('layouts.app', function ($view) {
+            $view->with('logoHeight', Setting::get('logo_height', '48'));
         });
     }
 }

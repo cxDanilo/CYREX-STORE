@@ -16,8 +16,9 @@ class SettingsController extends Controller
         $defaultCurrency = Setting::get('default_currency', 'USD');
         $whatsappNumber = Setting::get('whatsapp_number', '59177947379');
         $categoryMenuScope = Setting::get('category_menu_scope', 'shop');
+        $logoHeight = Setting::get('logo_height', '48');
 
-        return view('admin.settings.edit', compact('currentRate', 'currencyMode', 'defaultCurrency', 'whatsappNumber', 'categoryMenuScope'));
+        return view('admin.settings.edit', compact('currentRate', 'currencyMode', 'defaultCurrency', 'whatsappNumber', 'categoryMenuScope', 'logoHeight'));
     }
 
     public function update(Request $request)
@@ -28,6 +29,7 @@ class SettingsController extends Controller
             'default_currency' => ['required', 'in:USD,BOB'],
             'whatsapp_number' => ['required', 'string', 'regex:/^[0-9]{6,15}$/'],
             'category_menu_scope' => ['required', 'in:all,shop'],
+            'logo_height' => ['required', 'integer', 'min:20', 'max:120'],
         ]);
 
         if ($request->filled('rate') && (float) $data['rate'] !== ExchangeRate::current()) {
@@ -38,6 +40,7 @@ class SettingsController extends Controller
         Setting::set('default_currency', $data['default_currency']);
         Setting::set('whatsapp_number', $data['whatsapp_number']);
         Setting::set('category_menu_scope', $data['category_menu_scope']);
+        Setting::set('logo_height', (string) $data['logo_height']);
 
         return back()->with('status', 'Ajustes guardados.');
     }

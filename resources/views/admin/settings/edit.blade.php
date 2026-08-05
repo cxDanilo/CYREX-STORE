@@ -42,6 +42,17 @@
   </div>
 
   <div class="form-section">
+    <h3>Marca</h3>
+
+    <div class="form-group">
+      <label for="logo_height">Alto del logo (px)</label>
+      <input type="number" min="20" max="120" id="logo_height" name="logo_height" value="{{ old('logo_height', $logoHeight) }}" required>
+      <div class="form-hint">Se aplica al logo del header, footer y menú mobile. Entre 20 y 120px.</div>
+      @error('logo_height') <div class="error">{{ $message }}</div> @enderror
+    </div>
+  </div>
+
+  <div class="form-section">
     <h3>Navegación</h3>
 
     <div class="form-group">
