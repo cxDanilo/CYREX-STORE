@@ -55,3 +55,4 @@
 </section>
 
 @endsection
+{{-- prueba flujo git deploy: 2026-08-05 --}}
