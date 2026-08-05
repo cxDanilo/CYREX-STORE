@@ -21,7 +21,7 @@
 <footer class="wrap">
   <div class="footer-top">
     <div>
-      <div class="logo" style="margin-bottom:10px;"><img src="{{ asset('images/logo-icon.png') }}" alt="" class="logo-icon">CYREX<span>.</span></div>
+      <img src="{{ asset('images/logo-horizontal.png') }}" alt="Cyrex Store" class="logo-full" style="margin-bottom:12px;">
       <p style="color:var(--text-secondary);font-size:13.5px;max-width:260px;">Componentes y periféricos gamer en Bolivia. Santa Cruz y Cochabamba.</p>
     </div>
     <div class="footer-cols">
