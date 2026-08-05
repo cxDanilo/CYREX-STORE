@@ -1,0 +1,125 @@
+﻿@extends('admin.layout')
+
+@section('title', $product->exists ? 'Editar producto' : 'Nuevo producto')
+
+@section('content')
+
+<form method="POST" action="{{ $product->exists ? route('admin.productos.update', $product) : route('admin.productos.store') }}" class="admin-form"
+      x-data="{
+        specs: {{ collect($product->specs ?? [])->map(fn($v, $k) => ['key' => $k, 'value' => $v])->values()->toJson() }},
+        variants: {{ $product->relationLoaded('variants') ? $product->variants->map(fn($v) => ['id' => $v->id, 'variant_type' => $v->variant_type, 'variant_value' => $v->variant_value, 'sku' => $v->sku, 'stock' => $v->stock, 'price_override' => $v->price_override])->toJson() : '[]' }}
+      }">
+  @csrf
+  @if($product->exists) @method('PUT') @endif
+
+  <div class="form-section">
+    <h3>Información general</h3>
+
+    <div class="form-group">
+      <label for="name">Nombre</label>
+      <input type="text" id="name" name="name" value="{{ old('name', $product->name) }}" required
+             x-on:input="if(!$refs.slug.dataset.touched) $refs.slug.value = $event.target.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')">
+      @error('name') <div class="error">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="form-group">
+      <label for="slug">Slug (URL)</label>
+      <input type="text" id="slug" name="slug" x-ref="slug" value="{{ old('slug', $product->slug) }}" required
+             x-on:input="$event.target.dataset.touched = true">
+      <div class="form-hint">Se usa en la URL: /producto/<span x-text="$refs.slug ? $refs.slug.value : ''"></span></div>
+      @error('slug') <div class="error">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="form-group">
+      <label for="category_id">Categoría</label>
+      <select id="category_id" name="category_id" required>
+        <option value="">Seleccioná una categoría</option>
+        @foreach($categories as $cat)
+          <option value="{{ $cat->id }}" {{ (int) old('category_id', $product->category_id) === $cat->id ? 'selected' : '' }}>
+            {{ $cat->parent_id ? '— ' : '' }}{{ $cat->name }}
+          </option>
+        @endforeach
+      </select>
+      @error('category_id') <div class="error">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="form-group">
+      <label for="description">Descripción</label>
+      <textarea id="description" name="description" rows="3">{{ old('description', $product->description) }}</textarea>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3>Precio e inventario</h3>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="price">Precio</label>
+        <input type="number" step="0.01" min="0" id="price" name="price" value="{{ old('price', $product->price) }}" required>
+        @error('price') <div class="error">{{ $message }}</div> @enderror
+      </div>
+      <div class="form-group">
+        <label for="currency">Moneda</label>
+        <select id="currency" name="currency" required>
+          <option value="USD" {{ old('currency', $product->currency) === 'USD' ? 'selected' : '' }}>USD</option>
+          <option value="BOB" {{ old('currency', $product->currency) === 'BOB' ? 'selected' : '' }}>BOB</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="sku">SKU</label>
+        <input type="text" id="sku" name="sku" value="{{ old('sku', $product->sku) }}">
+      </div>
+      <div class="form-group">
+        <label for="stock">Stock</label>
+        <input type="number" min="0" id="stock" name="stock" value="{{ old('stock', $product->stock ?? 0) }}" required>
+        @error('stock') <div class="error">{{ $message }}</div> @enderror
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="status">Estado</label>
+      <select id="status" name="status" required>
+        <option value="active" {{ old('status', $product->status) === 'active' ? 'selected' : '' }}>Publicado</option>
+        <option value="inactive" {{ old('status', $product->status) === 'inactive' ? 'selected' : '' }}>Privado</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3>Especificaciones técnicas</h3>
+    <template x-for="(spec, i) in specs" :key="i">
+      <div class="repeater-row" style="grid-template-columns:1fr 1fr auto;">
+        <input type="text" x-model="spec.key" :name="'spec_key[' + i + ']'" placeholder="Ej: Sensor">
+        <input type="text" x-model="spec.value" :name="'spec_value[' + i + ']'" placeholder="Ej: PAW3395, hasta 26,000 DPI">
+        <button type="button" class="repeater-remove" x-on:click="specs.splice(i, 1)">×</button>
+      </div>
+    </template>
+    <button type="button" class="btn btn-sm" x-on:click="specs.push({key: '', value: ''})">+ Agregar especificación</button>
+  </div>
+
+  <div class="form-section">
+    <h3>Variantes</h3>
+    <p class="form-hint" style="margin-bottom:14px;">Si el producto viene en más de una opción (ej. color), agregalas acá — no crees un producto nuevo por cada variante.</p>
+    <template x-for="(variant, i) in variants" :key="i">
+      <div class="repeater-row">
+        <input type="hidden" :name="'variants[' + i + '][id]'" x-model="variant.id">
+        <input type="text" x-model="variant.variant_type" :name="'variants[' + i + '][variant_type]'" placeholder="Tipo (ej: Color)">
+        <input type="text" x-model="variant.variant_value" :name="'variants[' + i + '][variant_value]'" placeholder="Valor (ej: Blanco)">
+        <input type="number" min="0" x-model="variant.stock" :name="'variants[' + i + '][stock]'" placeholder="Stock">
+        <input type="number" step="0.01" min="0" x-model="variant.price_override" :name="'variants[' + i + '][price_override]'" placeholder="Precio (opcional)">
+        <button type="button" class="repeater-remove" x-on:click="variants.splice(i, 1)">×</button>
+      </div>
+    </template>
+    <button type="button" class="btn btn-sm" x-on:click="variants.push({id: '', variant_type: 'Color', variant_value: '', sku: '', stock: 0, price_override: ''})">+ Agregar variante</button>
+  </div>
+
+  <div class="form-actions">
+    <a href="{{ route('admin.productos.index') }}" class="btn">Cancelar</a>
+    <button type="submit" class="btn btn-primary">Guardar producto</button>
+  </div>
+</form>
+
+@endsection

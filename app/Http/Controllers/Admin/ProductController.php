@@ -1,0 +1,160 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
+class ProductController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query = Product::with('category')->orderByDesc('created_at');
+
+        if ($request->filled('q')) {
+            $query->where('name', 'like', '%'.$request->q.'%');
+        }
+
+        $products = $query->paginate(15)->withQueryString();
+
+        return view('admin.products.index', compact('products'));
+    }
+
+    public function create()
+    {
+        $categories = Category::orderBy('parent_id')->orderBy('name')->get();
+        $product = new Product(['status' => 'active', 'currency' => 'USD']);
+
+        return view('admin.products.form', compact('categories', 'product'));
+    }
+
+    public function store(Request $request)
+    {
+        $data = $this->validated($request);
+        $data['specs'] = $this->specsFromRequest($request);
+        $variants = $this->variantsFromRequest($request);
+        $data['has_variants'] = count($variants) > 0;
+
+        $product = Product::create($data);
+        $this->syncVariants($product, $variants);
+
+        return redirect()->route('admin.productos.index')->with('status', 'Producto creado.');
+    }
+
+    public function edit(Product $product)
+    {
+        $categories = Category::orderBy('parent_id')->orderBy('name')->get();
+        $product->load('variants');
+
+        return view('admin.products.form', compact('product', 'categories'));
+    }
+
+    public function update(Request $request, Product $product)
+    {
+        $data = $this->validated($request, $product->id);
+        $data['specs'] = $this->specsFromRequest($request);
+        $variants = $this->variantsFromRequest($request);
+        $data['has_variants'] = count($variants) > 0;
+
+        $product->update($data);
+        $this->syncVariants($product, $variants);
+
+        return redirect()->route('admin.productos.index')->with('status', 'Producto actualizado.');
+    }
+
+    public function destroy(Product $product)
+    {
+        $product->delete();
+
+        return back()->with('status', 'Producto eliminado.');
+    }
+
+    public function toggleStatus(Product $product)
+    {
+        $product->update([
+            'status' => $product->status === 'active' ? 'inactive' : 'active',
+        ]);
+
+        return back()->with('status', $product->status === 'active' ? 'Producto publicado.' : 'Producto puesto en privado.');
+    }
+
+    private function validated(Request $request, ?int $ignoreId = null): array
+    {
+        return $request->validate([
+            'category_id' => ['required', 'exists:categories,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'slug' => [
+                'required', 'string', 'max:255', 'alpha_dash',
+                Rule::unique('products', 'slug')->ignore($ignoreId),
+            ],
+            'description' => ['nullable', 'string'],
+            'price' => ['required', 'numeric', 'min:0'],
+            'currency' => ['required', 'in:USD,BOB'],
+            'sku' => ['nullable', 'string', 'max:100'],
+            'stock' => ['required', 'integer', 'min:0'],
+            'status' => ['required', 'in:active,inactive'],
+        ]);
+    }
+
+    private function specsFromRequest(Request $request): array
+    {
+        $specs = [];
+        $keys = $request->input('spec_key', []);
+        $values = $request->input('spec_value', []);
+
+        foreach ($keys as $i => $key) {
+            $key = trim($key);
+            $value = trim($values[$i] ?? '');
+
+            if ($key !== '' && $value !== '') {
+                $specs[$key] = $value;
+            }
+        }
+
+        return $specs;
+    }
+
+    private function variantsFromRequest(Request $request): array
+    {
+        $variants = [];
+
+        foreach ($request->input('variants', []) as $variant) {
+            if (empty($variant['variant_value'])) {
+                continue;
+            }
+
+            $variants[] = [
+                'id' => $variant['id'] ?? null,
+                'variant_type' => $variant['variant_type'] !== '' ? $variant['variant_type'] : 'Color',
+                'variant_value' => $variant['variant_value'],
+                'sku' => $variant['sku'] ?? null,
+                'stock' => ($variant['stock'] ?? '') !== '' ? (int) $variant['stock'] : 0,
+                'price_override' => ($variant['price_override'] ?? '') !== '' ? $variant['price_override'] : null,
+            ];
+        }
+
+        return $variants;
+    }
+
+    private function syncVariants(Product $product, array $variants): void
+    {
+        $keptIds = [];
+
+        foreach ($variants as $variant) {
+            $id = $variant['id'];
+            unset($variant['id']);
+
+            if ($id && $product->variants()->where('id', $id)->exists()) {
+                $product->variants()->where('id', $id)->update($variant);
+                $keptIds[] = $id;
+            } else {
+                $keptIds[] = $product->variants()->create($variant)->id;
+            }
+        }
+
+        $product->variants()->whereNotIn('id', $keptIds)->delete();
+    }
+}
