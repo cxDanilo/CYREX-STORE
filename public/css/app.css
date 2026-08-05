@@ -65,10 +65,15 @@ footer{padding:56px 0 32px;border-top:1px solid var(--border);}
 .cat-eyebrow{font-family:var(--font-mono);font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;}
 .product-info h1{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,3vw,36px);letter-spacing:-0.01em;line-height:1.15;margin-bottom:14px;}
 .variant-options{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
-.variant-swatch{padding:8px 16px;border-radius:100px;border:1px solid var(--border);background:var(--bg-elevated);cursor:pointer;font-size:13px;}
+.variant-swatch{padding:8px 16px;border-radius:100px;border:1px solid var(--border);background:var(--bg-elevated);cursor:pointer;font-size:13px;transition:border-color .15s,background .15s,color .15s,transform .15s;}
+.variant-swatch:hover{border-color:var(--border-strong);transform:translateY(-1px);}
 .variant-swatch.selected{border-color:var(--gold);background:var(--gold-dim);color:var(--gold);}
 .price-block{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:24px;}
-.price-main{font-family:var(--font-mono);font-size:38px;font-weight:500;color:var(--gold);line-height:1;}
+.currency-toggle{display:inline-flex;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:100px;padding:3px;gap:2px;}
+.currency-toggle button{font-family:var(--font-mono);font-size:12px;font-weight:600;padding:7px 18px;border-radius:100px;border:none;background:none;color:var(--text-muted);cursor:pointer;transition:background .2s,color .2s;}
+.currency-toggle button.active{background:var(--gold);color:#0A0A0B;}
+.currency-toggle button:not(.active):hover{color:var(--text-secondary);}
+.price-main{font-family:var(--font-mono);font-size:38px;font-weight:500;color:var(--gold);line-height:1;transition:opacity .15s;}
 .price-alt{font-family:var(--font-mono);font-size:13px;color:var(--text-muted);margin-top:8px;}
 .btn-whatsapp{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--gold);color:#0A0A0B;font-weight:600;font-size:15px;padding:16px;border-radius:100px;border:none;cursor:pointer;width:100%;margin-bottom:24px;}
 .spec-table{width:100%;border-collapse:collapse;}

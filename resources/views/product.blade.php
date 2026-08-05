@@ -37,9 +37,9 @@
     @endif
 
     <div class="price-block">
-      <div class="price-toggle" style="margin-bottom:14px;">
-        <button @click="showBob = false" :style="!showBob ? 'color:var(--gold)' : 'color:var(--text-muted)'" style="background:none;border:none;font-family:var(--font-mono);font-size:12px;margin-right:12px;cursor:pointer;">USD</button>
-        <button @click="showBob = true" :style="showBob ? 'color:var(--gold)' : 'color:var(--text-muted)'" style="background:none;border:none;font-family:var(--font-mono);font-size:12px;cursor:pointer;">BOB</button>
+      <div class="currency-toggle" style="margin-bottom:14px;">
+        <button type="button" @click="showBob = false" :class="!showBob && 'active'">USD</button>
+        <button type="button" @click="showBob = true" :class="showBob && 'active'">BOB</button>
       </div>
       <div class="price-main" x-text="showBob ? 'Bs ' + (basePrice * rate).toFixed(2) : '$' + basePrice.toFixed(2)"></div>
       <div class="price-alt" x-text="showBob ? '≈ $' + basePrice.toFixed(2) + ' USD' : '≈ Bs ' + (basePrice * rate).toFixed(2)"></div>
