@@ -10,29 +10,14 @@
 </div>
 
 <div class="wrap shop-layout">
-  <aside class="sidebar">
-    <div class="sidebar-title">Filtrar categorías</div>
-    <div class="cat-item {{ !request('category') ? 'active' : '' }}">
-      <a href="{{ route('shop') }}">Todas</a>
-    </div>
-    @foreach($categories as $parent)
-      <div class="cat-item">
-        <a href="{{ route('shop', ['category' => $parent->slug]) }}">{{ $parent->name }}</a>
-      </div>
-      <div class="cat-children">
-        @foreach($parent->children as $child)
-          <a href="{{ route('shop', ['category' => $child->slug]) }}"
-             class="{{ request('category') === $child->slug ? 'active' : '' }}">
-            {{ $child->name }}
-          </a>
-        @endforeach
-      </div>
-    @endforeach
-  </aside>
-
   <div class="shop-main">
-    <div style="margin-bottom:20px;color:var(--text-secondary);font-size:14px;">
-      <b style="color:var(--text-primary);">{{ $products->total() }}</b> productos
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;">
+      <div style="color:var(--text-secondary);font-size:14px;">
+        <b style="color:var(--text-primary);">{{ $products->total() }}</b> productos
+      </div>
+      @if(request('category'))
+        <a href="{{ route('shop') }}" class="btn btn-sm">Quitar filtro ×</a>
+      @endif
     </div>
 
     <div class="product-grid">

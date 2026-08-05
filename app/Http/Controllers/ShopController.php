@@ -12,9 +12,6 @@ class ShopController extends Controller
 {
     public function index(Request $request)
     {
-        $rate = ExchangeRate::current();
-        $categories = Category::parents()->with('children')->get();
-
         $query = Product::where('status', 'active')->with('category');
 
         if ($request->filled('category')) {
@@ -33,7 +30,7 @@ class ShopController extends Controller
 
         $products = $query->orderByDesc('created_at')->paginate(12)->withQueryString();
 
-        return view('shop', compact('rate', 'categories', 'products'));
+        return view('shop', compact('products'));
     }
 
     public function show(string $slug)

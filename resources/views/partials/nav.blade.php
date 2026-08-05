@@ -1,4 +1,4 @@
-<div x-data="{ megaOpen: false, mobileOpen: false, cartOpen: false }" x-on:keydown.escape.window="megaOpen = false; mobileOpen = false; cartOpen = false">
+<div x-data="{ mobileOpen: false, cartOpen: false }" x-on:keydown.escape.window="mobileOpen = false; cartOpen = false">
 
 <nav>
   <div class="wrap nav-inner">
@@ -7,31 +7,6 @@
     </button>
 
     <div class="logo"><a href="{{ route('home') }}" style="color:inherit;">CYREX<span>.</span></a></div>
-
-    <div class="nav-cats" x-on:click.outside="megaOpen = false">
-      <button type="button" class="nav-cats-btn" x-on:click="megaOpen = !megaOpen" :class="megaOpen && 'active'">
-        Categorías
-        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" :style="megaOpen && 'transform:rotate(180deg)'" style="transition:transform .2s;">
-          <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none"/>
-        </svg>
-      </button>
-
-      <div class="mega-menu" x-show="megaOpen" x-cloak>
-        @foreach($navCategories as $parent)
-          <div class="mega-col">
-            <div class="mega-col-title">
-              <span class="mega-icon">@include('partials.category-icon', ['icon' => $parent->icon])</span>
-              <a href="{{ route('shop', ['category' => $parent->slug]) }}">{{ $parent->name }}</a>
-            </div>
-            <div class="mega-col-links">
-              @foreach($parent->children as $child)
-                <a href="{{ route('shop', ['category' => $child->slug]) }}">{{ $child->name }}</a>
-              @endforeach
-            </div>
-          </div>
-        @endforeach
-      </div>
-    </div>
 
     <form class="nav-search" method="GET" action="{{ route('shop') }}">
       <input type="text" name="q" value="{{ request('q') }}" placeholder="Buscar en todo Cyrex Store" />
@@ -93,3 +68,5 @@
 @include('partials.cart-drawer')
 
 </div>
+
+@include('partials.category-float')
