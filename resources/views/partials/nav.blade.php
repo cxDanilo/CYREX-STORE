@@ -69,4 +69,6 @@
 
 </div>
 
-@include('partials.category-float')
+@if($categoryMenuScope === 'all' || request()->routeIs('shop'))
+  @include('partials.category-float')
+@endif

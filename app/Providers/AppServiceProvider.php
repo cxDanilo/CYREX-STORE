@@ -31,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with([
                 'navCategories' => Category::parents()->with('children')->get(),
+                'categoryMenuScope' => Setting::get('category_menu_scope', 'shop'),
                 'cartItems' => Cart::items(),
                 'cartCount' => Cart::count(),
                 'cartCurrency' => $currency,

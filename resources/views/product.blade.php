@@ -4,6 +4,17 @@
 
 @section('content')
 
+@php
+  $showBobInitial = $currencyMode === 'bob_only' || ($currencyMode === 'both' && $defaultCurrency === 'BOB');
+  $basePriceUsd = $product->currency === 'USD' ? (float) $product->price : (float) $product->price / $rate;
+  $priceMainInitial = $showBobInitial
+      ? 'Bs '.number_format($basePriceUsd * $rate, 2)
+      : '$'.number_format($basePriceUsd, 2);
+  $priceAltInitial = $showBobInitial
+      ? '≈ $'.number_format($basePriceUsd, 2).' USD'
+      : '≈ Bs '.number_format($basePriceUsd * $rate, 2);
+@endphp
+
 <div class="wrap breadcrumb">
   <a href="{{ route('home') }}">Inicio</a> / <a href="{{ route('shop', ['category' => $product->category->slug]) }}">{{ $product->category->name }}</a> / {{ $product->name }}
 </div>
@@ -48,9 +59,9 @@
           <button type="button" @click="showBob = true" :class="showBob && 'active'">BOB</button>
         </div>
       @endif
-      <div class="price-main" x-text="showBob ? 'Bs ' + (basePrice * rate).toFixed(2) : '$' + basePrice.toFixed(2)"></div>
+      <div class="price-main" x-text="showBob ? 'Bs ' + (basePrice * rate).toFixed(2) : '$' + basePrice.toFixed(2)">{{ $priceMainInitial }}</div>
       @if($currencyMode === 'both')
-        <div class="price-alt" x-text="showBob ? '≈ $' + basePrice.toFixed(2) + ' USD' : '≈ Bs ' + (basePrice * rate).toFixed(2)"></div>
+        <div class="price-alt" x-text="showBob ? '≈ $' + basePrice.toFixed(2) + ' USD' : '≈ Bs ' + (basePrice * rate).toFixed(2)">{{ $priceAltInitial }}</div>
       @endif
     </div>
 

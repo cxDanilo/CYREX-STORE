@@ -42,6 +42,19 @@
   </div>
 
   <div class="form-section">
+    <h3>Navegación</h3>
+
+    <div class="form-group">
+      <label for="category_menu_scope">Menú flotante de categorías</label>
+      <select id="category_menu_scope" name="category_menu_scope" required>
+        <option value="shop" {{ old('category_menu_scope', $categoryMenuScope) === 'shop' ? 'selected' : '' }}>Solo en la página Tienda</option>
+        <option value="all" {{ old('category_menu_scope', $categoryMenuScope) === 'all' ? 'selected' : '' }}>En todo el sitio</option>
+      </select>
+      <div class="form-hint">En mobile las categorías siempre están disponibles desde el menú hamburguesa, sin importar esta opción.</div>
+    </div>
+  </div>
+
+  <div class="form-section">
     <h3>WhatsApp</h3>
 
     <div class="form-group">
