@@ -73,12 +73,22 @@ document.addEventListener('alpine:init', () => {
 
     <div class="logo"><a href="{{ route('home') }}" style="color:inherit;">CYREX<span>.</span></a></div>
 
+    <a href="{{ route('home') }}" class="nav-home-link">Inicio</a>
+
     <form class="nav-search" method="GET" action="{{ route('shop') }}">
       <input type="text" name="q" value="{{ request('q') }}" placeholder="Buscar en todo Cyrex Store" />
       <button class="search-btn" type="submit">Buscar</button>
     </form>
 
     <div class="nav-actions">
+      <a href="https://wa.me/{{ $whatsappNumber }}" target="_blank" class="nav-whatsapp">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8.9-.2.2-.3.2-.5.1-.2-.1-1-.4-1.9-1.2-.7-.6-1.2-1.4-1.3-1.6-.1-.2 0-.4.1-.5l.4-.4c.1-.1.2-.2.2-.4.1-.1 0-.3 0-.4C10.3 9.6 9.9 8.6 9.7 8.2c-.2-.4-.3-.3-.5-.3h-.4c-.1 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.3 1 2.4c.1.2 1.7 2.6 4.1 3.6.6.2 1 .4 1.4.5.6.2 1.1.1 1.5.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2-.1-.1-.2-.2-.5-.3z"/></svg>
+        <span class="nav-whatsapp-text">
+          <small>Asesor</small>
+          {{ $whatsappNumber }}
+        </span>
+      </a>
+      <span class="nav-status"><i></i> En línea</span>
       <button type="button" class="cart-icon-btn" x-on:click="$store.cart.open = true" aria-label="Ver carrito">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
           <path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.6L20 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
