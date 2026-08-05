@@ -27,6 +27,10 @@ class ShopController extends Controller
             }
         }
 
+        if ($request->filled('q')) {
+            $query->where('name', 'like', '%'.$request->q.'%');
+        }
+
         $products = $query->orderByDesc('created_at')->paginate(12)->withQueryString();
 
         return view('shop', compact('rate', 'categories', 'products'));

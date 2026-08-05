@@ -12,18 +12,7 @@
 </head>
 <body>
 
-<nav>
-  <div class="wrap nav-inner">
-    <div class="logo"><a href="{{ route('home') }}" style="color:inherit;">CYREX<span>.</span></a></div>
-    <div class="nav-search">
-      <input type="text" placeholder="Buscar en todo Cyrex Store" />
-      <button class="search-btn">Buscar</button>
-    </div>
-    <div class="nav-actions">
-      <a href="{{ route('shop') }}" class="btn-gold" style="text-decoration:none;">Ver tienda</a>
-    </div>
-  </div>
-</nav>
+@include('partials.nav')
 
 <main>
 @yield('content')
