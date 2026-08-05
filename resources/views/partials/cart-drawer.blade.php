@@ -1,4 +1,4 @@
-<div class="cart-drawer-overlay" x-show="$store.cart.open" x-on:click="$store.cart.open = false" x-cloak></div>
+<div class="cart-drawer-overlay" x-show="$store.cart.open" x-transition.opacity.duration.200ms x-on:click="$store.cart.open = false" x-cloak></div>
 
 <aside class="cart-drawer" :class="$store.cart.open && 'open'">
   <div class="mobile-drawer-head">

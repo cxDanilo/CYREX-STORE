@@ -12,7 +12,7 @@
           {{ $parent->name }}
         </a>
 
-        <div class="cat-flyout" x-show="hoverCat === {{ $parent->id }}" x-on:mouseenter="openCat({{ $parent->id }})" x-on:mouseleave="scheduleClose({{ $parent->id }})" x-cloak>
+        <div class="cat-flyout" x-show="hoverCat === {{ $parent->id }}" x-transition.opacity.duration.150ms x-on:mouseenter="openCat({{ $parent->id }})" x-on:mouseleave="scheduleClose({{ $parent->id }})" x-cloak>
           <div class="cat-flyout-title"><a href="{{ route('shop', ['category' => $parent->slug]) }}">Ver todo en {{ $parent->name }}</a></div>
           <div class="cat-flyout-grid">
             @foreach($parent->children as $child)

@@ -37,10 +37,27 @@ document.addEventListener('alpine:init', () => {
     },
 
     apply(data) {
+      const prevCount = this.count;
       this.keys = data.keys;
       this.count = data.count;
+
       const el = document.getElementById('cart-drawer-content');
-      if (el) el.innerHTML = data.html;
+      if (el) {
+        el.style.opacity = '0';
+        setTimeout(() => {
+          el.innerHTML = data.html;
+          el.style.opacity = '1';
+        }, 150);
+      }
+
+      if (data.count !== prevCount) {
+        const badge = document.querySelector('.cart-badge');
+        if (badge) {
+          badge.classList.remove('pulse');
+          void badge.offsetWidth;
+          badge.classList.add('pulse');
+        }
+      }
     },
   });
 });
@@ -75,7 +92,7 @@ document.addEventListener('alpine:init', () => {
   </div>
 </nav>
 
-<div class="mobile-drawer-overlay" x-show="mobileOpen" x-on:click="mobileOpen = false" x-cloak></div>
+<div class="mobile-drawer-overlay" x-show="mobileOpen" x-transition.opacity.duration.200ms x-on:click="mobileOpen = false" x-cloak></div>
 
 <aside class="mobile-drawer" :class="mobileOpen && 'open'" x-data="{ openGroup: null }">
   <div class="mobile-drawer-head">
@@ -100,7 +117,7 @@ document.addEventListener('alpine:init', () => {
             <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none"/>
           </svg>
         </button>
-        <div class="accordion-body" x-show="openGroup === {{ $parent->id }}" x-cloak>
+        <div class="accordion-body" x-show="openGroup === {{ $parent->id }}" x-transition.opacity.duration.150ms x-cloak>
           <a href="{{ route('shop', ['category' => $parent->slug]) }}">Ver todo en {{ $parent->name }}</a>
           @foreach($parent->children as $child)
             <a href="{{ route('shop', ['category' => $child->slug]) }}">{{ $child->name }}</a>
