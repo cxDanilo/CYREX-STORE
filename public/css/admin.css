@@ -63,6 +63,11 @@
 
 .form-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:24px;}
 
+/* LIVE PREVIEW */
+.admin-preview{width:280px;flex-shrink:0;position:sticky;top:20px;}
+.admin-preview-label{font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-muted);margin-bottom:12px;}
+.admin-preview .card-media{position:relative;}
+
 /* LOGIN */
 .admin-login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
 .admin-login-card{width:100%;max-width:380px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:20px;padding:36px 32px;}
@@ -78,4 +83,5 @@
   .admin-nav-foot{border-top:none;margin-top:0;padding-top:0;}
   .form-row{grid-template-columns:1fr;}
   .repeater-row{grid-template-columns:1fr 1fr;}
+  .admin-preview{display:none;}
 }
