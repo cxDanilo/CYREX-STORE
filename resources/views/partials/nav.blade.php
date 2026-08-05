@@ -1,4 +1,4 @@
-<div x-data="{ megaOpen: false, mobileOpen: false }" x-on:keydown.escape.window="megaOpen = false; mobileOpen = false">
+<div x-data="{ megaOpen: false, mobileOpen: false, cartOpen: false }" x-on:keydown.escape.window="megaOpen = false; mobileOpen = false; cartOpen = false">
 
 <nav>
   <div class="wrap nav-inner">
@@ -39,6 +39,16 @@
     </form>
 
     <div class="nav-actions">
+      <button type="button" class="cart-icon-btn" x-on:click="cartOpen = true" aria-label="Ver carrito">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.6L20 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="10" cy="20" r="1.4" fill="currentColor"/>
+          <circle cx="17" cy="20" r="1.4" fill="currentColor"/>
+        </svg>
+        @if($cartCount > 0)
+          <span class="cart-badge">{{ $cartCount }}</span>
+        @endif
+      </button>
       <a href="{{ route('shop') }}" class="btn-gold" style="text-decoration:none;">Ver tienda</a>
     </div>
   </div>
@@ -79,5 +89,7 @@
     @endforeach
   </nav>
 </aside>
+
+@include('partials.cart-drawer')
 
 </div>

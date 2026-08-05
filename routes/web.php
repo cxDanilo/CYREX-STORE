@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -11,6 +12,9 @@ use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tienda', [ShopController::class, 'index'])->name('shop');
 Route::get('/producto/{slug}', [ShopController::class, 'show'])->name('product.show');
+
+Route::post('/carrito/agregar', [CartController::class, 'add'])->name('cart.add');
+Route::delete('/carrito/quitar/{key}', [CartController::class, 'remove'])->name('cart.remove');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('guest')->group(function () {

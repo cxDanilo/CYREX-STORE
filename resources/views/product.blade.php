@@ -54,9 +54,12 @@
       @endif
     </div>
 
-    <button class="btn-whatsapp" onclick="window.open('https://wa.me/59177947379?text=Hola, me interesa el {{ urlencode($product->name) }}', '_blank')">
-      Consultar por WhatsApp
-    </button>
+    <form method="POST" action="{{ route('cart.add') }}">
+      @csrf
+      <input type="hidden" name="product_id" value="{{ $product->id }}">
+      <input type="hidden" name="variant_id" :value="variant">
+      <button type="submit" class="btn-cta">Agregar al carrito</button>
+    </form>
 
     @if($product->description)
       <p style="color:var(--text-secondary);font-size:15px;line-height:1.7;margin-bottom:24px;">{{ $product->description }}</p>

@@ -41,6 +41,17 @@
     </div>
   </div>
 
+  <div class="form-section">
+    <h3>WhatsApp</h3>
+
+    <div class="form-group">
+      <label for="whatsapp_number">Número de WhatsApp (con código de país, sin +, sin espacios)</label>
+      <input type="text" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number', $whatsappNumber) }}" placeholder="59177947379" required>
+      <div class="form-hint">A este número llega el mensaje de "Finalizar por WhatsApp" del carrito.</div>
+      @error('whatsapp_number') <div class="error">{{ $message }}</div> @enderror
+    </div>
+  </div>
+
   <div class="form-actions">
     <button type="submit" class="btn btn-primary">Guardar ajustes</button>
   </div>
