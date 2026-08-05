@@ -37,7 +37,11 @@
   <div class="product-grid">
     @foreach($featured as $product)
       <a class="card" href="{{ route('product.show', $product->slug) }}" style="display:block;">
-        <div class="card-media"></div>
+        <div class="card-media">
+          @if($product->image_url)
+            <img src="{{ $product->image_url }}" alt="{{ $product->name }}">
+          @endif
+        </div>
         <div class="card-body">
           <div class="card-cat">{{ $product->category->name }}</div>
           <div class="card-name">{{ $product->name }}</div>

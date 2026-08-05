@@ -22,6 +22,15 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,10,11,0.92);backdrop-fi
 .nav-actions{display:flex;align-items:center;gap:18px;flex-shrink:0;}
 .btn-gold{background:var(--gold);color:#0A0A0B;font-weight:600;font-size:14px;padding:10px 18px;border-radius:100px;border:none;cursor:pointer;}
 
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font-body);font-size:13.5px;font-weight:600;padding:10px 18px;border-radius:100px;border:1px solid var(--border);background:var(--bg-elevated);color:var(--text-primary);cursor:pointer;transition:border-color .15s,background .15s,transform .15s;text-decoration:none;}
+.btn:hover{border-color:var(--border-strong);transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.btn-primary{background:var(--gold);color:#0A0A0B;border-color:var(--gold);}
+.btn-primary:hover{background:#e6c400;}
+.btn-danger{color:var(--red);}
+.btn-danger:hover{border-color:var(--red);}
+.btn-sm{padding:6px 12px;font-size:12.5px;}
+
 footer{padding:56px 0 32px;border-top:1px solid var(--border);}
 .footer-top{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:36px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:28px;}
 .footer-cols{display:flex;gap:48px;flex-wrap:wrap;}
@@ -49,7 +58,8 @@ footer{padding:56px 0 32px;border-top:1px solid var(--border);}
 .product-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));gap:18px;}
 .card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:border-color .2s,transform .2s;}
 .card:hover{border-color:var(--border-strong);transform:translateY(-2px);}
-.card-media{aspect-ratio:1/1;background:var(--bg-elevated-2);display:flex;align-items:center;justify-content:center;position:relative;}
+.card-media{aspect-ratio:1/1;background:var(--bg-elevated-2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.card-media img{width:100%;height:100%;object-fit:cover;}
 .badge{position:absolute;top:12px;left:12px;font-family:var(--font-mono);font-size:10px;padding:4px 10px;border-radius:100px;background:var(--gold);color:#0A0A0B;font-weight:600;}
 .card-body{padding:14px;}
 .card-cat{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:5px;}

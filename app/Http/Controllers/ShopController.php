@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\ExchangeRate;
 use App\Models\Product;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller
@@ -42,6 +43,9 @@ class ShopController extends Controller
             ->take(4)
             ->get();
 
-        return view('product', compact('rate', 'product', 'related'));
+        $currencyMode = Setting::get('currency_mode', 'both');
+        $defaultCurrency = Setting::get('default_currency', 'USD');
+
+        return view('product', compact('rate', 'product', 'related', 'currencyMode', 'defaultCurrency'));
     }
 }

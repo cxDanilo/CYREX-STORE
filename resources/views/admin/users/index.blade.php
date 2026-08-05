@@ -30,7 +30,7 @@
 </div>
 
 <div style="margin-top:20px;">
-  {{ $users->links('admin.partials.pagination') }}
+  {{ $users->links('partials.pagination') }}
 </div>
 
 @endsection

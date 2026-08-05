@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
@@ -38,6 +40,10 @@ class ProductController extends Controller
         $variants = $this->variantsFromRequest($request);
         $data['has_variants'] = count($variants) > 0;
 
+        if ($request->hasFile('image')) {
+            $data['image'] = $this->storeImage($request);
+        }
+
         $product = Product::create($data);
         $this->syncVariants($product, $variants);
 
@@ -59,6 +65,14 @@ class ProductController extends Controller
         $variants = $this->variantsFromRequest($request);
         $data['has_variants'] = count($variants) > 0;
 
+        if ($request->hasFile('image')) {
+            $this->deleteImage($product);
+            $data['image'] = $this->storeImage($request);
+        } elseif ($request->boolean('remove_image')) {
+            $this->deleteImage($product);
+            $data['image'] = null;
+        }
+
         $product->update($data);
         $this->syncVariants($product, $variants);
 
@@ -67,6 +81,7 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        $this->deleteImage($product);
         $product->delete();
 
         return back()->with('status', 'Producto eliminado.');
@@ -83,7 +98,7 @@ class ProductController extends Controller
 
     private function validated(Request $request, ?int $ignoreId = null): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
             'name' => ['required', 'string', 'max:255'],
             'slug' => [
@@ -96,7 +111,28 @@ class ProductController extends Controller
             'sku' => ['nullable', 'string', 'max:100'],
             'stock' => ['required', 'integer', 'min:0'],
             'status' => ['required', 'in:active,inactive'],
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
+
+        unset($data['image']);
+
+        return $data;
+    }
+
+    private function storeImage(Request $request): string
+    {
+        $file = $request->file('image');
+        $filename = Str::random(20).'.'.$file->getClientOriginalExtension();
+        $file->storeAs('products', $filename, 'uploads');
+
+        return 'products/'.$filename;
+    }
+
+    private function deleteImage(Product $product): void
+    {
+        if ($product->image) {
+            Storage::disk('uploads')->delete($product->image);
+        }
     }
 
     private function specsFromRequest(Request $request): array

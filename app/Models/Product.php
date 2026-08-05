@@ -13,7 +13,7 @@ class Product extends Model
 
     protected $fillable = [
         'category_id', 'name', 'slug', 'description', 'price', 'currency',
-        'sku', 'stock', 'has_variants', 'status', 'specs',
+        'sku', 'stock', 'has_variants', 'status', 'specs', 'image',
     ];
 
     protected $casts = [
@@ -40,5 +40,10 @@ class Product extends Model
     public function priceInBob(float $rate): float
     {
         return $this->currency === 'BOB' ? (float) $this->price : (float) $this->price * $rate;
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image ? asset('uploads/'.$this->image) : null;
     }
 }

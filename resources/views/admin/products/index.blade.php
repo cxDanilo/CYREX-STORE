@@ -20,6 +20,7 @@
     <table class="admin-table">
       <thead>
         <tr>
+          <th></th>
           <th>Nombre</th>
           <th>Categoría</th>
           <th>Precio</th>
@@ -30,6 +31,13 @@
       <tbody>
         @foreach($products as $product)
           <tr>
+            <td>
+              <div style="width:40px;height:40px;border-radius:8px;background:var(--bg-elevated-2);overflow:hidden;">
+                @if($product->image_url)
+                  <img src="{{ $product->image_url }}" alt="" style="width:100%;height:100%;object-fit:cover;">
+                @endif
+              </div>
+            </td>
             <td>
               {{ $product->name }}
               @if($product->has_variants)
@@ -68,7 +76,7 @@
 </div>
 
 <div style="margin-top:20px;">
-  {{ $products->links('admin.partials.pagination') }}
+  {{ $products->links('partials.pagination') }}
 </div>
 
 @endsection

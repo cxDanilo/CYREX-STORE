@@ -39,6 +39,9 @@
       @forelse($products as $product)
         <a class="card" href="{{ route('product.show', $product->slug) }}" style="display:block;">
           <div class="card-media">
+            @if($product->image_url)
+              <img src="{{ $product->image_url }}" alt="{{ $product->name }}">
+            @endif
             @if($product->has_variants)
               <span class="badge">Variantes</span>
             @endif
@@ -61,7 +64,7 @@
     </div>
 
     <div class="pagination-links">
-      {{ $products->links() }}
+      {{ $products->links('partials.pagination') }}
     </div>
   </div>
 </div>

@@ -6,6 +6,7 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tienda', [ShopController::class, 'index'])->name('shop');
@@ -30,5 +31,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('productos/{product}/estado', [AdminProductController::class, 'toggleStatus'])->name('productos.toggle-status');
 
         Route::get('usuarios', [AdminUserController::class, 'index'])->name('usuarios.index');
+
+        Route::get('ajustes', [AdminSettingsController::class, 'edit'])->name('settings.edit');
+        Route::put('ajustes', [AdminSettingsController::class, 'update'])->name('settings.update');
     });
 });

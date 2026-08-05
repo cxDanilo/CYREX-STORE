@@ -11,13 +11,17 @@
 <div class="wrap product-hero"
      x-data="{
         variant: {{ $product->variants->first()?->id ?? 'null' }},
-        showBob: false,
+        showBob: {{ $currencyMode === 'bob_only' || ($currencyMode === 'both' && $defaultCurrency === 'BOB') ? 'true' : 'false' }},
         rate: {{ $rate }},
         basePrice: {{ $product->currency === 'USD' ? $product->price : $product->price / $rate }},
         variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'name' => $v->variant_value, 'stock' => $v->stock])->toJson() }}
      }">
   <div class="gallery">
-    <div class="gallery-main"></div>
+    <div class="gallery-main">
+      @if($product->image_url)
+        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">
+      @endif
+    </div>
   </div>
 
   <div class="product-info">
@@ -37,12 +41,16 @@
     @endif
 
     <div class="price-block">
-      <div class="currency-toggle" style="margin-bottom:14px;">
-        <button type="button" @click="showBob = false" :class="!showBob && 'active'">USD</button>
-        <button type="button" @click="showBob = true" :class="showBob && 'active'">BOB</button>
-      </div>
+      @if($currencyMode === 'both')
+        <div class="currency-toggle" style="margin-bottom:14px;">
+          <button type="button" @click="showBob = false" :class="!showBob && 'active'">USD</button>
+          <button type="button" @click="showBob = true" :class="showBob && 'active'">BOB</button>
+        </div>
+      @endif
       <div class="price-main" x-text="showBob ? 'Bs ' + (basePrice * rate).toFixed(2) : '$' + basePrice.toFixed(2)"></div>
-      <div class="price-alt" x-text="showBob ? '≈ $' + basePrice.toFixed(2) + ' USD' : '≈ Bs ' + (basePrice * rate).toFixed(2)"></div>
+      @if($currencyMode === 'both')
+        <div class="price-alt" x-text="showBob ? '≈ $' + basePrice.toFixed(2) + ' USD' : '≈ Bs ' + (basePrice * rate).toFixed(2)"></div>
+      @endif
     </div>
 
     <button class="btn-whatsapp" onclick="window.open('https://wa.me/59177947379?text=Hola, me interesa el {{ urlencode($product->name) }}', '_blank')">
@@ -69,7 +77,11 @@
   <div class="product-grid">
     @foreach($related as $r)
       <a class="card" href="{{ route('product.show', $r->slug) }}" style="display:block;">
-        <div class="card-media"></div>
+        <div class="card-media">
+          @if($r->image_url)
+            <img src="{{ $r->image_url }}" alt="{{ $r->name }}">
+          @endif
+        </div>
         <div class="card-body">
           <div class="card-cat">{{ $r->category->name }}</div>
           <div class="card-name">{{ $r->name }}</div>

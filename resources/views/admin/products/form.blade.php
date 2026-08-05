@@ -4,7 +4,7 @@
 
 @section('content')
 
-<form method="POST" action="{{ $product->exists ? route('admin.productos.update', $product) : route('admin.productos.store') }}" class="admin-form"
+<form method="POST" action="{{ $product->exists ? route('admin.productos.update', $product) : route('admin.productos.store') }}" class="admin-form" enctype="multipart/form-data"
       x-data="{
         specs: {{ collect($product->specs ?? [])->map(fn($v, $k) => ['key' => $k, 'value' => $v])->values()->toJson() }},
         variants: {{ $product->relationLoaded('variants') ? $product->variants->map(fn($v) => ['id' => $v->id, 'variant_type' => $v->variant_type, 'variant_value' => $v->variant_value, 'sku' => $v->sku, 'stock' => $v->stock, 'price_override' => $v->price_override])->toJson() : '[]' }}
@@ -46,6 +46,29 @@
     <div class="form-group">
       <label for="description">Descripción</label>
       <textarea id="description" name="description" rows="3">{{ old('description', $product->description) }}</textarea>
+    </div>
+
+    <div class="form-group"
+         x-data="{ preview: {{ $product->image_url ? '\''.$product->image_url.'\'' : 'null' }} }">
+      <label for="image">Imagen del producto</label>
+      <div style="display:flex;gap:16px;align-items:flex-start;">
+        <div style="width:96px;height:96px;border-radius:12px;background:var(--bg-elevated-2);border:1px solid var(--border);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+          <img :src="preview" x-show="preview" style="width:100%;height:100%;object-fit:cover;" alt="">
+          <span x-show="!preview" style="color:var(--text-muted);font-size:11px;">Sin imagen</span>
+        </div>
+        <div style="flex:1;">
+          <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp"
+                 x-on:change="preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : preview">
+          <div class="form-hint">JPG, PNG o WEBP, máx. 4 MB.</div>
+          @if($product->image)
+            <label style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:var(--text-secondary);">
+              <input type="checkbox" name="remove_image" value="1" x-on:change="if($event.target.checked) preview = null">
+              Quitar imagen actual
+            </label>
+          @endif
+        </div>
+      </div>
+      @error('image') <div class="error">{{ $message }}</div> @enderror
     </div>
   </div>
 

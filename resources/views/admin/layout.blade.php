@@ -18,6 +18,7 @@
     <nav class="admin-nav">
       <a href="{{ route('admin.productos.index') }}" class="{{ request()->routeIs('admin.productos.*') ? 'active' : '' }}">Productos</a>
       <a href="{{ route('admin.usuarios.index') }}" class="{{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">Usuarios</a>
+      <a href="{{ route('admin.settings.edit') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">Ajustes</a>
     </nav>
     <div class="admin-nav-foot">
       <a href="{{ route('home') }}" target="_blank">Ver sitio ↗</a>
