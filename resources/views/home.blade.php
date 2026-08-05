@@ -4,15 +4,15 @@
 
 @section('styles')
 <style>
-  .hero{min-height:70vh;display:flex;flex-direction:column;justify-content:center;padding:80px 0;border-bottom:1px solid var(--border);}
+  .hero{min-height:70vh;display:flex;flex-direction:column;justify-content:center;padding-block:80px;border-bottom:1px solid var(--border);}
   .hero h1{font-family:var(--font-display);font-weight:700;font-size:clamp(36px,6vw,72px);line-height:1.02;letter-spacing:-0.03em;max-width:800px;margin-bottom:20px;}
   .hero h1 em{font-style:normal;color:var(--gold);}
   .hero p{font-size:18px;color:var(--text-secondary);max-width:480px;margin-bottom:32px;}
   .hero-cta{display:inline-block;background:var(--gold);color:#0A0A0B;font-weight:600;padding:14px 28px;border-radius:100px;}
-  .cat-strip{padding:40px 0;display:flex;gap:12px;overflow-x:auto;border-bottom:1px solid var(--border);}
+  .cat-strip{padding-block:40px;display:flex;gap:12px;overflow-x:auto;border-bottom:1px solid var(--border);}
   .cat-chip{flex-shrink:0;font-size:14px;padding:10px 20px;border-radius:100px;border:1px solid var(--border);color:var(--text-secondary);white-space:nowrap;}
   .cat-chip:hover{border-color:var(--gold);color:var(--gold);}
-  .featured{padding:60px 0 100px;}
+  .featured{padding-top:60px;padding-bottom:100px;}
   .featured h2{font-family:var(--font-display);font-weight:600;font-size:24px;margin-bottom:24px;}
 </style>
 @endsection

@@ -71,7 +71,7 @@ document.addEventListener('alpine:init', () => {
       <span></span><span></span><span></span>
     </button>
 
-    <div class="logo"><a href="{{ route('home') }}" style="color:inherit;">CYREX<span>.</span></a></div>
+    <div class="logo"><a href="{{ route('home') }}" style="color:inherit;"><img src="{{ asset('images/logo-icon.png') }}" alt="" class="logo-icon">CYREX<span>.</span></a></div>
 
     <a href="{{ route('home') }}" class="nav-home-link">Inicio</a>
     <a href="{{ route('shop') }}" class="nav-home-link">Tienda</a>
@@ -101,7 +101,7 @@ document.addEventListener('alpine:init', () => {
 
 <aside class="mobile-drawer" :class="mobileOpen && 'open'" x-data="{ openGroup: null }">
   <div class="mobile-drawer-head">
-    <div class="logo">CYREX<span>.</span></div>
+    <div class="logo"><img src="{{ asset('images/logo-icon.png') }}" alt="" class="logo-icon">CYREX<span>.</span></div>
     <button type="button" class="mobile-drawer-close" x-on:click="mobileOpen = false" aria-label="Cerrar menú">×</button>
   </div>
 

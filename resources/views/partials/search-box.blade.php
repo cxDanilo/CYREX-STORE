@@ -18,11 +18,10 @@
       }
     }" x-on:click.outside="open = false">
   <form class="{{ $formClass }}" method="GET" action="{{ route('shop') }}" x-on:submit="open = false">
-    <span class="search-icon">
+    <button type="submit" class="search-icon-btn" aria-label="Buscar">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-    </span>
+    </button>
     <input type="text" name="q" x-model="q" x-on:input="search()" placeholder="Buscar en todo Cyrex Store" autocomplete="off" />
-    <button class="search-btn" type="submit">Buscar</button>
   </form>
 
   <div class="search-suggestions" x-show="open" x-transition.opacity.duration.150ms x-cloak>
