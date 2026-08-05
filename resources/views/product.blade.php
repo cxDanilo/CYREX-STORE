@@ -42,7 +42,8 @@
 
     <div class="price-block">
       @if($currencyMode === 'both')
-        <div class="currency-toggle" style="margin-bottom:14px;">
+        <div class="currency-toggle" :class="showBob && 'is-bob'" style="margin-bottom:14px;">
+          <div class="toggle-thumb"></div>
           <button type="button" @click="showBob = false" :class="!showBob && 'active'">USD</button>
           <button type="button" @click="showBob = true" :class="showBob && 'active'">BOB</button>
         </div>
