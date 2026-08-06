@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\ExchangeRate;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class SettingsController extends Controller
 {
@@ -17,8 +19,19 @@ class SettingsController extends Controller
         $whatsappNumber = Setting::get('whatsapp_number', '59177947379');
         $categoryMenuScope = Setting::get('category_menu_scope', 'shop');
         $logoHeight = Setting::get('logo_height', '60');
+        $logoPath = Setting::get('logo_path');
+        $whatsappBtnText = Setting::get('whatsapp_btn_text', 'Escríbenos');
+        $shopCtaText = Setting::get('shop_cta_text', 'Ver tienda');
+        $footerWhatsappBtnText = Setting::get('footer_whatsapp_btn_text', 'Escríbenos por WhatsApp');
+        $footerTagline = Setting::get('footer_tagline', 'Componentes y periféricos gamer en Bolivia. Santa Cruz y Cochabamba.');
+        $accentColor = Setting::get('accent_color', '#FFD900');
+        $reducedMotion = Setting::get('reduced_motion', 'off');
 
-        return view('admin.settings.edit', compact('currentRate', 'currencyMode', 'defaultCurrency', 'whatsappNumber', 'categoryMenuScope', 'logoHeight'));
+        return view('admin.settings.edit', compact(
+            'currentRate', 'currencyMode', 'defaultCurrency', 'whatsappNumber', 'categoryMenuScope',
+            'logoHeight', 'logoPath', 'whatsappBtnText', 'shopCtaText', 'footerWhatsappBtnText',
+            'footerTagline', 'accentColor', 'reducedMotion'
+        ));
     }
 
     public function update(Request $request)
@@ -30,6 +43,14 @@ class SettingsController extends Controller
             'whatsapp_number' => ['required', 'string', 'regex:/^[0-9]{6,15}$/'],
             'category_menu_scope' => ['required', 'in:all,shop'],
             'logo_height' => ['required', 'integer', 'min:20', 'max:120'],
+            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'remove_logo' => ['nullable', 'boolean'],
+            'whatsapp_btn_text' => ['required', 'string', 'max:60'],
+            'shop_cta_text' => ['required', 'string', 'max:60'],
+            'footer_whatsapp_btn_text' => ['required', 'string', 'max:80'],
+            'footer_tagline' => ['required', 'string', 'max:200'],
+            'accent_color' => ['required', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'reduced_motion' => ['required', 'in:on,off'],
         ]);
 
         if ($request->filled('rate') && (float) $data['rate'] !== ExchangeRate::current()) {
@@ -41,7 +62,33 @@ class SettingsController extends Controller
         Setting::set('whatsapp_number', $data['whatsapp_number']);
         Setting::set('category_menu_scope', $data['category_menu_scope']);
         Setting::set('logo_height', (string) $data['logo_height']);
+        Setting::set('whatsapp_btn_text', $data['whatsapp_btn_text']);
+        Setting::set('shop_cta_text', $data['shop_cta_text']);
+        Setting::set('footer_whatsapp_btn_text', $data['footer_whatsapp_btn_text']);
+        Setting::set('footer_tagline', $data['footer_tagline']);
+        Setting::set('accent_color', $data['accent_color']);
+        Setting::set('reduced_motion', $data['reduced_motion']);
+
+        if ($request->hasFile('logo')) {
+            $this->deleteLogo();
+            $file = $request->file('logo');
+            $filename = 'branding/'.Str::random(20).'.'.$file->getClientOriginalExtension();
+            $file->storeAs('', $filename, 'uploads');
+            Setting::set('logo_path', $filename);
+        } elseif ($request->boolean('remove_logo')) {
+            $this->deleteLogo();
+            Setting::set('logo_path', null);
+        }
 
         return back()->with('status', 'Ajustes guardados.');
+    }
+
+    private function deleteLogo(): void
+    {
+        $current = Setting::get('logo_path');
+
+        if ($current) {
+            Storage::disk('uploads')->delete($current);
+        }
     }
 }

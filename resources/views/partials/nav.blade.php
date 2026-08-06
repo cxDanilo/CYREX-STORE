@@ -71,17 +71,18 @@ document.addEventListener('alpine:init', () => {
       <span></span><span></span><span></span>
     </button>
 
-    <div class="logo"><a href="{{ route('home') }}"><img src="{{ asset('images/logo-horizontal.png') }}" alt="Cyrex Store" class="logo-full"></a></div>
+    <div class="logo"><a href="{{ route('home') }}"><img src="{{ $logoUrl }}" alt="Cyrex Store" class="logo-full"></a></div>
 
-    <a href="{{ route('home') }}" class="nav-home-link">Inicio</a>
-    <a href="{{ route('shop') }}" class="nav-home-link">Tienda</a>
+    @foreach($headerMenuItems as $item)
+      <a href="{{ $item['url'] }}" class="nav-home-link">{{ $item['label'] }}</a>
+    @endforeach
 
     @include('partials.search-box')
 
     <div class="nav-actions">
       <a href="https://wa.me/{{ $whatsappNumber }}" target="_blank" class="nav-whatsapp-btn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.7.8-.8.9-.2.2-.3.2-.5.1-.2-.1-1-.4-1.9-1.2-.7-.6-1.2-1.4-1.3-1.6-.1-.2 0-.4.1-.5l.4-.4c.1-.1.2-.2.2-.4.1-.1 0-.3 0-.4C10.3 9.6 9.9 8.6 9.7 8.2c-.2-.4-.3-.3-.5-.3h-.4c-.1 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.3 1 2.4c.1.2 1.7 2.6 4.1 3.6.6.2 1 .4 1.4.5.6.2 1.1.1 1.5.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2-.1-.1-.2-.2-.5-.3z"/></svg>
-        <span>Escríbenos</span>
+        @include('partials.whatsapp-icon')
+        <span>{{ $whatsappBtnText }}</span>
       </a>
       <span class="nav-status"><i></i> En línea</span>
       <button type="button" class="cart-icon-btn" x-on:click="$store.cart.open = true" aria-label="Ver carrito">
@@ -92,7 +93,7 @@ document.addEventListener('alpine:init', () => {
         </svg>
         <span class="cart-badge" x-show="$store.cart.count > 0" x-text="$store.cart.count" x-cloak></span>
       </button>
-      <a href="{{ route('shop') }}" class="btn-gold" style="text-decoration:none;">Ver tienda</a>
+      <a href="{{ route('shop') }}" class="btn-gold" style="text-decoration:none;">{{ $shopCtaText }}</a>
     </div>
   </div>
 </nav>
@@ -101,7 +102,7 @@ document.addEventListener('alpine:init', () => {
 
 <aside class="mobile-drawer" :class="mobileOpen && 'open'" x-data="{ openGroup: null }">
   <div class="mobile-drawer-head">
-    <img src="{{ asset('images/logo-horizontal.png') }}" alt="Cyrex Store" class="logo-full">
+    <img src="{{ $logoUrl }}" alt="Cyrex Store" class="logo-full">
     <button type="button" class="mobile-drawer-close" x-on:click="mobileOpen = false" aria-label="Cerrar menú">×</button>
   </div>
 

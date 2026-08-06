@@ -15,7 +15,7 @@
       <div class="form-group">
         <label for="name">Nombre</label>
         <input type="text" id="name" name="name" value="{{ old('name', $category->name) }}" required
-               x-on:input="if(!$refs.slug.dataset.touched) $refs.slug.value = $event.target.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')">
+               x-on:input="if(!$refs.slug.dataset.touched) $refs.slug.value = window.autoSlugify($event.target.value)">
         @error('name') <div class="error">{{ $message }}</div> @enderror
       </div>
 

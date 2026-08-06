@@ -1,0 +1,333 @@
+<?php
+
+/*
+|--------------------------------------------------------------------------
+| Registro de tipos de bloque del CMS
+|--------------------------------------------------------------------------
+|
+| Cada tipo de bloque define:
+| - view: la plantilla Blade que lo renderiza (usada por PageRenderer,
+|   tanto para el sitio público como para el preview del editor).
+| - category: agrupa el bloque en la paleta del editor.
+| - icon: SVG inline mostrado en la paleta del editor.
+| - defaults: valores por defecto de sus campos (se fusionan con `data`
+|   al renderizar, para que un bloque guardado antes de un cambio de
+|   schema no rompa la vista si le falta una clave nueva).
+| - fields: metadata de edición (tipo de campo, label, opciones).
+|   PageRenderer NUNCA lee esta clave — es exclusivamente para que un
+|   editor (hoy GrapesJS, mañana el que sea) sepa qué formulario
+|   construir. Un editor nuevo no requiere tocar PageRenderer.
+|
+| Tipos de campo soportados por el editor: text, textarea, number,
+| select (requiere 'options'; 'categories' como options se resuelve
+| dinámicamente en Admin\PageBlockController con categorías reales),
+| repeater (requiere 'fields' anidado, mismo vocabulario de tipos).
+|
+| Para agregar un tipo de bloque nuevo: crear su vista en
+| resources/views/cms/blocks/ y agregar una entrada acá. Nada más —
+| ni PageRenderer ni el editor necesitan tocarse.
+|
+*/
+
+return [
+
+    'hero_simple' => [
+        'label' => 'Hero',
+        'view' => 'cms.blocks.hero-simple',
+        'category' => 'Contenido',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 10h10M7 14h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+        'defaults' => ['titulo' => '', 'subtitulo' => '', 'cta_label' => '', 'cta_url' => ''],
+        'fields' => [
+            'titulo' => ['type' => 'text', 'label' => 'Título'],
+            'subtitulo' => ['type' => 'textarea', 'label' => 'Subtítulo'],
+            'cta_label' => ['type' => 'text', 'label' => 'Texto del botón'],
+            'cta_url' => ['type' => 'text', 'label' => 'Link del botón'],
+        ],
+    ],
+
+    'titulo' => [
+        'label' => 'Título',
+        'view' => 'cms.blocks.titulo',
+        'category' => 'Contenido',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><path d="M6 5v14M18 5v14M6 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+        'defaults' => ['texto' => '', 'tamano' => 'grande'],
+        'fields' => [
+            'texto' => ['type' => 'text', 'label' => 'Texto'],
+            'tamano' => ['type' => 'select', 'label' => 'Tamaño', 'options' => [
+                ['id' => 'grande', 'name' => 'Grande'],
+                ['id' => 'mediano', 'name' => 'Mediano'],
+                ['id' => 'chico', 'name' => 'Chico'],
+            ]],
+        ],
+    ],
+
+    'texto_libre' => [
+        'label' => 'Texto',
+        'view' => 'cms.blocks.texto-libre',
+        'category' => 'Contenido',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 11h16M4 16h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+        'defaults' => ['texto' => ''],
+        'fields' => [
+            'texto' => ['type' => 'textarea', 'label' => 'Texto'],
+        ],
+    ],
+
+    'boton' => [
+        'label' => 'Botón',
+        'view' => 'cms.blocks.boton',
+        'category' => 'Contenido',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="9" width="18" height="6" rx="3" stroke="currentColor" stroke-width="1.5"/></svg>',
+        'defaults' => ['texto' => '', 'url' => '', 'estilo' => 'primario'],
+        'fields' => [
+            'texto' => ['type' => 'text', 'label' => 'Texto del botón'],
+            'url' => ['type' => 'text', 'label' => 'Link'],
+            'estilo' => ['type' => 'select', 'label' => 'Estilo', 'options' => [
+                ['id' => 'primario', 'name' => 'Dorado (primario)'],
+                ['id' => 'secundario', 'name' => 'Contorno (secundario)'],
+            ]],
+        ],
+    ],
+
+    'cta' => [
+        'label' => 'CTA',
+        'view' => 'cms.blocks.cta',
+        'category' => 'Contenido',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M9 12h6M12 9l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        'defaults' => ['texto' => '', 'boton_label' => '', 'boton_url' => ''],
+        'fields' => [
+            'texto' => ['type' => 'textarea', 'label' => 'Texto'],
+            'boton_label' => ['type' => 'text', 'label' => 'Texto del botón'],
+            'boton_url' => ['type' => 'text', 'label' => 'Link del botón'],
+        ],
+    ],
+
+    'separador' => [
+        'label' => 'Separador',
+        'view' => 'cms.blocks.separador',
+        'category' => 'Contenido',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><path d="M4 12h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+        'defaults' => ['tamano' => 'mediano'],
+        'fields' => [
+            'tamano' => ['type' => 'select', 'label' => 'Espaciado', 'options' => [
+                ['id' => 'chico', 'name' => 'Chico'],
+                ['id' => 'mediano', 'name' => 'Mediano'],
+                ['id' => 'grande', 'name' => 'Grande'],
+            ]],
+        ],
+    ],
+
+    'imagen' => [
+        'label' => 'Imagen',
+        'view' => 'cms.blocks.imagen',
+        'category' => 'Medios',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="9.5" r="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M21 16l-5.5-5.5L6 20" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+        'defaults' => ['url' => '', 'alt' => '', 'leyenda' => ''],
+        'fields' => [
+            'url' => ['type' => 'text', 'label' => 'URL de la imagen'],
+            'alt' => ['type' => 'text', 'label' => 'Texto alternativo'],
+            'leyenda' => ['type' => 'text', 'label' => 'Leyenda (opcional)'],
+        ],
+    ],
+
+    'galeria' => [
+        'label' => 'Galería',
+        'view' => 'cms.blocks.galeria',
+        'category' => 'Medios',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>',
+        'defaults' => ['items' => []],
+        'fields' => [
+            'items' => ['type' => 'repeater', 'label' => 'Imágenes', 'fields' => [
+                'url' => ['type' => 'text', 'label' => 'URL de imagen'],
+                'alt' => ['type' => 'text', 'label' => 'Texto alternativo'],
+            ]],
+        ],
+    ],
+
+    'video' => [
+        'label' => 'Video',
+        'view' => 'cms.blocks.video',
+        'category' => 'Medios',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M10 9l5 3-5 3V9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+        'defaults' => ['titulo' => '', 'url' => ''],
+        'fields' => [
+            'titulo' => ['type' => 'text', 'label' => 'Título (opcional)'],
+            'url' => ['type' => 'text', 'label' => 'URL de YouTube o Vimeo'],
+        ],
+    ],
+
+    'banner' => [
+        'label' => 'Banner',
+        'view' => 'cms.blocks.banner',
+        'category' => 'Medios',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 15h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+        'defaults' => ['imagen_url' => '', 'titulo' => '', 'cta_label' => '', 'cta_url' => ''],
+        'fields' => [
+            'imagen_url' => ['type' => 'text', 'label' => 'URL de imagen de fondo'],
+            'titulo' => ['type' => 'text', 'label' => 'Título'],
+            'cta_label' => ['type' => 'text', 'label' => 'Texto del botón'],
+            'cta_url' => ['type' => 'text', 'label' => 'Link del botón'],
+        ],
+    ],
+
+    'carrusel' => [
+        'label' => 'Carrusel',
+        'view' => 'cms.blocks.carrusel',
+        'category' => 'Medios',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="5" y="5" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M2 12h1.5M20.5 12H22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+        'defaults' => ['items' => []],
+        'fields' => [
+            'items' => ['type' => 'repeater', 'label' => 'Slides', 'fields' => [
+                'url' => ['type' => 'text', 'label' => 'URL de imagen'],
+                'texto' => ['type' => 'text', 'label' => 'Leyenda (opcional)'],
+            ]],
+        ],
+    ],
+
+    'marcas' => [
+        'label' => 'Marcas',
+        'view' => 'cms.blocks.marcas',
+        'category' => 'Medios',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="1.5"/></svg>',
+        'defaults' => ['items' => []],
+        'fields' => [
+            'items' => ['type' => 'repeater', 'label' => 'Logos', 'fields' => [
+                'url' => ['type' => 'text', 'label' => 'URL del logo'],
+                'nombre' => ['type' => 'text', 'label' => 'Nombre de la marca'],
+            ]],
+        ],
+    ],
+
+    'mapa' => [
+        'label' => 'Mapa',
+        'view' => 'cms.blocks.mapa',
+        'category' => 'Medios',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.5 7-11.5A7 7 0 0 0 5 9.5C5 14.5 12 21 12 21z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.2" stroke="currentColor" stroke-width="1.5"/></svg>',
+        'defaults' => ['direccion' => ''],
+        'fields' => [
+            'direccion' => ['type' => 'text', 'label' => 'Dirección o lugar'],
+        ],
+    ],
+
+    'productos' => [
+        'label' => 'Productos',
+        'view' => 'cms.blocks.productos',
+        'category' => 'Comercio',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12l-1 12H7L6 8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.5"/></svg>',
+        'defaults' => ['titulo' => '', 'categoria' => '', 'limite' => 4],
+        'fields' => [
+            'titulo' => ['type' => 'text', 'label' => 'Título (opcional)'],
+            'categoria' => ['type' => 'select', 'label' => 'Categoría', 'options' => 'categories'],
+            'limite' => ['type' => 'number', 'label' => 'Cantidad de productos'],
+        ],
+    ],
+
+    'cta_whatsapp' => [
+        'label' => 'CTA de WhatsApp',
+        'view' => 'cms.blocks.cta-whatsapp',
+        'category' => 'Comercio',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M9 10c0 3 2 5 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+        'defaults' => ['texto' => 'Escríbenos por WhatsApp'],
+        'fields' => [
+            'texto' => ['type' => 'text', 'label' => 'Texto del botón'],
+        ],
+    ],
+
+    'formulario' => [
+        'label' => 'Formulario',
+        'view' => 'cms.blocks.formulario',
+        'category' => 'Comercio',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 9h10M7 13h10M7 17h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+        'defaults' => ['titulo' => '', 'boton_texto' => 'Enviar por WhatsApp'],
+        'fields' => [
+            'titulo' => ['type' => 'text', 'label' => 'Título (opcional)'],
+            'boton_texto' => ['type' => 'text', 'label' => 'Texto del botón'],
+        ],
+    ],
+
+    'faq' => [
+        'label' => 'FAQ',
+        'view' => 'cms.blocks.faq',
+        'category' => 'Prueba social',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M10 9a2 2 0 1 1 3 1.7c-.7.5-1 .8-1 1.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="16.3" r=".2" stroke="currentColor" stroke-width="1.8"/></svg>',
+        'defaults' => ['items' => []],
+        'fields' => [
+            'items' => ['type' => 'repeater', 'label' => 'Preguntas', 'fields' => [
+                'pregunta' => ['type' => 'text', 'label' => 'Pregunta'],
+                'respuesta' => ['type' => 'textarea', 'label' => 'Respuesta'],
+            ]],
+        ],
+    ],
+
+    'cards' => [
+        'label' => 'Cards',
+        'view' => 'cms.blocks.cards',
+        'category' => 'Prueba social',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="6" height="14" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="4" width="6" height="16" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="16" y="7" width="6" height="13" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>',
+        'defaults' => ['items' => []],
+        'fields' => [
+            'items' => ['type' => 'repeater', 'label' => 'Cards', 'fields' => [
+                'titulo' => ['type' => 'text', 'label' => 'Título'],
+                'texto' => ['type' => 'textarea', 'label' => 'Texto'],
+            ]],
+        ],
+    ],
+
+    'testimonios' => [
+        'label' => 'Testimonios',
+        'view' => 'cms.blocks.testimonios',
+        'category' => 'Prueba social',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><path d="M7 8c-2 0-3 1.5-3 3.5S5 15 7 15v3l-3-2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M16 8c-2 0-3 1.5-3 3.5s1 3.5 3 3.5v3l-3-2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+        'defaults' => ['items' => []],
+        'fields' => [
+            'items' => ['type' => 'repeater', 'label' => 'Testimonios', 'fields' => [
+                'nombre' => ['type' => 'text', 'label' => 'Nombre'],
+                'texto' => ['type' => 'textarea', 'label' => 'Testimonio'],
+            ]],
+        ],
+    ],
+
+    'garantias' => [
+        'label' => 'Garantías',
+        'view' => 'cms.blocks.garantias',
+        'category' => 'Prueba social',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+        'defaults' => ['items' => []],
+        'fields' => [
+            'items' => ['type' => 'repeater', 'label' => 'Ítems', 'fields' => [
+                'icono' => ['type' => 'select', 'label' => 'Ícono', 'options' => [
+                    ['id' => 'check', 'name' => 'Check'],
+                    ['id' => 'shield', 'name' => 'Garantía'],
+                    ['id' => 'truck', 'name' => 'Envío'],
+                    ['id' => 'support', 'name' => 'Soporte'],
+                ]],
+                'texto' => ['type' => 'text', 'label' => 'Texto'],
+            ]],
+        ],
+    ],
+
+    'numeros_destacados' => [
+        'label' => 'Números destacados',
+        'view' => 'cms.blocks.numeros-destacados',
+        'category' => 'Prueba social',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19V11M12 19V5M19 19v-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+        'defaults' => ['items' => []],
+        'fields' => [
+            'items' => ['type' => 'repeater', 'label' => 'Números', 'fields' => [
+                'numero' => ['type' => 'text', 'label' => 'Número'],
+                'etiqueta' => ['type' => 'text', 'label' => 'Etiqueta'],
+            ]],
+        ],
+    ],
+
+    'html_libre' => [
+        'label' => 'HTML',
+        'view' => 'cms.blocks.html-libre',
+        'category' => 'Avanzado',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><path d="M8 6l-5 6 5 6M16 6l5 6-5 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        'defaults' => ['html' => ''],
+        'fields' => [
+            'html' => ['type' => 'textarea', 'label' => 'HTML crudo (sin sanitizar — usar con cuidado)'],
+        ],
+    ],
+
+];

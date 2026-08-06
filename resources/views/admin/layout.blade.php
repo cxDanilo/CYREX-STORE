@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
 <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v={{ filemtime(public_path('css/admin.css')) }}">
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="{{ asset('js/admin-autoslug.js') }}?v={{ filemtime(public_path('js/admin-autoslug.js')) }}"></script>
+@yield('styles')
 </head>
 <body>
 
@@ -20,6 +22,11 @@
       <a href="{{ route('admin.categorias.index') }}" class="{{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">Categorías</a>
       <a href="{{ route('admin.usuarios.index') }}" class="{{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">Usuarios</a>
       <a href="{{ route('admin.settings.edit') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">Ajustes</a>
+      <a href="{{ route('admin.paginas.index') }}" class="{{ request()->routeIs('admin.paginas.*') ? 'active' : '' }}">Páginas</a>
+      <a href="{{ route('admin.plantillas.index') }}" class="{{ request()->routeIs('admin.plantillas.*') ? 'active' : '' }}">Plantillas</a>
+      <a href="{{ route('admin.medios.index') }}" class="{{ request()->routeIs('admin.medios.*') ? 'active' : '' }}">Medios</a>
+      <a href="{{ route('admin.menus.index') }}" class="{{ request()->routeIs('admin.menus.*') ? 'active' : '' }}">Menús</a>
+      <a href="{{ route('admin.redes.index') }}" class="{{ request()->routeIs('admin.redes.*') ? 'active' : '' }}">Redes sociales</a>
     </nav>
     <div class="admin-nav-foot">
       <a href="{{ route('home') }}" target="_blank">Ver sitio ↗</a>
@@ -49,5 +56,6 @@
   </div>
 </div>
 
+@yield('scripts')
 </body>
 </html>
