@@ -109,7 +109,7 @@ document.addEventListener('alpine:init', () => {
 
   <nav class="mobile-accordion">
     @foreach($navCategories as $parent)
-      <div class="accordion-group">
+      <div class="accordion-group" :class="openGroup === {{ $parent->id }} && 'is-open'">
         <button type="button" class="accordion-head" x-on:click="openGroup = (openGroup === {{ $parent->id }} ? null : {{ $parent->id }})">
           <span style="display:flex;align-items:center;gap:10px;">
             <span class="mega-icon">@include('partials.category-icon', ['icon' => $parent->icon])</span>
@@ -119,8 +119,8 @@ document.addEventListener('alpine:init', () => {
             <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none"/>
           </svg>
         </button>
-        <div class="accordion-body" x-show="openGroup === {{ $parent->id }}" x-transition.opacity.duration.150ms x-cloak>
-          <a href="{{ route('shop', ['category' => $parent->slug]) }}">Ver todo en {{ $parent->name }}</a>
+        <div class="accordion-body" x-show="openGroup === {{ $parent->id }}" x-collapse.duration.250ms x-cloak>
+          <a href="{{ route('shop', ['category' => $parent->slug]) }}" class="accordion-viewall">Ver todo en {{ $parent->name }}</a>
           @foreach($parent->children as $child)
             <a href="{{ route('shop', ['category' => $child->slug]) }}">{{ $child->name }}</a>
           @endforeach

@@ -66,10 +66,15 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,10,11,0.92);backdrop-fi
 .mobile-search input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text-primary);font-size:14px;padding:0 14px;}
 
 .accordion-group{border-bottom:1px solid var(--border);}
-.accordion-head{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;color:var(--text-primary);font-size:14px;font-weight:500;padding:14px 4px;cursor:pointer;text-align:left;}
-.accordion-body{display:flex;flex-direction:column;gap:2px;padding:0 4px 14px 32px;}
-.accordion-body a{font-size:13.5px;color:var(--text-secondary);padding:6px 0;}
-.accordion-body a:hover{color:var(--gold);}
+.accordion-head{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;color:var(--text-primary);font-size:14px;font-weight:500;padding:14px 4px;cursor:pointer;text-align:left;border-radius:8px;transition:background .15s,color .15s;}
+.accordion-head:active{background:var(--bg-elevated-2);}
+.accordion-head .mega-icon{color:var(--text-secondary);transition:color .15s;}
+.accordion-group.is-open .accordion-head{color:var(--gold);}
+.accordion-group.is-open .accordion-head .mega-icon{color:var(--gold);}
+.accordion-body{display:flex;flex-direction:column;gap:2px;padding:2px 4px 14px 32px;}
+.accordion-body a{font-size:13.5px;color:var(--text-secondary);padding:8px 0;transition:color .15s;}
+.accordion-body a:hover,.accordion-body a:active{color:var(--gold);}
+.accordion-viewall{color:var(--gold)!important;font-weight:600;border-bottom:1px solid var(--border);margin-bottom:4px;}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font-body);font-size:13.5px;font-weight:600;padding:10px 18px;border-radius:100px;border:1px solid var(--border);background:var(--bg-elevated);color:var(--text-primary);cursor:pointer;transition:border-color .15s,background .15s,transform .15s;text-decoration:none;}
 .btn:hover{border-color:var(--border-strong);transform:translateY(-1px);}
@@ -163,10 +168,13 @@ footer{padding:56px 0 32px;border-top:1px solid var(--border);}
 @media (max-width:860px){
   .hamburger{display:flex;}
   nav > .wrap > .search-wrap{display:none;}
-  .nav-inner{gap:16px;}
+  .nav-inner{gap:10px;}
   .cat-float{display:none;}
   .nav-home-link,.nav-status,.nav-whatsapp-btn span{display:none;}
   .nav-whatsapp-btn{padding:9px;}
+  .nav-inner .logo-full{height:36px;}
+  .nav-inner .btn-gold{display:none;}
+  .nav-actions{gap:10px;}
 }
 
 @media (max-width:1180px){
