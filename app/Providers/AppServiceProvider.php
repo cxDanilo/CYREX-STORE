@@ -43,7 +43,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('layouts.app', function ($view) {
-            $view->with('logoHeight', Setting::get('logo_height', '60'));
+            $view->with([
+                'logoHeight' => Setting::get('logo_height', '60'),
+                'footerCategories' => Category::parents()->get(),
+                'whatsappNumber' => Setting::get('whatsapp_number', '59177947379'),
+            ]);
         });
     }
 }
