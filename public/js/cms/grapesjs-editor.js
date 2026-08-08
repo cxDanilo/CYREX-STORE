@@ -77,12 +77,33 @@
     const wrap = document.createElement('div');
     wrap.className = 'cms-media-field';
 
+    const thumb = document.createElement('img');
+    thumb.className = 'cms-media-thumb';
+    thumb.style.display = 'none';
+    thumb.addEventListener('error', () => { thumb.style.display = 'none'; });
+
+    function updateThumb(url) {
+      if (url) {
+        thumb.src = url;
+        thumb.style.display = 'block';
+      } else {
+        thumb.removeAttribute('src');
+        thumb.style.display = 'none';
+      }
+    }
+
+    const controls = document.createElement('div');
+    controls.className = 'cms-media-controls';
+
     const textInput = document.createElement('input');
     textInput.type = 'text';
     textInput.className = 'gjs-field';
     textInput.placeholder = 'URL de la imagen';
     textInput.value = initialValue || '';
-    textInput.addEventListener('input', () => onChange(textInput.value));
+    textInput.addEventListener('input', () => {
+      updateThumb(textInput.value);
+      onChange(textInput.value);
+    });
 
     const uploadLabel = document.createElement('label');
     uploadLabel.className = 'cms-media-upload-btn';
@@ -110,6 +131,7 @@
           const uploaded = (res.items || [])[0];
           if (uploaded) {
             textInput.value = uploaded.url;
+            updateThumb(uploaded.url);
             onChange(uploaded.url);
           }
           uploadLabel.textContent = 'Subir';
@@ -123,8 +145,12 @@
     });
 
     uploadLabel.appendChild(fileInput);
-    wrap.appendChild(textInput);
-    wrap.appendChild(uploadLabel);
+    controls.appendChild(textInput);
+    controls.appendChild(uploadLabel);
+
+    updateThumb(initialValue);
+    wrap.appendChild(thumb);
+    wrap.appendChild(controls);
 
     return { wrap, textInput };
   }
@@ -134,7 +160,14 @@
       createInput({ trait }) {
         const { wrap, textInput } = buildMediaWidget(
           '',
-          (val) => this.component.set(trait.get('name'), val),
+          (val) => {
+            // Evita que el "eco" del propio cambio (cada tecleo dispara
+            // change:<campo>, que GrapesJS usa para volver a llamar a
+            // onUpdate) reconstruya este mismo input y le haga perder el
+            // foco a mitad de escritura.
+            this.suppressNextUpdate = true;
+            this.component.set(trait.get('name'), val);
+          },
           mediaUploadUrl,
           csrfToken
         );
@@ -147,6 +180,10 @@
       },
       onUpdate({ component, trait }) {
         this.component = component;
+        if (this.suppressNextUpdate) {
+          this.suppressNextUpdate = false;
+          return;
+        }
         if (this.input) this.input.value = component.get(trait.get('name')) || '';
       },
     });
@@ -196,6 +233,19 @@
       },
       onUpdate({ elInput, component, trait }) {
         this.component = component;
+
+        // changeProp:true hace que CADA tecleo (que ya actualizó el modelo
+        // a mano, ver más abajo) dispare este mismo onUpdate como "eco".
+        // Sin este corte, cada letra reconstruye TODAS las filas desde
+        // cero — el input activo se destruye y el foco se pierde a mitad
+        // de escritura. Reconstruir sí hace falta al agregar/quitar una
+        // fila o al cargar por primera vez, así que ahí SÍ se deja pasar
+        // (ver addBtn/removeBtn, que llaman a onUpdate directo).
+        if (this.suppressNextUpdate) {
+          this.suppressNextUpdate = false;
+          return;
+        }
+
         const rowsEl = elInput.querySelector('.cms-repeater-trait > div') || elInput.firstChild;
         rowsEl.innerHTML = '';
         const items = component.get(trait.get('name')) || [];
@@ -212,6 +262,7 @@
               const commit = (val) => {
                 const current = (component.get(trait.get('name')) || []).slice();
                 current[index] = Object.assign({}, current[index], { [subKey]: val });
+                this.suppressNextUpdate = true;
                 component.set(trait.get('name'), current);
               };
               const { wrap: mediaWrap } = buildMediaWidget(item[subKey] || '', commit, mediaUploadUrl, csrfToken);
@@ -241,6 +292,7 @@
             input.addEventListener(subField.type === 'select' ? 'change' : 'input', () => {
               const current = (component.get(trait.get('name')) || []).slice();
               current[index] = Object.assign({}, current[index], { [subKey]: input.value });
+              this.suppressNextUpdate = true;
               component.set(trait.get('name'), current);
             });
             row.appendChild(input);

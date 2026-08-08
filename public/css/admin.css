@@ -111,8 +111,10 @@
 .gjs-trt-trait .gjs-label{display:block;white-space:normal;overflow:visible;text-overflow:clip;margin-bottom:6px;font-size:12.5px;color:var(--text-secondary);line-height:1.4;}
 .gjs-trt-trait .gjs-fields{width:100%;}
 
-.cms-media-field{display:flex;gap:6px;align-items:center;margin-bottom:8px;}
-.cms-media-field .gjs-field{margin-bottom:0;}
+.cms-media-field{display:flex;flex-direction:column;gap:8px;margin-bottom:8px;}
+.cms-media-thumb{width:100%;height:220px;object-fit:contain;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:8px;}
+.cms-media-controls{display:flex;gap:6px;align-items:center;}
+.cms-media-controls .gjs-field{margin-bottom:0;}
 .cms-media-upload-btn{flex-shrink:0;background:none;border:1px solid var(--border);color:var(--text-secondary);border-radius:8px;padding:8px 12px;font-size:12.5px;cursor:pointer;transition:border-color .15s,color .15s;}
 .cms-media-upload-btn:hover{border-color:var(--gold);color:var(--gold);}
 .cms-repeater-row .cms-media-field{margin-bottom:0;flex:1;}
