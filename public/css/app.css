@@ -8,7 +8,11 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{background:var(--bg);min-height:100%;}
-body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);-webkit-font-smoothing:antialiased;min-height:100%;}
+/* !important solo acá: el editor de contenido (GrapesJS) inyecta su
+   propio "body{background-color:#fff}" dentro del canvas para simular
+   una hoja en blanco, con la misma prioridad que esta regla — sin
+   forzarla, el canvas se ve blanco con texto casi invisible encima. */
+body{background:var(--bg) !important;color:var(--text-primary);font-family:var(--font-body);-webkit-font-smoothing:antialiased;min-height:100%;}
 a{color:inherit;text-decoration:none;}
 button,input,select{font-family:inherit;}
 .wrap{width:100%;max-width:1440px;margin:0 auto;padding:0 clamp(20px,3.2vw,48px);}
