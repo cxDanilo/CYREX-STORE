@@ -5,6 +5,7 @@
       collapseTimer: null,
       showHint: false,
       hintTimer: null,
+      hoverEnabled: window.matchMedia('(hover: hover)').matches,
       openCat(id) { clearTimeout(this.closeTimer); this.hoverCat = id; },
       scheduleClose(id) { clearTimeout(this.closeTimer); this.closeTimer = setTimeout(() => { if (this.hoverCat === id) this.hoverCat = null; }, 300); },
       expand() { clearTimeout(this.collapseTimer); this.expanded = true; if (this.showHint) this.dismissHint(); },
@@ -14,13 +15,17 @@
         this.showHint = false;
         document.cookie = 'cyrex_cat_hint_seen=1; max-age=' + (60*60*24*365) + '; path=/; SameSite=Lax';
       },
-      // En tablet/celular no existe :hover real — mouseenter nunca
-      // dispara, así que el submenú no había forma de abrirlo con el
-      // dedo. Acá interceptamos el primer toque para abrir el submenú
-      // en vez de navegar; un segundo toque sobre el mismo ítem (o
-      // tocar 'Ver todo en X' adentro) sí navega normal.
+      // En touch, el navegador dispara un mouseenter "fantasma" en el
+      // primer toque (para simular :hover) ANTES del click — eso ya
+      // dejaba hoverCat puesto cuando handleTap corría, y su propio
+      // chequeo (hoverCat !== id) daba falso, así que nunca frenaba la
+      // navegación: por eso tocar se comportaba igual que un click de
+      // PC. Ahora todos los mouseenter/mouseleave de acá se ignoran en
+      // touch (hoverEnabled=false) — hoverCat solo lo puede tocar
+      // handleTap, así el primer toque SIEMPRE abre el submenú y el
+      // segundo (o tocar 'Ver todo en X') navega normal.
       handleTap(event, id) {
-        if (window.matchMedia('(hover: hover)').matches) return;
+        if (this.hoverEnabled) return;
         if (this.hoverCat !== id) {
           event.preventDefault();
           this.expand();
@@ -32,8 +37,8 @@
       showHint = !document.cookie.split('; ').includes('cyrex_cat_hint_seen=1');
       if (showHint) hintTimer = setTimeout(() => dismissHint(), 7000);
     "
-    x-on:mouseenter="expand()"
-    x-on:mouseleave="scheduleCollapse()"
+    x-on:mouseenter="hoverEnabled && expand()"
+    x-on:mouseleave="hoverEnabled && scheduleCollapse()"
     x-on:click.outside="expanded = false; hoverCat = null;">
   <div class="cat-float-hint" x-show="showHint" x-transition.opacity.duration.400ms x-cloak>
     <span class="cat-float-hint-arrow">&larr;</span>
@@ -42,13 +47,13 @@
   </div>
   <div class="cat-float-list" :class="expanded && 'expanded'">
     @foreach($navCategories as $parent)
-      <div class="cat-float-item" x-on:mouseenter="expand(); openCat({{ $parent->id }})" x-on:mouseleave="scheduleClose({{ $parent->id }})">
+      <div class="cat-float-item" x-on:mouseenter="hoverEnabled && (expand(), openCat({{ $parent->id }}))" x-on:mouseleave="hoverEnabled && scheduleClose({{ $parent->id }})">
         <a href="{{ route('shop', ['category' => $parent->slug]) }}" class="cat-float-link" :class="hoverCat === {{ $parent->id }} && 'active'" x-on:click="handleTap($event, {{ $parent->id }})">
           <span class="mega-icon">@include('partials.category-icon', ['icon' => $parent->icon])</span>
           <span class="cat-float-label">{{ $parent->name }}</span>
         </a>
 
-        <div class="cat-flyout" x-show="hoverCat === {{ $parent->id }}" x-transition.opacity.duration.150ms x-on:mouseenter="expand(); openCat({{ $parent->id }})" x-on:mouseleave="scheduleClose({{ $parent->id }})" x-cloak>
+        <div class="cat-flyout" x-show="hoverCat === {{ $parent->id }}" x-transition.opacity.duration.150ms x-on:mouseenter="hoverEnabled && (expand(), openCat({{ $parent->id }}))" x-on:mouseleave="hoverEnabled && scheduleClose({{ $parent->id }})" x-cloak>
           <div class="cat-flyout-title"><a href="{{ route('shop', ['category' => $parent->slug]) }}">Ver todo en {{ $parent->name }}</a></div>
           <div class="cat-flyout-grid">
             @foreach($parent->children as $child)
