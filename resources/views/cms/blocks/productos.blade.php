@@ -9,11 +9,37 @@
     }
   }
 
-  $productos = $query->orderByDesc('created_at')->take((int) ($data['limite'] ?? 4))->get();
+  $limite = (int) ($data['limite'] ?? 4);
+
+  if (($data['orden'] ?? 'recientes') === 'aleatorio_diario') {
+    // Orden barajado en PHP (no en SQL) para que funcione igual en
+    // cualquier motor de base de datos — MySQL en el servidor, SQLite en
+    // local. Semilla = la fecha de hoy: mismo orden para todos los
+    // visitantes durante el día, y cambia recién al pasar la medianoche.
+    $seed = now()->format('Ymd');
+    $productos = $query->get()
+        ->sortBy(fn ($p) => crc32($seed.'-'.$p->id))
+        ->take($limite)
+        ->values();
+  } else {
+    $productos = $query->orderByDesc('created_at')->take($limite)->get();
+  }
 @endphp
 <div class="wrap cms-block">
-  @if(!empty($data['titulo']))
-    <h2 class="cms-titulo cms-titulo-mediano" style="margin-bottom:20px;">{{ $data['titulo'] }}</h2>
+  @if(!empty($data['eyebrow']) || !empty($data['subtitulo']))
+    <div class="cms-productos-head">
+      @if(!empty($data['eyebrow']))
+        <div class="cms-productos-eyebrow">{{ $data['eyebrow'] }}</div>
+      @endif
+      @if(!empty($data['titulo']))
+        <h2 class="cms-titulo cms-titulo-grande">{{ $data['titulo'] }}@if(!empty($data['titulo_destacado'])) <em class="cms-hero-em">{{ $data['titulo_destacado'] }}</em>@endif</h2>
+      @endif
+      @if(!empty($data['subtitulo']))
+        <p class="cms-productos-subtitulo">{{ $data['subtitulo'] }}</p>
+      @endif
+    </div>
+  @elseif(!empty($data['titulo']))
+    <h2 class="cms-titulo cms-titulo-mediano" style="margin-bottom:20px;">{{ $data['titulo'] }}@if(!empty($data['titulo_destacado'])) <em class="cms-hero-em">{{ $data['titulo_destacado'] }}</em>@endif</h2>
   @endif
   <div class="product-grid">
     @foreach($productos as $product)

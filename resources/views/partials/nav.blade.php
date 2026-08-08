@@ -65,7 +65,7 @@ document.addEventListener('alpine:init', () => {
 
 <div x-data="{ mobileOpen: false }" x-on:keydown.escape.window="mobileOpen = false; $store.cart.open = false">
 
-<nav>
+<nav class="{{ request()->routeIs('home') ? 'nav-hero-mode' : '' }}">
   <div class="wrap nav-inner">
     <button type="button" class="hamburger" x-on:click="mobileOpen = true" aria-label="Abrir menú">
       <span></span><span></span><span></span>

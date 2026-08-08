@@ -51,6 +51,29 @@ return [
         ],
     ],
 
+    'hero_video' => [
+        'label' => 'Hero con video',
+        'view' => 'cms.blocks.hero-video',
+        'category' => 'Contenido',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M10 9l5 3-5 3V9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+        'defaults' => [
+            'video_url' => '',
+            'poster_url' => '',
+            'titulo' => '',
+            'boton1_texto' => '', 'boton1_url' => '',
+            'boton2_texto' => '', 'boton2_url' => '',
+        ],
+        'fields' => [
+            'video_url' => ['type' => 'text', 'label' => 'Video: link de YouTube/Vimeo o URL de un archivo .mp4'],
+            'poster_url' => ['type' => 'text', 'label' => 'Imagen de respaldo (se usa en celular y mientras carga el video)'],
+            'titulo' => ['type' => 'textarea', 'label' => 'Título'],
+            'boton1_texto' => ['type' => 'text', 'label' => 'Botón 1 — texto'],
+            'boton1_url' => ['type' => 'text', 'label' => 'Botón 1 — link'],
+            'boton2_texto' => ['type' => 'text', 'label' => 'Botón 2 — texto'],
+            'boton2_url' => ['type' => 'text', 'label' => 'Botón 2 — link'],
+        ],
+    ],
+
     'titulo' => [
         'label' => 'Título',
         'view' => 'cms.blocks.titulo',
@@ -219,10 +242,30 @@ return [
         'view' => 'cms.blocks.productos',
         'category' => 'Comercio',
         'icon' => '<svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12l-1 12H7L6 8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.5"/></svg>',
-        'defaults' => ['titulo' => '', 'categoria' => '', 'limite' => 4],
+        'defaults' => ['eyebrow' => '', 'titulo' => '', 'titulo_destacado' => '', 'subtitulo' => '', 'categoria' => '', 'limite' => 4, 'orden' => 'recientes'],
         'fields' => [
+            'eyebrow' => ['type' => 'text', 'label' => 'Texto pequeño superior (opcional)'],
             'titulo' => ['type' => 'text', 'label' => 'Título (opcional)'],
+            'titulo_destacado' => ['type' => 'text', 'label' => 'Palabras finales destacadas en dorado (opcional)'],
+            'subtitulo' => ['type' => 'textarea', 'label' => 'Subtítulo (opcional)'],
             'categoria' => ['type' => 'select', 'label' => 'Categoría', 'options' => 'categories'],
+            'limite' => ['type' => 'number', 'label' => 'Cantidad de productos'],
+            'orden' => ['type' => 'select', 'label' => 'Orden', 'options' => [
+                ['id' => 'recientes', 'name' => 'Más recientes'],
+                ['id' => 'aleatorio_diario', 'name' => 'Aleatorio (cambia cada día)'],
+            ]],
+        ],
+    ],
+
+    'categoria_rotativa' => [
+        'label' => 'Categoría del día',
+        'view' => 'cms.blocks.categoria-rotativa',
+        'category' => 'Comercio',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><path d="M4 4h7v7H4V4zM13 4h7v7h-7V4zM4 13h7v7H4v-7zM13 13h7v7h-7v-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+        'defaults' => ['etiqueta' => 'Novedades', 'posicion' => 1, 'limite' => 4],
+        'fields' => [
+            'etiqueta' => ['type' => 'text', 'label' => 'Insignia (ej. "Novedades")'],
+            'posicion' => ['type' => 'number', 'label' => 'Posición en la rotación diaria (1, 2, 3... — usá un número distinto en cada bloque de este tipo en la misma página para que no se repita la categoría)'],
             'limite' => ['type' => 'number', 'label' => 'Cantidad de productos'],
         ],
     ],
@@ -330,6 +373,27 @@ return [
             'items' => ['type' => 'repeater', 'label' => 'Números', 'fields' => [
                 'numero' => ['type' => 'text', 'label' => 'Número'],
                 'etiqueta' => ['type' => 'text', 'label' => 'Etiqueta'],
+            ]],
+        ],
+    ],
+
+    'redes_sociales' => [
+        'label' => 'Publicaciones de redes',
+        'view' => 'cms.blocks.redes-sociales',
+        'category' => 'Prueba social',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor"/></svg>',
+        'defaults' => ['titulo' => '', 'items' => []],
+        'fields' => [
+            'titulo' => ['type' => 'text', 'label' => 'Título (opcional)'],
+            'items' => ['type' => 'repeater', 'label' => 'Publicaciones', 'fields' => [
+                'plataforma' => ['type' => 'select', 'label' => 'Red social', 'options' => [
+                    ['id' => 'instagram', 'name' => 'Instagram'],
+                    ['id' => 'tiktok', 'name' => 'TikTok'],
+                    ['id' => 'facebook', 'name' => 'Facebook'],
+                ]],
+                'imagen' => ['type' => 'text', 'label' => 'Captura de la publicación (URL de imagen)'],
+                'texto' => ['type' => 'text', 'label' => 'Texto corto (opcional)'],
+                'url' => ['type' => 'text', 'label' => 'Link a la publicación real'],
             ]],
         ],
     ],
