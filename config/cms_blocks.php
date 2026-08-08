@@ -65,7 +65,7 @@ return [
         ],
         'fields' => [
             'video_url' => ['type' => 'text', 'label' => 'Video: link de YouTube/Vimeo o URL de un archivo .mp4'],
-            'poster_url' => ['type' => 'text', 'label' => 'Imagen de respaldo (se usa en celular y mientras carga el video)'],
+            'poster_url' => ['type' => 'media', 'label' => 'Imagen de respaldo (se usa en celular y mientras carga el video)'],
             'titulo' => ['type' => 'textarea', 'label' => 'Título'],
             'boton1_texto' => ['type' => 'text', 'label' => 'Botón 1 — texto'],
             'boton1_url' => ['type' => 'text', 'label' => 'Botón 1 — link'],
@@ -152,7 +152,7 @@ return [
         'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8.5" cy="9.5" r="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M21 16l-5.5-5.5L6 20" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
         'defaults' => ['url' => '', 'alt' => '', 'leyenda' => ''],
         'fields' => [
-            'url' => ['type' => 'text', 'label' => 'URL de la imagen'],
+            'url' => ['type' => 'media', 'label' => 'Imagen'],
             'alt' => ['type' => 'text', 'label' => 'Texto alternativo'],
             'leyenda' => ['type' => 'text', 'label' => 'Leyenda (opcional)'],
         ],
@@ -166,7 +166,7 @@ return [
         'defaults' => ['items' => []],
         'fields' => [
             'items' => ['type' => 'repeater', 'label' => 'Imágenes', 'fields' => [
-                'url' => ['type' => 'text', 'label' => 'URL de imagen'],
+                'url' => ['type' => 'media', 'label' => 'Imagen'],
                 'alt' => ['type' => 'text', 'label' => 'Texto alternativo'],
             ]],
         ],
@@ -191,7 +191,7 @@ return [
         'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 15h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
         'defaults' => ['imagen_url' => '', 'titulo' => '', 'cta_label' => '', 'cta_url' => ''],
         'fields' => [
-            'imagen_url' => ['type' => 'text', 'label' => 'URL de imagen de fondo'],
+            'imagen_url' => ['type' => 'media', 'label' => 'Imagen de fondo'],
             'titulo' => ['type' => 'text', 'label' => 'Título'],
             'cta_label' => ['type' => 'text', 'label' => 'Texto del botón'],
             'cta_url' => ['type' => 'text', 'label' => 'Link del botón'],
@@ -206,7 +206,7 @@ return [
         'defaults' => ['items' => []],
         'fields' => [
             'items' => ['type' => 'repeater', 'label' => 'Slides', 'fields' => [
-                'url' => ['type' => 'text', 'label' => 'URL de imagen'],
+                'url' => ['type' => 'media', 'label' => 'Imagen'],
                 'texto' => ['type' => 'text', 'label' => 'Leyenda (opcional)'],
             ]],
         ],
@@ -220,7 +220,7 @@ return [
         'defaults' => ['items' => []],
         'fields' => [
             'items' => ['type' => 'repeater', 'label' => 'Logos', 'fields' => [
-                'url' => ['type' => 'text', 'label' => 'URL del logo'],
+                'url' => ['type' => 'media', 'label' => 'Logo'],
                 'nombre' => ['type' => 'text', 'label' => 'Nombre de la marca'],
             ]],
         ],
@@ -391,7 +391,7 @@ return [
                     ['id' => 'tiktok', 'name' => 'TikTok'],
                     ['id' => 'facebook', 'name' => 'Facebook'],
                 ]],
-                'imagen' => ['type' => 'text', 'label' => 'Captura de la publicación (URL de imagen)'],
+                'imagen' => ['type' => 'media', 'label' => 'Captura de la publicación'],
                 'texto' => ['type' => 'text', 'label' => 'Texto corto (opcional)'],
                 'url' => ['type' => 'text', 'label' => 'Link a la publicación real'],
             ]],

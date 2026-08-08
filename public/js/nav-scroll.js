@@ -1,6 +1,7 @@
 window.addEventListener('DOMContentLoaded', function () {
   var nav = document.querySelector('nav.nav-hero-mode');
-  if (!nav) return;
+  var hint = document.querySelector('.cms-hero-scroll-hint');
+  if (!nav && !hint) return;
 
   var hero = document.querySelector('.cms-hero-video');
   var heroHeight = hero ? hero.offsetHeight : window.innerHeight;
@@ -15,9 +16,18 @@ window.addEventListener('DOMContentLoaded', function () {
   var span = Math.max(endAt - startAt, 1);
 
   function onScroll() {
-    var progress = (window.scrollY - startAt) / span;
-    progress = Math.min(1, Math.max(0, progress));
-    nav.style.setProperty('--nav-progress', progress);
+    if (nav) {
+      var progress = (window.scrollY - startAt) / span;
+      progress = Math.min(1, Math.max(0, progress));
+      nav.style.setProperty('--nav-progress', progress);
+    }
+
+    // El aviso de "seguí scrolleando" solo tiene sentido antes de que el
+    // visitante toque la rueda — se apaga rápido, no espera al mismo
+    // punto que el header (eso sería demasiado tarde).
+    if (hint) {
+      hint.style.opacity = Math.max(0, 1 - window.scrollY / 150);
+    }
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });

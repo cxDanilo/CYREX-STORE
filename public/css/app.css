@@ -287,6 +287,12 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .cms-hero-video-buttons{display:flex;gap:14px;flex-wrap:wrap;}
 .cms-hero-video-buttons .btn{padding:14px 26px;font-size:14.5px;}
 
+.cms-hero-scroll-hint{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11.5px;color:rgba(255,255,255,.75);letter-spacing:.03em;text-shadow:0 1px 4px rgba(0,0,0,.6);pointer-events:none;transition:opacity .2s ease;}
+.cms-hero-scroll-hint svg{animation:cms-scroll-bob 1.6s ease-in-out infinite;}
+@keyframes cms-scroll-bob{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
+@media (prefers-reduced-motion: reduce){.cms-hero-scroll-hint svg{animation:none;}}
+.motion-reduced .cms-hero-scroll-hint svg{animation:none;}
+
 @media (max-width:680px){
   .cms-hero-video{min-height:60vh;}
   .cms-hero-video-has-poster .cms-hero-video-iframe,.cms-hero-video-has-poster .cms-hero-video-native{display:none;}

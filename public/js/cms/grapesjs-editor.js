@@ -48,6 +48,10 @@
         return { type: 'number', name: key, label: f.label, changeProp: true };
       }
 
+      if (f.type === 'media') {
+        return { type: 'media', name: key, label: f.label, changeProp: true };
+      }
+
       if (f.type === 'repeater') {
         return {
           type: 'repeater',
@@ -62,7 +66,91 @@
     });
   }
 
-  function registerCustomTraitTypes(editor) {
+  /**
+   * Campo compartido por el trait 'media' y por las filas de un
+   * repeater con un subcampo 'media': un input de URL de toda la vida
+   * (para pegar un link externo) + un botón que sube el archivo directo
+   * a la Biblioteca de Medios y completa la URL solo. Una sola
+   * implementación para no mantener la lógica de subida duplicada.
+   */
+  function buildMediaWidget(initialValue, onChange, mediaUploadUrl, csrfToken) {
+    const wrap = document.createElement('div');
+    wrap.className = 'cms-media-field';
+
+    const textInput = document.createElement('input');
+    textInput.type = 'text';
+    textInput.className = 'gjs-field';
+    textInput.placeholder = 'URL de la imagen';
+    textInput.value = initialValue || '';
+    textInput.addEventListener('input', () => onChange(textInput.value));
+
+    const uploadLabel = document.createElement('label');
+    uploadLabel.className = 'cms-media-upload-btn';
+    uploadLabel.textContent = 'Subir';
+
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.style.display = 'none';
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      uploadLabel.textContent = 'Subiendo…';
+      const formData = new FormData();
+      formData.append('files[]', file);
+
+      fetch(mediaUploadUrl, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json' },
+        body: formData,
+      })
+        .then((r) => r.json())
+        .then((res) => {
+          const uploaded = (res.items || [])[0];
+          if (uploaded) {
+            textInput.value = uploaded.url;
+            onChange(uploaded.url);
+          }
+          uploadLabel.textContent = 'Subir';
+        })
+        .catch(() => {
+          uploadLabel.textContent = 'Error';
+          setTimeout(() => { uploadLabel.textContent = 'Subir'; }, 1500);
+        });
+
+      fileInput.value = '';
+    });
+
+    uploadLabel.appendChild(fileInput);
+    wrap.appendChild(textInput);
+    wrap.appendChild(uploadLabel);
+
+    return { wrap, textInput };
+  }
+
+  function registerCustomTraitTypes(editor, mediaUploadUrl, csrfToken) {
+    editor.TraitManager.addType('media', {
+      createInput({ trait }) {
+        const { wrap, textInput } = buildMediaWidget(
+          '',
+          (val) => this.component.set(trait.get('name'), val),
+          mediaUploadUrl,
+          csrfToken
+        );
+        this.input = textInput;
+        return wrap;
+      },
+      onEvent() {
+        // El cambio ya se aplica directo arriba (texto o subida) — igual
+        // que el trait 'repeater', no hace falta nada acá.
+      },
+      onUpdate({ component, trait }) {
+        this.component = component;
+        if (this.input) this.input.value = component.get(trait.get('name')) || '';
+      },
+    });
+
     editor.TraitManager.addType('textarea', {
       createInput() {
         const el = document.createElement('textarea');
@@ -119,6 +207,18 @@
 
           Object.keys(subFields).forEach((subKey) => {
             const subField = subFields[subKey];
+
+            if (subField.type === 'media') {
+              const commit = (val) => {
+                const current = (component.get(trait.get('name')) || []).slice();
+                current[index] = Object.assign({}, current[index], { [subKey]: val });
+                component.set(trait.get('name'), current);
+              };
+              const { wrap: mediaWrap } = buildMediaWidget(item[subKey] || '', commit, mediaUploadUrl, csrfToken);
+              row.appendChild(mediaWrap);
+              return;
+            }
+
             let input;
 
             if (subField.type === 'select') {
@@ -265,7 +365,7 @@
 
   window.CyrexCmsEditor = {
     init(config) {
-      const { mountId, indexUrl, storeUrl, previewUrl, csrfToken, cssUrl, fontsUrl } = config;
+      const { mountId, indexUrl, storeUrl, previewUrl, mediaUploadUrl, csrfToken, cssUrl, fontsUrl } = config;
       const statusEl = document.getElementById('cms-save-status');
 
       const editor = grapesjs.init({
@@ -294,7 +394,7 @@
 
       window.editor = editor; // expuesto para diagnóstico/verificación, no lo usa la app
 
-      registerCustomTraitTypes(editor);
+      registerCustomTraitTypes(editor, mediaUploadUrl, csrfToken);
 
       const setStatus = (text) => { if (statusEl) statusEl.textContent = text; };
 

@@ -53,6 +53,7 @@
       indexUrl: '{{ route('admin.paginas.bloques.index', $page) }}',
       storeUrl: '{{ route('admin.paginas.bloques.store', $page) }}',
       previewUrl: '{{ route('admin.paginas.bloques.preview', $page) }}',
+      mediaUploadUrl: '{{ route('admin.medios.store') }}',
       csrfToken: '{{ csrf_token() }}',
       cssUrl: '{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}',
       fontsUrl: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap',

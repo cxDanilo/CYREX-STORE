@@ -83,7 +83,15 @@ class MediaController extends Controller
         }
 
         if ($request->wantsJson()) {
-            return response()->json(['created' => count($created)]);
+            return response()->json([
+                'created' => count($created),
+                'items' => collect($created)->map(fn (Media $m) => [
+                    'id' => $m->id,
+                    'url' => $m->url,
+                    'thumb_url' => $m->thumb_url,
+                    'original_name' => $m->original_name,
+                ])->values(),
+            ]);
         }
 
         return back()->with('status', count($created).' archivo(s) subido(s).');
