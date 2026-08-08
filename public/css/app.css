@@ -170,7 +170,17 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 
 /* PRODUCT PAGE */
 .product-hero{display:grid;grid-template-columns:1fr 1fr;gap:56px;padding-top:8px;padding-bottom:60px;align-items:start;}
-.gallery-main{aspect-ratio:1/1;background:var(--bg-elevated);border:1px solid var(--border);border-radius:20px;display:flex;align-items:center;justify-content:center;}
+.gallery-main{aspect-ratio:1/1;background:var(--bg-elevated);border:1px solid var(--border);border-radius:20px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:zoom-in;}
+.gallery-main img{transition:transform .2s ease;}
+.gallery-main:hover img{transform:scale(1.8);}
+@media (prefers-reduced-motion: reduce){
+  .gallery-main img{transition:none;}
+  .gallery-main:hover img{transform:none;}
+}
+@media (hover:none){
+  .gallery-main{cursor:default;}
+  .gallery-main:hover img{transform:none;}
+}
 .cat-eyebrow{font-family:var(--font-mono);font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;}
 .product-info h1{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,3vw,36px);letter-spacing:-0.01em;line-height:1.15;margin-bottom:14px;}
 .variant-options{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
@@ -206,6 +216,16 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .btn-cta:hover{background:#e6c400;}
 .btn-cta.in-cart{background:var(--bg-elevated-2);color:var(--gold);border-color:var(--border-strong);}
 .btn-cta.in-cart:hover{border-color:var(--red);color:var(--red);}
+
+.btn-cta-row{display:flex;gap:10px;margin-bottom:24px;}
+.btn-cta-row .btn-cta{margin-bottom:0;flex:1;min-width:0;}
+.btn-cta-whatsapp{display:flex;align-items:center;justify-content:center;gap:8px;flex:1;min-width:0;background:none;border:1px solid var(--border);color:var(--text-primary);font-weight:600;font-size:15px;padding:16px;border-radius:100px;cursor:pointer;text-decoration:none;transition:border-color .15s,color .15s,background .15s,transform .15s;}
+.btn-cta-whatsapp svg{color:#25D366;flex-shrink:0;}
+.btn-cta-whatsapp:hover{border-color:var(--gold);color:var(--gold);background:var(--bg-elevated);transform:translateY(-1px);}
+
+@media (max-width:520px){
+  .btn-cta-row{flex-direction:column;}
+}
 .spec-table{width:100%;border-collapse:collapse;}
 .spec-table tr{border-bottom:1px solid var(--border);}
 .spec-table td{padding:12px 16px;font-size:14px;}

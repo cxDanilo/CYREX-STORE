@@ -13,6 +13,8 @@
   $priceAltInitial = $showBobInitial
       ? '≈ $'.number_format($basePriceUsd, 2).' USD'
       : '≈ Bs '.number_format($basePriceUsd * $rate, 2);
+  $whatsappNumber = \App\Models\Setting::get('whatsapp_number', '59177947379');
+  $productUrl = route('product.show', $product->slug);
 @endphp
 
 <div class="wrap breadcrumb">
@@ -26,7 +28,18 @@
         toggled: false,
         rate: {{ $rate }},
         basePrice: {{ $product->currency === 'USD' ? $product->price : $product->price / $rate }},
-        variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'name' => $v->variant_value, 'stock' => $v->stock])->toJson() }}
+        variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'name' => $v->variant_value, 'stock' => $v->stock])->toJson() }},
+        whatsappHref() {
+          const variantObj = this.variants.find(v => v.id === this.variant);
+          const variantSuffix = variantObj ? ' (' + variantObj.name + ')' : '';
+          const priceUsd = this.basePrice.toFixed(2);
+          const priceBob = (this.basePrice * this.rate).toFixed(2);
+          const text = 'Hola! Me interesa este producto:\n'
+            + {{ Js::from($product->name) }} + variantSuffix + '\n'
+            + '$' + priceUsd + ' USD / Bs ' + priceBob + ' BOB\n'
+            + {{ Js::from($productUrl) }};
+          return 'https://wa.me/{{ $whatsappNumber }}?text=' + encodeURIComponent(text);
+        }
      }">
   <div class="gallery">
     <div class="gallery-main">
@@ -68,11 +81,18 @@
       @endif
     </div>
 
-    <button type="button" class="btn-cta"
-            :class="$store.cart.has({{ $product->id }}, variant) && 'in-cart'"
-            @click="$store.cart.has({{ $product->id }}, variant) ? $store.cart.remove({{ $product->id }} + ':' + (variant ?? '')) : $store.cart.add({{ $product->id }}, variant)">
-      <span x-text="$store.cart.has({{ $product->id }}, variant) ? 'En el carrito ✓' : 'Agregar al carrito'">Agregar al carrito</span>
-    </button>
+    <div class="btn-cta-row">
+      <button type="button" class="btn-cta"
+              :class="$store.cart.has({{ $product->id }}, variant) && 'in-cart'"
+              @click="$store.cart.has({{ $product->id }}, variant) ? $store.cart.remove({{ $product->id }} + ':' + (variant ?? '')) : $store.cart.add({{ $product->id }}, variant)">
+        <span x-text="$store.cart.has({{ $product->id }}, variant) ? 'En el carrito ✓' : 'Agregar al carrito'">Agregar al carrito</span>
+      </button>
+
+      <a :href="whatsappHref()" target="_blank" rel="noopener" class="btn-cta-whatsapp">
+        @include('partials.whatsapp-icon')
+        <span>Consultar</span>
+      </a>
+    </div>
 
     @if($product->description)
       <p style="color:var(--text-secondary);font-size:15px;line-height:1.7;margin-bottom:24px;">{{ $product->description }}</p>
