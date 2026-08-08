@@ -138,6 +138,17 @@
   </div>
 
   <div class="form-section">
+    <h3>Analítica</h3>
+
+    <div class="form-group">
+      <label for="ga4_measurement_id">ID de medición de Google Analytics 4</label>
+      <input type="text" id="ga4_measurement_id" name="ga4_measurement_id" value="{{ old('ga4_measurement_id', $ga4MeasurementId) }}" placeholder="G-XXXXXXXXXX">
+      <div class="form-hint">Lo sacás de tu cuenta de Google Analytics (analytics.google.com) → Administrar → Flujos de datos → tu sitio. Dejalo vacío para no cargar Analytics en el sitio.</div>
+      @error('ga4_measurement_id') <div class="error">{{ $message }}</div> @enderror
+    </div>
+  </div>
+
+  <div class="form-section">
     <h3>WhatsApp</h3>
 
     <div class="form-group">

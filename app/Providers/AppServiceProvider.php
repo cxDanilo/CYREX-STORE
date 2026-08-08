@@ -74,6 +74,7 @@ class AppServiceProvider extends ServiceProvider
                 'accentColor' => Setting::get('accent_color', '#FFD900'),
                 'reducedMotion' => Setting::get('reduced_motion', 'off'),
                 'socialLinks' => Cache::remember('footer.social_links', self::NAV_CACHE_TTL, fn () => SocialLink::ordered()->get()),
+                'ga4MeasurementId' => Setting::get('ga4_measurement_id', ''),
             ]);
         });
     }

@@ -26,11 +26,12 @@ class SettingsController extends Controller
         $footerTagline = Setting::get('footer_tagline', 'Componentes y periféricos gamer en Bolivia. Santa Cruz y Cochabamba.');
         $accentColor = Setting::get('accent_color', '#FFD900');
         $reducedMotion = Setting::get('reduced_motion', 'off');
+        $ga4MeasurementId = Setting::get('ga4_measurement_id', '');
 
         return view('admin.settings.edit', compact(
             'currentRate', 'currencyMode', 'defaultCurrency', 'whatsappNumber', 'categoryMenuScope',
             'logoHeight', 'logoPath', 'whatsappBtnText', 'shopCtaText', 'footerWhatsappBtnText',
-            'footerTagline', 'accentColor', 'reducedMotion'
+            'footerTagline', 'accentColor', 'reducedMotion', 'ga4MeasurementId'
         ));
     }
 
@@ -51,6 +52,7 @@ class SettingsController extends Controller
             'footer_tagline' => ['required', 'string', 'max:200'],
             'accent_color' => ['required', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'reduced_motion' => ['required', 'in:on,off'],
+            'ga4_measurement_id' => ['nullable', 'string', 'regex:/^G-[A-Za-z0-9]+$/'],
         ]);
 
         if ($request->filled('rate') && (float) $data['rate'] !== ExchangeRate::current()) {
@@ -68,6 +70,7 @@ class SettingsController extends Controller
         Setting::set('footer_tagline', $data['footer_tagline']);
         Setting::set('accent_color', $data['accent_color']);
         Setting::set('reduced_motion', $data['reduced_motion']);
+        Setting::set('ga4_measurement_id', $data['ga4_measurement_id'] ?? '');
 
         if ($request->hasFile('logo')) {
             $this->deleteLogo();
