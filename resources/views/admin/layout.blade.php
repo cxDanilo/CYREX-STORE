@@ -19,20 +19,32 @@
     <div class="admin-logo"><a href="{{ route('admin.dashboard') }}" style="color:inherit;">CYREX<span>.</span> ADMIN</a></div>
     <nav class="admin-nav">
       <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a>
+
+      <div class="admin-nav-label">Catálogo</div>
       <a href="{{ route('admin.productos.index') }}" class="{{ request()->routeIs('admin.productos.*') ? 'active' : '' }}">Productos</a>
       <a href="{{ route('admin.categorias.index') }}" class="{{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">Categorías</a>
-      <a href="{{ route('admin.historial.index') }}" class="{{ request()->routeIs('admin.historial.*') ? 'active' : '' }}">Historial</a>
+      <a href="{{ route('admin.historial.index') }}" class="{{ request()->routeIs('admin.historial.*') ? 'active' : '' }}">Historial de cambios</a>
       <a href="{{ route('admin.woocommerce.create') }}" class="{{ request()->routeIs('admin.woocommerce.*') ? 'active' : '' }}">Importar WooCommerce</a>
-      <a href="{{ route('admin.usuarios.index') }}" class="{{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">Usuarios</a>
-      <a href="{{ route('admin.settings.edit') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">Ajustes</a>
+
+      <div class="admin-nav-label">Contenido</div>
       <a href="{{ route('admin.paginas.index') }}" class="{{ request()->routeIs('admin.paginas.*') ? 'active' : '' }}">Páginas</a>
       <a href="{{ route('admin.plantillas.index') }}" class="{{ request()->routeIs('admin.plantillas.*') ? 'active' : '' }}">Plantillas</a>
       <a href="{{ route('admin.medios.index') }}" class="{{ request()->routeIs('admin.medios.*') ? 'active' : '' }}">Medios</a>
       <a href="{{ route('admin.menus.index') }}" class="{{ request()->routeIs('admin.menus.*') ? 'active' : '' }}">Menús</a>
       <a href="{{ route('admin.redes.index') }}" class="{{ request()->routeIs('admin.redes.*') ? 'active' : '' }}">Redes sociales</a>
+
+      <div class="admin-nav-label">Cuenta</div>
+      <a href="{{ route('admin.usuarios.index') }}" class="{{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">Usuarios</a>
+      <a href="{{ route('admin.settings.edit') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">Ajustes</a>
     </nav>
     <div class="admin-nav-foot">
       <a href="{{ route('home') }}" target="_blank">Ver sitio ↗</a>
+      @if(auth()->user()->isAdmin())
+        <form method="POST" action="{{ route('admin.cache.purge') }}">
+          @csrf
+          <button type="submit" style="background:none;border:none;padding:10px 12px;color:var(--text-muted);font-size:13px;cursor:pointer;width:100%;text-align:left;">Purgar caché</button>
+        </form>
+      @endif
       <form method="POST" action="{{ route('admin.logout') }}">
         @csrf
         <button type="submit" style="background:none;border:none;padding:10px 12px;color:var(--text-muted);font-size:13px;cursor:pointer;width:100%;text-align:left;">Cerrar sesión</button>

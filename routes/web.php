@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\SocialLinkController as AdminSocialLinkController
 use App\Http\Controllers\Admin\ProductActivityLogController as AdminProductActivityLogController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\WooCommerceImportController as AdminWooCommerceImportController;
+use App\Http\Controllers\Admin\CacheController as AdminCacheController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductQuickEditController;
 
@@ -72,6 +73,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('usuarios/{user}/editar', [AdminUserController::class, 'edit'])->name('usuarios.edit');
             Route::put('usuarios/{user}', [AdminUserController::class, 'update'])->name('usuarios.update');
             Route::delete('usuarios/{user}', [AdminUserController::class, 'destroy'])->name('usuarios.destroy');
+
+            Route::post('cache/purgar', [AdminCacheController::class, 'purge'])->name('cache.purge');
         });
 
         Route::get('ajustes', [AdminSettingsController::class, 'edit'])->name('settings.edit');
