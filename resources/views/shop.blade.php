@@ -20,17 +20,36 @@
       @endif
     </div>
 
-    <div class="product-grid" x-data="{}">
+    <div class="product-grid">
       @forelse($products as $product)
-        <a class="card" href="{{ route('product.show', $product->slug) }}" style="display:block;">
+        <a class="card" href="{{ route('product.show', $product->slug) }}" style="display:block;"
+           x-data="{
+             showVariants: false,
+             hasVariants: {{ $product->has_variants ? 'true' : 'false' }},
+             variants: {{ $product->variants->map(fn ($v) => ['id' => $v->id, 'name' => $v->variant_value])->toJson() }},
+             quickAdd() {
+               if (this.hasVariants) { this.showVariants = !this.showVariants; }
+               else { $store.cart.add({{ $product->id }}, null); }
+             }
+           }"
+           @click.outside="showVariants = false">
           <div class="card-media">
             @if($product->image_url)
               <img src="{{ $product->image_url }}" alt="{{ $product->name }}">
             @endif
-            @if(!$product->has_variants)
-              <button type="button" class="card-quick-add" @click.stop.prevent="$store.cart.add({{ $product->id }}, null)" aria-label="Agregar {{ $product->name }} al carrito">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.6L20 8H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.3" fill="currentColor"/><circle cx="17" cy="20" r="1.3" fill="currentColor"/></svg>
-              </button>
+            <button type="button" class="card-quick-add" @click.stop.prevent="quickAdd()" aria-label="Agregar {{ $product->name }} al carrito">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.6L20 8H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.3" fill="currentColor"/><circle cx="17" cy="20" r="1.3" fill="currentColor"/></svg>
+            </button>
+
+            @if($product->has_variants)
+              <div class="card-variant-picker" x-show="showVariants" x-cloak x-transition.opacity.duration.150ms @click.stop.prevent="true">
+                <div class="card-variant-picker-title">Elegí una opción</div>
+                <div class="card-variant-picker-options">
+                  <template x-for="v in variants" :key="v.id">
+                    <button type="button" class="card-variant-chip" @click.stop.prevent="$store.cart.add({{ $product->id }}, v.id); showVariants = false" x-text="v.name"></button>
+                  </template>
+                </div>
+              </div>
             @endif
           </div>
           <div class="card-body">
