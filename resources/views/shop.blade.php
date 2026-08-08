@@ -20,7 +20,7 @@
       @endif
     </div>
 
-    <div class="product-grid">
+    <div class="product-grid" x-data="{}">
       @forelse($products as $product)
         <a class="card" href="{{ route('product.show', $product->slug) }}" style="display:block;">
           <div class="card-media">
@@ -29,6 +29,10 @@
             @endif
             @if($product->has_variants)
               <span class="badge">Variantes</span>
+            @else
+              <button type="button" class="card-quick-add" @click.stop.prevent="$store.cart.add({{ $product->id }}, null)" aria-label="Agregar {{ $product->name }} al carrito">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.6L20 8H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.3" fill="currentColor"/><circle cx="17" cy="20" r="1.3" fill="currentColor"/></svg>
+              </button>
             @endif
           </div>
           <div class="card-body">
