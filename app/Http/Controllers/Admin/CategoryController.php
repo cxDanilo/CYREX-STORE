@@ -100,6 +100,7 @@ class CategoryController extends Controller
             'parent_id' => $parentRules,
             'icon' => ['nullable', 'in:'.implode(',', self::ICONS)],
             'sort_order' => ['required', 'integer', 'min:0'],
+            'component_type' => ['nullable', 'in:'.implode(',', array_keys(config('pc_builder.component_types')))],
         ]);
 
         if (! empty($data['parent_id'])) {

@@ -39,6 +39,7 @@ class ProductController extends Controller
     {
         $data = $this->validated($request);
         $data['specs'] = $this->specsFromRequest($request);
+        $data['compat'] = $this->compatFromRequest($request, Category::find($data['category_id']));
         $variants = $this->variantsFromRequest($request);
         $data['has_variants'] = count($variants) > 0;
 
@@ -66,6 +67,7 @@ class ProductController extends Controller
     {
         $data = $this->validated($request, $product->id);
         $data['specs'] = $this->specsFromRequest($request);
+        $data['compat'] = $this->compatFromRequest($request, Category::find($data['category_id']));
         $variants = $this->variantsFromRequest($request);
         $data['has_variants'] = count($variants) > 0;
 
@@ -168,6 +170,47 @@ class ProductController extends Controller
         }
 
         return $specs;
+    }
+
+    /**
+     * Los campos de compatibilidad dependen de la categoría (un procesador
+     * pide socket/plataforma/TDP, un gabinete pide form factors/largo de
+     * GPU/radiador, etc.) — config/pc_builder.php define qué campos le
+     * corresponden a cada tipo de componente, y acá solo leemos los que
+     * apliquen según la categoría elegida. Si la categoría no está marcada
+     * como pieza de PC (component_type null), no se guarda nada.
+     */
+    private function compatFromRequest(Request $request, ?Category $category): ?array
+    {
+        $type = $category?->component_type;
+        $fields = $type ? config("pc_builder.fields.$type") : null;
+
+        if (! $fields) {
+            return null;
+        }
+
+        $compat = [];
+
+        foreach ($fields as $key => $field) {
+            if ($field['type'] === 'checkboxes') {
+                $values = array_values($request->input("compat.$key", []));
+                if (! empty($values)) {
+                    $compat[$key] = $values;
+                }
+
+                continue;
+            }
+
+            $value = $request->input("compat.$key");
+
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $compat[$key] = $field['type'] === 'number' ? (float) $value : $value;
+        }
+
+        return $compat ?: null;
     }
 
     private function variantsFromRequest(Request $request): array

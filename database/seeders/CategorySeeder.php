@@ -13,8 +13,14 @@ class CategorySeeder extends Seeder
             'Componentes' => [
                 'icon' => 'i-cpu',
                 'children' => [
-                    'Procesadores', 'Placas madre', 'Memorias RAM',
-                    'Almacenamiento', 'Fuentes de poder', 'Gabinetes', 'Refrigeración',
+                    'Procesadores' => 'cpu',
+                    'Placas madre' => 'motherboard',
+                    'Memorias RAM' => 'ram',
+                    'Almacenamiento' => null,
+                    'Fuentes de poder' => 'psu',
+                    'Gabinetes' => 'case',
+                    'Refrigeración' => 'cooler',
+                    'Tarjetas gráficas' => 'gpu',
                 ],
             ],
             'Periféricos' => [
@@ -44,11 +50,18 @@ class CategorySeeder extends Seeder
             ]);
 
             $childOrder = 0;
-            foreach ($info['children'] as $childName) {
+            foreach ($info['children'] as $childKey => $childValue) {
+                // Algunos grupos vienen como ['Nombre' => 'component_type'],
+                // otros (sin piezas de PC de por medio) como lista simple.
+                [$childName, $componentType] = is_string($childKey)
+                    ? [$childKey, $childValue]
+                    : [$childValue, null];
+
                 Category::create([
                     'name' => $childName,
                     'slug' => \Str::slug($childName),
                     'parent_id' => $parent->id,
+                    'component_type' => $componentType,
                     'sort_order' => $childOrder++,
                 ]);
             }

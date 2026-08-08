@@ -13,11 +13,12 @@ class Product extends Model
 
     protected $fillable = [
         'category_id', 'name', 'slug', 'description', 'price', 'currency',
-        'sku', 'stock', 'has_variants', 'status', 'specs', 'image',
+        'sku', 'stock', 'has_variants', 'status', 'specs', 'image', 'compat',
     ];
 
     protected $casts = [
         'specs' => 'array',
+        'compat' => 'array',
         'has_variants' => 'boolean',
         'price' => 'decimal:2',
     ];
@@ -45,5 +46,10 @@ class Product extends Model
     public function getImageUrlAttribute(): ?string
     {
         return $this->image ? asset('uploads/'.$this->image) : null;
+    }
+
+    public function getComponentTypeAttribute(): ?string
+    {
+        return $this->category?->component_type;
     }
 }

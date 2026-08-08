@@ -58,6 +58,18 @@
       </div>
 
       <div class="form-group">
+        <label for="component_type">Tipo de componente (para "Arma tu PC")</label>
+        <select id="component_type" name="component_type">
+          <option value="">No aplica</option>
+          @foreach(config('pc_builder.component_types') as $key => $label)
+            <option value="{{ $key }}" {{ old('component_type', $category->component_type) === $key ? 'selected' : '' }}>{{ $label }}</option>
+          @endforeach
+        </select>
+        <div class="form-hint">Marcá esto solo en la categoría real donde vas a cargar esos productos (ej: Procesadores → Procesador). Así el armador de PC sabe qué campos de compatibilidad pedirle a cada producto.</div>
+        @error('component_type') <div class="error">{{ $message }}</div> @enderror
+      </div>
+
+      <div class="form-group">
         <label for="sort_order">Orden</label>
         <input type="number" min="0" id="sort_order" name="sort_order" value="{{ old('sort_order', $category->sort_order ?? 0) }}" required>
         <div class="form-hint">Controla el orden en el menú de categorías — menor número aparece primero.</div>

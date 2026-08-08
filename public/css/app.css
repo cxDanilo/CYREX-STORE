@@ -66,6 +66,8 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,10,11,0.92);backdrop-fi
 .nav-search input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text-primary);font-size:14px;padding:0 14px 0 4px;}
 .nav-actions{display:flex;align-items:center;gap:18px;flex-shrink:0;}
 .btn-gold{background:var(--gold);color:#0A0A0B;font-weight:600;font-size:14px;padding:10px 18px;border-radius:100px;border:none;cursor:pointer;}
+.btn-outline-gold{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid var(--gold);color:var(--gold);font-weight:600;font-size:13px;padding:9px 17px;border-radius:100px;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .15s,color .15s;}
+.btn-outline-gold:hover{background:var(--gold);color:#0A0A0B;}
 
 .search-suggestions{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:8px;box-shadow:0 20px 50px rgba(0,0,0,0.4);z-index:250;max-height:380px;overflow-y:auto;}
 .search-suggestion-item{display:flex;align-items:center;gap:12px;padding:9px;border-radius:10px;transition:background .15s;}
@@ -307,6 +309,7 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
   .nav-whatsapp-btn{padding:9px;}
   .nav-inner .logo-full{height:36px;}
   .nav-inner .btn-gold{display:none;}
+  .nav-inner .btn-outline-gold{display:none;}
   .nav-actions{gap:10px;}
 }
 

@@ -93,6 +93,7 @@ document.addEventListener('alpine:init', () => {
         </svg>
         <span class="cart-badge" x-show="$store.cart.count > 0" x-text="$store.cart.count" x-cloak></span>
       </button>
+      <a href="{{ route('pc-builder') }}" class="btn-outline-gold">Arma tu PC</a>
       <a href="{{ route('shop') }}" class="btn-gold" style="text-decoration:none;">{{ $shopCtaText }}</a>
     </div>
   </div>
@@ -107,6 +108,8 @@ document.addEventListener('alpine:init', () => {
   </div>
 
   @include('partials.search-box', ['formClass' => 'mobile-search'])
+
+  <a href="{{ route('pc-builder') }}" class="btn-outline-gold" style="width:100%;justify-content:center;margin:14px 0;">Arma tu PC</a>
 
   <nav class="mobile-accordion">
     @foreach($navCategories as $parent)

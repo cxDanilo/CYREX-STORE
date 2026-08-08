@@ -13,8 +13,12 @@
         price: @js((string) old('price', $product->price ?? '')),
         currency: @js(old('currency', $product->currency ?? 'USD')),
         categoryId: @js((string) old('category_id', $product->category_id ?? '')),
-        categories: @js($categories->map(fn($c) => ['id' => (string) $c->id, 'name' => $c->name])->values()),
-        get categoryName() { return (this.categories.find(c => c.id === this.categoryId) || {}).name || ''; }
+        categories: @js($categories->map(fn($c) => ['id' => (string) $c->id, 'name' => $c->name, 'componentType' => $c->component_type])->values()),
+        get categoryName() { return (this.categories.find(c => c.id === this.categoryId) || {}).name || ''; },
+        componentFields: @js(config('pc_builder.fields')),
+        get componentType() { return (this.categories.find(c => c.id === this.categoryId) || {}).componentType || null; },
+        get activeFields() { return this.componentType ? (this.componentFields[this.componentType] || {}) : {}; },
+        compat: {{ Js::from((object) ($product->compat ?: [])) }}
      }">
   <form method="POST" action="{{ $product->exists ? route('admin.productos.update', $product) : route('admin.productos.store') }}" class="admin-form" enctype="multipart/form-data" style="flex:1;min-width:0;">
     @csrf
@@ -128,6 +132,48 @@
         </div>
       </template>
       <button type="button" class="btn btn-sm" x-on:click="specs.push({key: '', value: ''})">+ Agregar especificación</button>
+    </div>
+
+    <div class="form-section" x-show="componentType" x-cloak>
+      <h3>Compatibilidad (Arma tu PC)</h3>
+      <p class="form-hint" style="margin-bottom:14px;">Esta categoría está marcada como pieza de PC — completá estos datos para que el armador sepa con qué otras piezas es compatible este producto.</p>
+
+      <template x-for="(field, key) in activeFields" :key="key">
+        <div class="form-group">
+          <label x-text="field.label"></label>
+
+          <template x-if="field.type === 'select'">
+            <select :name="'compat[' + key + ']'" x-model="compat[key]">
+              <option value="">Seleccioná...</option>
+              <template x-for="[optKey, optLabel] in Object.entries(field.options)" :key="optKey">
+                <option :value="optKey" x-text="optLabel"></option>
+              </template>
+            </select>
+          </template>
+
+          <template x-if="field.type === 'number'">
+            <input type="number" step="1" min="0" :name="'compat[' + key + ']'" x-model.number="compat[key]">
+          </template>
+
+          <template x-if="field.type === 'checkboxes'">
+            <div style="display:flex;gap:16px;flex-wrap:wrap;">
+              <template x-for="[optKey, optLabel] in Object.entries(field.options)" :key="optKey">
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;">
+                  <input type="checkbox" :value="optKey" :name="'compat[' + key + '][]'"
+                         :checked="(compat[key] || []).includes(optKey)"
+                         x-on:change="
+                            compat[key] = compat[key] || [];
+                            $event.target.checked
+                              ? compat[key].push(optKey)
+                              : compat[key] = compat[key].filter(v => v !== optKey);
+                         ">
+                  <span x-text="optLabel"></span>
+                </label>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
     </div>
 
     <div class="form-section">
