@@ -95,13 +95,21 @@
 
 .cms-editor-layout{display:flex;gap:20px;height:calc(100vh - 220px);min-height:480px;}
 .cms-editor-canvas{flex:1;min-width:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
-.cms-editor-sidebar{width:300px;flex-shrink:0;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
+.cms-editor-sidebar{width:360px;flex-shrink:0;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
 .cms-editor-panel{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:16px;}
 .cms-editor-panel h4{font-size:12px;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-muted);margin-bottom:12px;font-weight:600;}
 
 .gjs-field{width:100%;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text-primary);font-size:13px;outline:none;margin-bottom:8px;}
 .gjs-field:focus{border-color:var(--gold);}
 .gjs-field-textarea{resize:vertical;}
+
+/* GrapesJS pone label y campo lado a lado por defecto (pensado para
+   nombres cortos tipo "Ancho", "Color") y trunca con "..." si no entra.
+   Nuestras etiquetas son frases descriptivas en español, así que las
+   apilamos arriba del campo en vez de truncarlas. */
+.gjs-trt-trait{display:block;padding:10px 4px;}
+.gjs-trt-trait .gjs-label{display:block;white-space:normal;overflow:visible;text-overflow:clip;margin-bottom:6px;font-size:12.5px;color:var(--text-secondary);line-height:1.4;}
+.gjs-trt-trait .gjs-fields{width:100%;}
 
 .cms-repeater-trait{display:flex;flex-direction:column;gap:8px;}
 .cms-repeater-row{display:flex;gap:6px;align-items:center;}
