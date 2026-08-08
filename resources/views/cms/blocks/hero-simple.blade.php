@@ -1,6 +1,9 @@
-<section class="wrap cms-block cms-hero">
+<section class="wrap cms-block cms-hero @if(($data['tamano'] ?? 'estandar') === 'grande') cms-hero-grande @endif">
+  @if(!empty($data['eyebrow']))
+    <div class="cms-hero-eyebrow">{{ $data['eyebrow'] }}</div>
+  @endif
   @if(!empty($data['titulo']))
-    <h1 class="cms-hero-title">{{ $data['titulo'] }}</h1>
+    <h1 class="cms-hero-title">{!! nl2br(e($data['titulo'])) !!}@if(!empty($data['titulo_destacado'])) <em class="cms-hero-em">{{ $data['titulo_destacado'] }}</em>@endif</h1>
   @endif
   @if(!empty($data['subtitulo']))
     <p class="cms-hero-subtitle">{{ $data['subtitulo'] }}</p>

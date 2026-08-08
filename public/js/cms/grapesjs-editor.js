@@ -339,8 +339,12 @@
       // Botones de dispositivo (reemplazan el panel default de GrapesJS, que se
       // desactivó con panels:{defaults:[]} para no exponer botones fuera de
       // nuestro control, como el visor de código HTML/CSS crudo).
-      document.querySelectorAll('[data-cms-device]').forEach((btn) => {
-        btn.addEventListener('click', () => editor.setDevice(btn.dataset.cmsDevice));
+      const deviceBtns = document.querySelectorAll('[data-cms-device]');
+      deviceBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          editor.setDevice(btn.dataset.cmsDevice);
+          deviceBtns.forEach((b) => b.classList.toggle('btn-primary', b === btn));
+        });
       });
 
       const saveBtn = document.getElementById('cms-save-btn');

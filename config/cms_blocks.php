@@ -36,12 +36,18 @@ return [
         'view' => 'cms.blocks.hero-simple',
         'category' => 'Contenido',
         'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 10h10M7 14h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
-        'defaults' => ['titulo' => '', 'subtitulo' => '', 'cta_label' => '', 'cta_url' => ''],
+        'defaults' => ['eyebrow' => '', 'titulo' => '', 'titulo_destacado' => '', 'subtitulo' => '', 'cta_label' => '', 'cta_url' => '', 'tamano' => 'estandar'],
         'fields' => [
-            'titulo' => ['type' => 'text', 'label' => 'Título'],
+            'eyebrow' => ['type' => 'text', 'label' => 'Texto pequeño superior (opcional)'],
+            'titulo' => ['type' => 'textarea', 'label' => 'Título'],
+            'titulo_destacado' => ['type' => 'text', 'label' => 'Palabras finales destacadas en dorado (opcional)'],
             'subtitulo' => ['type' => 'textarea', 'label' => 'Subtítulo'],
             'cta_label' => ['type' => 'text', 'label' => 'Texto del botón'],
             'cta_url' => ['type' => 'text', 'label' => 'Link del botón'],
+            'tamano' => ['type' => 'select', 'label' => 'Tamaño', 'options' => [
+                ['id' => 'estandar', 'name' => 'Estándar'],
+                ['id' => 'grande', 'name' => 'Grande (portada)'],
+            ]],
         ],
     ],
 
@@ -219,6 +225,15 @@ return [
             'categoria' => ['type' => 'select', 'label' => 'Categoría', 'options' => 'categories'],
             'limite' => ['type' => 'number', 'label' => 'Cantidad de productos'],
         ],
+    ],
+
+    'categorias_destacadas' => [
+        'label' => 'Categorías destacadas',
+        'view' => 'cms.blocks.categorias-destacadas',
+        'category' => 'Comercio',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="2" y="9" width="7" height="6" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="10" y="9" width="7" height="6" rx="3" stroke="currentColor" stroke-width="1.5"/><rect x="18" y="9" width="4" height="6" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>',
+        'defaults' => [],
+        'fields' => [],
     ],
 
     'cta_whatsapp' => [

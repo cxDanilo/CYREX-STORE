@@ -6,7 +6,7 @@
 
 <div class="cms-editor-topbar">
   <div class="cms-editor-devices">
-    <button type="button" class="btn btn-sm" data-cms-device="Desktop">Escritorio</button>
+    <button type="button" class="btn btn-sm btn-primary" data-cms-device="Desktop">Escritorio</button>
     <button type="button" class="btn btn-sm" data-cms-device="Tablet">Tablet</button>
     <button type="button" class="btn btn-sm" data-cms-device="Mobile">Celular</button>
   </div>
