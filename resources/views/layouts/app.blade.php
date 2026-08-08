@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <title>@yield('title', 'Cyrex Store')</title>
 @hasSection('meta_description')
 <meta name="description" content="@yield('meta_description')">
@@ -15,7 +16,20 @@
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 @yield('styles')
 </head>
-<body class="{{ ($reducedMotion ?? 'off') === 'on' ? 'motion-reduced' : '' }}">
+<body class="{{ ($reducedMotion ?? 'off') === 'on' ? 'motion-reduced' : '' }} {{ auth()->check() ? 'has-admin-bar' : '' }}">
+
+@auth
+  <div class="admin-session-bar">
+    <span>👤 Estás logueado como <strong>{{ \App\Models\User::ROLES[auth()->user()->role] ?? auth()->user()->role }}</strong> ({{ auth()->user()->name }})</span>
+    <div class="admin-session-bar-actions">
+      <a href="{{ route('admin.dashboard') }}">Ir al panel</a>
+      <form method="POST" action="{{ route('admin.logout') }}">
+        @csrf
+        <button type="submit">Cerrar sesión</button>
+      </form>
+    </div>
+  </div>
+@endauth
 
 @include('partials.nav')
 

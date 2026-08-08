@@ -39,19 +39,98 @@
             + '$' + priceUsd + ' USD / Bs ' + priceBob + ' BOB\n'
             + {{ Js::from($productUrl) }};
           return 'https://wa.me/{{ $whatsappNumber }}?text=' + encodeURIComponent(text);
+        },
+        isAdmin: {{ (auth()->check() && auth()->user()->isAdmin()) ? 'true' : 'false' }},
+        editing: false,
+        saving: false,
+        editName: {{ Js::from($product->name) }},
+        editPrice: {{ (float) $product->price }},
+        editCurrency: {{ Js::from($product->currency) }},
+        editDescription: {{ Js::from($product->description ?? '') }},
+        editImageUrl: {{ Js::from($product->image_url) }},
+        editImagePreview: null,
+        originalName: {{ Js::from($product->name) }},
+        originalPrice: {{ (float) $product->price }},
+        originalDescription: {{ Js::from($product->description ?? '') }},
+        quickUpdateUrl: {{ Js::from(route('product.quick-update', $product)) }},
+        toggleEdit() {
+          if (this.editing) {
+            this.cancelEdit();
+          } else {
+            this.editing = true;
+          }
+        },
+        cancelEdit() {
+          this.editName = this.originalName;
+          this.editPrice = this.originalPrice;
+          this.editDescription = this.originalDescription;
+          this.editImagePreview = null;
+          if (this.$refs.quickEditImage) this.$refs.quickEditImage.value = '';
+          this.editing = false;
+        },
+        onEditImagePicked(event) {
+          const file = event.target.files[0];
+          this.editImagePreview = file ? URL.createObjectURL(file) : null;
+        },
+        async saveQuickEdit() {
+          this.saving = true;
+          const formData = new FormData();
+          formData.append('_method', 'PATCH');
+          formData.append('name', this.editName);
+          formData.append('price', this.editPrice);
+          formData.append('description', this.editDescription ?? '');
+          const fileInput = this.$refs.quickEditImage;
+          if (fileInput && fileInput.files[0]) {
+            formData.append('image', fileInput.files[0]);
+          }
+          try {
+            const res = await fetch(this.quickUpdateUrl, {
+              method: 'POST',
+              headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                'Accept': 'application/json',
+              },
+              body: formData,
+            });
+            if (!res.ok) throw new Error('quick edit failed');
+            const data = await res.json();
+            this.editName = this.originalName = data.name;
+            this.editPrice = this.originalPrice = data.price;
+            this.editDescription = this.originalDescription = data.description ?? '';
+            this.editImageUrl = data.image_url;
+            this.editImagePreview = null;
+            this.basePrice = this.editCurrency === 'USD' ? data.price : data.price / this.rate;
+            if (this.$refs.quickEditImage) this.$refs.quickEditImage.value = '';
+            this.editing = false;
+          } catch (e) {
+            alert('No se pudo guardar el cambio. Probá de nuevo.');
+          } finally {
+            this.saving = false;
+          }
         }
      }">
   <div class="gallery">
     <div class="gallery-main">
-      @if($product->image_url)
-        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">
-      @endif
+      <img src="{{ $product->image_url }}" :src="editImagePreview || editImageUrl" x-show="editImagePreview || editImageUrl" alt="{{ $product->name }}" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">
+      <template x-if="isAdmin && editing">
+        <label class="admin-edit-image-overlay">
+          <span>Cambiar imagen</span>
+          <input type="file" x-ref="quickEditImage" accept="image/png,image/jpeg,image/webp" @change="onEditImagePicked($event)" style="display:none;">
+        </label>
+      </template>
     </div>
   </div>
 
   <div class="product-info">
+    <template x-if="isAdmin">
+      <button type="button" class="admin-edit-toggle" :class="editing && 'is-active'" @click="toggleEdit()" x-text="editing ? 'Cancelar edición' : '✏️ Editar producto'"></button>
+    </template>
+
     <div class="cat-eyebrow">{{ $product->category->name }}</div>
-    <h1>{{ $product->name }}</h1>
+    <h1 x-show="!editing" x-cloak x-text="editName">{{ $product->name }}</h1>
+    <template x-if="isAdmin">
+      <input type="text" x-show="editing" x-cloak x-model="editName" class="admin-edit-input admin-edit-input-name" x-transition>
+    </template>
 
     @if($product->has_variants && $product->variants->count())
       <div class="variant-options">
@@ -65,7 +144,14 @@
       </div>
     @endif
 
-    <div class="price-block">
+    <template x-if="isAdmin">
+      <div class="admin-edit-price-row" x-show="editing" x-cloak x-transition>
+        <input type="number" step="0.01" min="0" x-model.number="editPrice" class="admin-edit-input">
+        <span class="admin-edit-currency-label" x-text="editCurrency"></span>
+      </div>
+    </template>
+
+    <div class="price-block" x-show="!editing" x-cloak>
       @if($currencyMode === 'both')
         <div class="currency-toggle" style="margin-bottom:14px;">
           <div class="toggle-thumb" :class="toggled ? (showBob ? 'to-bob' : 'to-usd') : (showBob ? 'at-bob' : 'at-usd')"></div>
@@ -96,10 +182,18 @@
 
     {{-- Sin escapar: las descripciones importadas de WooCommerce traen HTML real
          (listas de specs, etc.) — mismo criterio que el bloque html_libre del CMS,
-         contenido cargado por el admin, no por un usuario del sitio. --}}
-    @if($product->description)
-      <div class="product-description">{!! $product->description !!}</div>
-    @endif
+         contenido cargado por el admin, no por un usuario del sitio.
+         x-html la mantiene actualizada en vivo tras guardar una edición rápida. --}}
+    <div class="product-description" x-show="!editing && editDescription" x-cloak x-html="editDescription">@if($product->description){!! $product->description !!}@endif</div>
+    <template x-if="isAdmin">
+      <div x-show="editing" x-cloak x-transition>
+        <textarea x-model="editDescription" class="admin-edit-input admin-edit-textarea" placeholder="Descripción (se puede usar HTML)"></textarea>
+        <div class="admin-edit-actions">
+          <button type="button" class="admin-edit-save" :disabled="saving" @click="saveQuickEdit()" x-text="saving ? 'Guardando…' : 'Guardar cambios'"></button>
+          <button type="button" class="admin-edit-cancel" :disabled="saving" @click="cancelEdit()">Cancelar</button>
+        </div>
+      </div>
+    </template>
 
     @if($product->specs)
       <table class="spec-table">

@@ -99,28 +99,9 @@ class ProductController extends Controller
         return back()->with('status', 'Producto eliminado.');
     }
 
-    /**
-     * Registra en el historial solo los campos que realmente cambiaron
-     * (Eloquent ya sabe cuáles son gracias a getChanges() tras el
-     * update) — así no se ensucia con una entrada cada vez que alguien
-     * guarda el formulario sin tocar nada. $before es el snapshot
-     * tomado ANTES de llamar a update(), ver arriba.
-     */
     private function logChanges(Product $product, array $before): void
     {
-        $changes = [];
-
-        foreach ($product->getChanges() as $key => $newValue) {
-            if (in_array($key, ['updated_at'], true)) {
-                continue;
-            }
-
-            $changes[$key] = ['antes' => $before[$key] ?? null, 'despues' => $newValue];
-        }
-
-        if (! empty($changes)) {
-            ProductActivityLog::record($product, 'updated', $changes);
-        }
+        ProductActivityLog::logFieldChanges($product, $before);
     }
 
     public function toggleStatus(Product $product)

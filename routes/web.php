@@ -19,11 +19,14 @@ use App\Http\Controllers\Admin\ProductActivityLogController as AdminProductActiv
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\WooCommerceImportController as AdminWooCommerceImportController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\ProductQuickEditController;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/tienda', [ShopController::class, 'index'])->name('shop');
 Route::get('/producto/{slug}', [ShopController::class, 'show'])->name('product.show');
 Route::get('/buscar-sugerencias', [ShopController::class, 'suggest'])->name('shop.suggest');
+
+Route::middleware(['auth', 'admin'])->patch('/producto/{product}/edicion-rapida', [ProductQuickEditController::class, 'update'])->name('product.quick-update');
 
 Route::post('/carrito/agregar', [CartController::class, 'add'])->name('cart.add');
 Route::delete('/carrito/quitar/{key}', [CartController::class, 'remove'])->name('cart.remove');

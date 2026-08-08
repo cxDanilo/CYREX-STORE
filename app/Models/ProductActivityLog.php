@@ -40,4 +40,27 @@ class ProductActivityLog extends Model
             'created_at' => now(),
         ]);
     }
+
+    /**
+     * Registra solo los campos que Eloquent detectó como realmente
+     * cambiados tras un update() — $before es el snapshot de atributos
+     * tomado ANTES de guardar (getOriginal() ya no sirve después del
+     * save(), Eloquent lo sincroniza con los valores nuevos).
+     */
+    public static function logFieldChanges(Product $product, array $before): void
+    {
+        $changes = [];
+
+        foreach ($product->getChanges() as $key => $newValue) {
+            if ($key === 'updated_at') {
+                continue;
+            }
+
+            $changes[$key] = ['antes' => $before[$key] ?? null, 'despues' => $newValue];
+        }
+
+        if (! empty($changes)) {
+            static::record($product, 'updated', $changes);
+        }
+    }
 }
