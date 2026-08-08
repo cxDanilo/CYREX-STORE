@@ -95,7 +95,7 @@
 
 .cms-editor-layout{display:flex;gap:20px;height:calc(100vh - 220px);min-height:480px;}
 .cms-editor-canvas{flex:1;min-width:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
-.cms-editor-sidebar{width:360px;flex-shrink:0;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
+.cms-editor-sidebar{width:440px;flex-shrink:0;overflow-y:auto;display:flex;flex-direction:column;gap:16px;}
 .cms-editor-panel{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:16px;}
 .cms-editor-panel h4{font-size:12px;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-muted);margin-bottom:12px;font-weight:600;}
 
