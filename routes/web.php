@@ -22,9 +22,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductQuickEditController;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
-Route::get('/arma-tu-pc', function () {
-    return view('pc-builder');
-})->name('pc-builder');
+Route::get('/arma-tu-pc', [App\Http\Controllers\PcBuilderController::class, 'index'])->name('pc-builder');
 Route::get('/tienda', [ShopController::class, 'index'])->name('shop');
 Route::get('/producto/{slug}', [ShopController::class, 'show'])->name('product.show');
 Route::get('/buscar-sugerencias', [ShopController::class, 'suggest'])->name('shop.suggest');

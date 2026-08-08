@@ -521,3 +521,48 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .motion-reduced .price-alt.price-flash,
 .motion-reduced .currency-toggle .toggle-thumb.to-bob,
 .motion-reduced .currency-toggle .toggle-thumb.to-usd{animation:none!important;}
+
+/* ARMA TU PC */
+.pcb-issue-pill{font-size:12.5px;padding:9px 12px;border-radius:8px;line-height:1.5;}
+.pcb-issue-pill.err{background:rgba(255,92,92,.1);color:#ff8a8a;border:1px solid rgba(255,92,92,.25);}
+.pcb-issue-pill.warn{background:rgba(255,176,32,.1);color:#ffc65c;border:1px solid rgba(255,176,32,.25);}
+.pcb-issue-pill.ok{background:rgba(62,207,110,.1);color:#6fe497;border:1px solid rgba(62,207,110,.25);}
+
+.pcb-layout{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;padding-bottom:80px;}
+@media (max-width:860px){.pcb-layout{grid-template-columns:1fr;}}
+
+.pcb-slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+.pcb-slot{position:relative;background:var(--bg-elevated);border:1px solid var(--border);border-radius:14px;padding:14px;cursor:pointer;transition:border-color .15s;min-height:76px;display:flex;align-items:center;gap:12px;}
+.pcb-slot:hover{border-color:var(--gold);}
+.pcb-slot-media{width:44px;height:44px;flex-shrink:0;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.pcb-slot-body{min-width:0;flex:1;}
+.pcb-slot-label{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;color:var(--text-muted);letter-spacing:.05em;margin-bottom:4px;}
+.pcb-slot-value{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pcb-slot-value.empty{color:var(--text-muted);font-weight:400;}
+.pcb-slot-sub{font-family:var(--font-mono);font-size:11px;color:var(--gold);margin-top:3px;}
+.pcb-slot-remove{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text-muted);font-size:16px;cursor:pointer;line-height:1;padding:2px 6px;}
+.pcb-slot-remove:hover{color:var(--red, #ff5c5c);}
+
+.pcb-summary-panel{position:sticky;top:20px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:14px;padding:18px;}
+.pcb-summary-panel h3{font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin-bottom:14px;}
+.pcb-summary-row{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:8px 0;border-bottom:1px solid var(--border);}
+.pcb-summary-row:last-of-type{border-bottom:none;}
+.pcb-summary-row .k{color:var(--text-muted);font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;}
+.pcb-summary-row .v{color:var(--text-primary);font-weight:600;text-align:right;}
+.pcb-summary-row .v.empty{color:var(--text-muted);font-weight:400;font-style:italic;}
+.pcb-summary-total{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.pcb-summary-total .v{font-family:var(--font-mono);color:var(--gold);font-size:20px;font-weight:700;}
+.pcb-summary-alt{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);text-align:right;margin-top:2px;}
+
+.picker-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:400;padding:20px;}
+.picker-box{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:22px;max-width:640px;width:100%;max-height:80vh;overflow-y:auto;}
+.picker-box h3{font-size:15px;margin-bottom:14px;font-family:var(--font-display);}
+.picker-close{float:right;background:none;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;}
+
+.pcb-picker-row{width:100%;display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color .15s,opacity .2s;}
+.pcb-picker-row:hover:not(.disabled){border-color:var(--gold);}
+.pcb-picker-row.disabled{opacity:.55;cursor:not-allowed;filter:grayscale(.5);}
+.pcb-picker-media{width:44px;height:44px;flex-shrink:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.pcb-picker-row .opt-name{font-size:13.5px;font-weight:600;margin-bottom:2px;}
+.pcb-picker-row .opt-price{font-family:var(--font-mono);font-size:12.5px;color:var(--gold);}
+.pcb-picker-row .opt-reason{font-size:11px;color:#ff8a8a;margin-top:4px;line-height:1.4;}

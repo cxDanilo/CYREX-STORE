@@ -15,7 +15,7 @@
         this.showHint = false;
         document.cookie = 'cyrex_cat_hint_seen=1; max-age=' + (60*60*24*365) + '; path=/; SameSite=Lax';
       },
-      // En touch, el navegador dispara un mouseenter "fantasma" en el
+      // En touch, el navegador dispara un mouseenter 'fantasma' en el
       // primer toque (para simular :hover) ANTES del click — eso ya
       // dejaba hoverCat puesto cuando handleTap corría, y su propio
       // chequeo (hoverCat !== id) daba falso, así que nunca frenaba la
