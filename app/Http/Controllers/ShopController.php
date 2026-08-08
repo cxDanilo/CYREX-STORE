@@ -13,13 +13,14 @@ class ShopController extends Controller
     public function index(Request $request)
     {
         $query = Product::where('status', 'active')->with('category');
+        $activeCategory = null;
 
         if ($request->filled('category')) {
-            $cat = Category::where('slug', $request->category)->first();
-            if ($cat) {
-                $ids = $cat->parent_id
-                    ? [$cat->id]
-                    : $cat->children()->pluck('id')->push($cat->id);
+            $activeCategory = Category::where('slug', $request->category)->first();
+            if ($activeCategory) {
+                $ids = $activeCategory->parent_id
+                    ? [$activeCategory->id]
+                    : $activeCategory->children()->pluck('id')->push($activeCategory->id);
                 $query->whereIn('category_id', $ids);
             }
         }
@@ -30,7 +31,7 @@ class ShopController extends Controller
 
         $products = $query->orderByDesc('created_at')->paginate(12)->withQueryString();
 
-        return view('shop', compact('products'));
+        return view('shop', compact('products', 'activeCategory'));
     }
 
     public function suggest(Request $request)

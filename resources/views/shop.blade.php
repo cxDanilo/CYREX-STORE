@@ -5,8 +5,11 @@
 @section('content')
 
 <div class="page-head wrap">
-  <div class="breadcrumb"><a href="{{ route('home') }}">Inicio</a> / Tienda</div>
-  <h1>Tienda</h1>
+  <div class="breadcrumb">
+    <a href="{{ route('home') }}">Inicio</a> / <a href="{{ route('shop') }}">Tienda</a>
+    @if($activeCategory) / {{ $activeCategory->name }} @endif
+  </div>
+  <h1>{{ $activeCategory ? $activeCategory->name : 'Tienda' }}</h1>
 </div>
 
 <div class="wrap shop-layout">
@@ -15,8 +18,8 @@
       <div style="color:var(--text-secondary);font-size:14px;">
         <b style="color:var(--text-primary);">{{ $products->total() }}</b> productos
       </div>
-      @if(request('category'))
-        <a href="{{ route('shop') }}" class="btn btn-sm">Quitar filtro ×</a>
+      @if($activeCategory)
+        <a href="{{ route('shop') }}" class="btn btn-sm">Ver todo el catálogo ×</a>
       @endif
     </div>
 
