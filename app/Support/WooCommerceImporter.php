@@ -41,6 +41,8 @@ class WooCommerceImporter
         'nombre' => 'name',
         'regular price' => 'price',
         'precio normal' => 'price',
+        'sale price' => 'sale_price',
+        'precio rebajado' => 'sale_price',
         'stock' => 'stock',
         'inventario' => 'stock',
         'categories' => 'categories',
@@ -56,14 +58,14 @@ class WooCommerceImporter
     ];
 
     /**
-     * @return array{created:int, updated:int, errors:array<int, string>}
+     * @return array{created:int, updated:int, errors:array<int, string>, warnings:array<int, string>}
      */
     public function import(string $csvPath): array
     {
         $handle = fopen($csvPath, 'r');
 
         if (! $handle) {
-            return ['created' => 0, 'updated' => 0, 'errors' => ['No se pudo abrir el archivo.']];
+            return ['created' => 0, 'updated' => 0, 'errors' => ['No se pudo abrir el archivo.'], 'warnings' => []];
         }
 
         $headerRow = fgetcsv($handle);
@@ -71,13 +73,14 @@ class WooCommerceImporter
         if (! $headerRow) {
             fclose($handle);
 
-            return ['created' => 0, 'updated' => 0, 'errors' => ['El archivo está vacío o no tiene encabezados.']];
+            return ['created' => 0, 'updated' => 0, 'errors' => ['El archivo está vacío o no tiene encabezados.'], 'warnings' => []];
         }
 
         $columns = $this->mapColumns($headerRow);
         $created = 0;
         $updated = 0;
         $errors = [];
+        $warnings = [];
         $rowNumber = 1;
 
         while (($row = fgetcsv($handle)) !== false) {
@@ -90,7 +93,11 @@ class WooCommerceImporter
                     continue;
                 }
 
-                $result === 'created' ? $created++ : $updated++;
+                if ($result['price_missing']) {
+                    $warnings[] = "Fila {$rowNumber}: \"{$result['name']}\" se importó con precio $0 — no tenía ni \"Precio normal\" ni \"Precio rebajado\" en el CSV, revisalo a mano.";
+                }
+
+                $result['action'] === 'created' ? $created++ : $updated++;
             } catch (\Throwable $e) {
                 $errors[] = "Fila {$rowNumber}: ".$e->getMessage();
             }
@@ -98,7 +105,7 @@ class WooCommerceImporter
 
         fclose($handle);
 
-        return ['created' => $created, 'updated' => $updated, 'errors' => $errors];
+        return ['created' => $created, 'updated' => $updated, 'errors' => $errors, 'warnings' => $warnings];
     }
 
     /**
@@ -144,7 +151,10 @@ class WooCommerceImporter
         return $value === '' ? null : $value;
     }
 
-    private function importRow(array $columns, array $row): ?string
+    /**
+     * @return array{action:string, name:string, price_missing:bool}|null
+     */
+    private function importRow(array $columns, array $row): ?array
     {
         $name = $this->value($columns, $row, 'name');
 
@@ -159,11 +169,17 @@ class WooCommerceImporter
 
         $before = $product->exists ? $product->getOriginal() : [];
 
+        // Algunos catálogos de WooCommerce solo cargan "Precio rebajado" (oferta)
+        // y dejan "Precio normal" vacío — si el normal no está, usamos el rebajado
+        // en vez de importar el producto en $0.
+        $priceValue = $this->value($columns, $row, 'price') ?? $this->value($columns, $row, 'sale_price');
+        $priceMissing = $priceValue === null;
+
         $product->name = $name;
         $product->slug = $product->slug ?: Str::slug($name).'-'.Str::random(4);
         $product->sku = $sku;
-        $product->description = $this->value($columns, $row, 'description') ?? $this->value($columns, $row, 'short_description');
-        $product->price = (float) ($this->value($columns, $row, 'price') ?? 0);
+        $product->description = $this->cleanHtml($this->value($columns, $row, 'description') ?? $this->value($columns, $row, 'short_description'));
+        $product->price = (float) ($priceValue ?? 0);
         $product->currency = $product->currency ?: 'USD';
         $product->stock = (int) ($this->value($columns, $row, 'stock') ?? 0);
         $product->status = ($this->value($columns, $row, 'published') === '0') ? 'inactive' : 'active';
@@ -195,7 +211,22 @@ class WooCommerceImporter
             }
         }
 
-        return $isNew ? 'created' : 'updated';
+        return ['action' => $isNew ? 'created' : 'updated', 'name' => $name, 'price_missing' => $priceMissing];
+    }
+
+    /**
+     * WooCommerce exporta el HTML de la descripción con los saltos de línea
+     * reales convertidos a la secuencia literal de dos caracteres "\n" (para
+     * que el campo no rompa el CSV) — si no se revierte, esos "\n" quedan
+     * como texto visible en vez de como espacio entre bloques.
+     */
+    private function cleanHtml(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        return str_replace(['\r\n', '\n'], "\n", $value);
     }
 
     private function resolveCategory(?string $categoriesField): ?int

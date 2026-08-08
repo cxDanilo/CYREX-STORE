@@ -94,8 +94,11 @@
       </a>
     </div>
 
+    {{-- Sin escapar: las descripciones importadas de WooCommerce traen HTML real
+         (listas de specs, etc.) — mismo criterio que el bloque html_libre del CMS,
+         contenido cargado por el admin, no por un usuario del sitio. --}}
     @if($product->description)
-      <p style="color:var(--text-secondary);font-size:15px;line-height:1.7;margin-bottom:24px;">{{ $product->description }}</p>
+      <div class="product-description">{!! $product->description !!}</div>
     @endif
 
     @if($product->specs)

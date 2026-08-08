@@ -30,6 +30,17 @@
   </div>
 @endif
 
+@if(count($result['warnings'] ?? []))
+  <div class="form-section" style="margin-bottom:20px;">
+    <h3>Avisos</h3>
+    <ul style="color:var(--gold);font-size:13px;line-height:1.8;padding-left:20px;">
+      @foreach($result['warnings'] as $warning)
+        <li>{{ $warning }}</li>
+      @endforeach
+    </ul>
+  </div>
+@endif
+
 <div class="form-actions" style="margin-top:0;">
   <a href="{{ route('admin.productos.index') }}" class="btn btn-primary">Ver productos</a>
   <a href="{{ route('admin.woocommerce.create') }}" class="btn">Importar otro archivo</a>
