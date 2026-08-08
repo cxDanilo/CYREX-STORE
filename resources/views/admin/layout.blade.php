@@ -16,10 +16,13 @@
 
 <div class="admin-body">
   <aside class="admin-sidebar">
-    <div class="admin-logo"><a href="{{ route('admin.productos.index') }}" style="color:inherit;">CYREX<span>.</span> ADMIN</a></div>
+    <div class="admin-logo"><a href="{{ route('admin.dashboard') }}" style="color:inherit;">CYREX<span>.</span> ADMIN</a></div>
     <nav class="admin-nav">
+      <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a>
       <a href="{{ route('admin.productos.index') }}" class="{{ request()->routeIs('admin.productos.*') ? 'active' : '' }}">Productos</a>
       <a href="{{ route('admin.categorias.index') }}" class="{{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">Categorías</a>
+      <a href="{{ route('admin.historial.index') }}" class="{{ request()->routeIs('admin.historial.*') ? 'active' : '' }}">Historial</a>
+      <a href="{{ route('admin.woocommerce.create') }}" class="{{ request()->routeIs('admin.woocommerce.*') ? 'active' : '' }}">Importar WooCommerce</a>
       <a href="{{ route('admin.usuarios.index') }}" class="{{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">Usuarios</a>
       <a href="{{ route('admin.settings.edit') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">Ajustes</a>
       <a href="{{ route('admin.paginas.index') }}" class="{{ request()->routeIs('admin.paginas.*') ? 'active' : '' }}">Páginas</a>

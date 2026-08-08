@@ -15,6 +15,9 @@ use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\MediaFolderController as AdminMediaFolderController;
 use App\Http\Controllers\Admin\MenuController as AdminMenuController;
 use App\Http\Controllers\Admin\SocialLinkController as AdminSocialLinkController;
+use App\Http\Controllers\Admin\ProductActivityLogController as AdminProductActivityLogController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\WooCommerceImportController as AdminWooCommerceImportController;
 use App\Http\Controllers\PageController;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
@@ -33,7 +36,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware('auth')->group(function () {
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-        Route::redirect('/', '/admin/productos');
+        Route::redirect('/', '/admin/dashboard');
+
+        Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('historial', [AdminProductActivityLogController::class, 'index'])->name('historial.index');
+
+        Route::get('importar-woocommerce', [AdminWooCommerceImportController::class, 'create'])->name('woocommerce.create');
+        Route::post('importar-woocommerce', [AdminWooCommerceImportController::class, 'store'])->name('woocommerce.store');
 
         Route::get('productos', [AdminProductController::class, 'index'])->name('productos.index');
         Route::get('productos/nuevo', [AdminProductController::class, 'create'])->name('productos.create');
@@ -51,6 +61,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('categorias/{category}', [AdminCategoryController::class, 'destroy'])->name('categorias.destroy');
 
         Route::get('usuarios', [AdminUserController::class, 'index'])->name('usuarios.index');
+
+        Route::middleware('admin')->group(function () {
+            Route::get('usuarios/nuevo', [AdminUserController::class, 'create'])->name('usuarios.create');
+            Route::post('usuarios', [AdminUserController::class, 'store'])->name('usuarios.store');
+            Route::get('usuarios/{user}/editar', [AdminUserController::class, 'edit'])->name('usuarios.edit');
+            Route::put('usuarios/{user}', [AdminUserController::class, 'update'])->name('usuarios.update');
+            Route::delete('usuarios/{user}', [AdminUserController::class, 'destroy'])->name('usuarios.destroy');
+        });
 
         Route::get('ajustes', [AdminSettingsController::class, 'edit'])->name('settings.edit');
         Route::put('ajustes', [AdminSettingsController::class, 'update'])->name('settings.update');

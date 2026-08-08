@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -46,6 +47,7 @@ class ProductController extends Controller
 
         $product = Product::create($data);
         $this->syncVariants($product, $variants);
+        ProductActivityLog::record($product, 'created');
 
         return redirect()->route('admin.productos.index')->with('status', 'Producto creado.');
     }
@@ -65,6 +67,12 @@ class ProductController extends Controller
         $variants = $this->variantsFromRequest($request);
         $data['has_variants'] = count($variants) > 0;
 
+        // Capturado ANTES de guardar: Eloquent sincroniza sus valores
+        // "originales" con los nuevos apenas el save() termina, así que
+        // pedir getOriginal() DESPUÉS de update() ya devuelve el valor
+        // nuevo — hay que guardarse el snapshot de antes a mano.
+        $before = $product->getAttributes();
+
         if ($request->hasFile('image')) {
             $this->deleteImage($product);
             $data['image'] = $this->storeImage($request);
@@ -74,6 +82,7 @@ class ProductController extends Controller
         }
 
         $product->update($data);
+        $this->logChanges($product, $before);
         $this->syncVariants($product, $variants);
 
         return redirect()->route('admin.productos.index')->with('status', 'Producto actualizado.');
@@ -81,10 +90,35 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        ProductActivityLog::record($product, 'deleted');
         $this->deleteImage($product);
         $product->delete();
 
         return back()->with('status', 'Producto eliminado.');
+    }
+
+    /**
+     * Registra en el historial solo los campos que realmente cambiaron
+     * (Eloquent ya sabe cuáles son gracias a getChanges() tras el
+     * update) — así no se ensucia con una entrada cada vez que alguien
+     * guarda el formulario sin tocar nada. $before es el snapshot
+     * tomado ANTES de llamar a update(), ver arriba.
+     */
+    private function logChanges(Product $product, array $before): void
+    {
+        $changes = [];
+
+        foreach ($product->getChanges() as $key => $newValue) {
+            if (in_array($key, ['updated_at'], true)) {
+                continue;
+            }
+
+            $changes[$key] = ['antes' => $before[$key] ?? null, 'despues' => $newValue];
+        }
+
+        if (! empty($changes)) {
+            ProductActivityLog::record($product, 'updated', $changes);
+        }
     }
 
     public function toggleStatus(Product $product)
