@@ -30,8 +30,9 @@ class ProductController extends Controller
     {
         $categories = Category::orderBy('parent_id')->orderBy('name')->get();
         $product = new Product(['status' => 'active', 'currency' => 'USD']);
+        $activityLogs = collect();
 
-        return view('admin.products.form', compact('categories', 'product'));
+        return view('admin.products.form', compact('categories', 'product', 'activityLogs'));
     }
 
     public function store(Request $request)
@@ -56,8 +57,9 @@ class ProductController extends Controller
     {
         $categories = Category::orderBy('parent_id')->orderBy('name')->get();
         $product->load('variants');
+        $activityLogs = ProductActivityLog::where('product_id', $product->id)->orderByDesc('created_at')->limit(20)->get();
 
-        return view('admin.products.form', compact('product', 'categories'));
+        return view('admin.products.form', compact('product', 'categories', 'activityLogs'));
     }
 
     public function update(Request $request, Product $product)

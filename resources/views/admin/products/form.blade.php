@@ -172,4 +172,43 @@
   </aside>
 </div>
 
+@if($product->exists)
+  <div class="form-section" style="margin-top:24px;">
+    <h3>Historial de este producto</h3>
+    @if($activityLogs->isEmpty())
+      <p class="form-hint">Todavía no hay cambios registrados para este producto.</p>
+    @else
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        @foreach($activityLogs as $log)
+          <div style="padding:12px 14px;background:var(--bg-elevated-2);border-radius:10px;">
+            <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:{{ empty($log->changes) ? '0' : '8px' }};">
+              <span>
+                <strong>{{ $log->user_name }}</strong>
+                @php
+                  $actionLabel = ['created' => 'creó el producto', 'updated' => 'editó el producto', 'deleted' => 'eliminó el producto'][$log->action] ?? $log->action;
+                  $actionColor = ['created' => 'var(--green)', 'updated' => 'var(--gold)', 'deleted' => 'var(--red)'][$log->action] ?? 'var(--text-secondary)';
+                @endphp
+                <span style="color:{{ $actionColor }};">{{ $actionLabel }}</span>
+              </span>
+              <span class="mono" style="color:var(--text-muted);font-size:12px;">{{ $log->created_at->format('d/m/Y H:i') }}</span>
+            </div>
+            @if(!empty($log->changes))
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                @foreach($log->changes as $field => $change)
+                  <div style="font-size:12.5px;">
+                    <span class="mono" style="color:var(--text-muted);">{{ $field }}:</span>
+                    <span style="color:var(--red);text-decoration:line-through;">{{ \Illuminate\Support\Str::limit((string) ($change['antes'] ?? '—'), 50) }}</span>
+                    →
+                    <span style="color:var(--green);">{{ \Illuminate\Support\Str::limit((string) ($change['despues'] ?? '—'), 50) }}</span>
+                  </div>
+                @endforeach
+              </div>
+            @endif
+          </div>
+        @endforeach
+      </div>
+    @endif
+  </div>
+@endif
+
 @endsection
