@@ -179,23 +179,23 @@
           <template x-if="!pickerOptions.length">
             <p class="form-hint">Todavía no hay productos cargados en esta categoría.</p>
           </template>
-          <template x-for="opt in pickerOptions" :key="opt.product.id">
-            <button type="button" class="pcb-picker-row"
-                    :class="opt.blocked && 'disabled'"
-                    :disabled="opt.blocked"
-                    @click="!opt.blocked && pick(openPicker, opt.product)">
-              <div class="pcb-picker-media">
-                <img :src="opt.product.image_url" x-show="opt.product.image_url" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">
-              </div>
-              <div style="flex:1;min-width:0;">
+          <div class="pcb-picker-grid">
+            <template x-for="opt in pickerOptions" :key="opt.product.id">
+              <button type="button" class="pcb-picker-card"
+                      :class="opt.blocked && 'disabled'"
+                      :disabled="opt.blocked"
+                      @click="!opt.blocked && pick(openPicker, opt.product)">
+                <div class="pcb-picker-card-media">
+                  <img :src="opt.product.image_url" x-show="opt.product.image_url" style="width:100%;height:100%;object-fit:cover;">
+                </div>
                 <div class="opt-name" x-text="opt.product.name"></div>
                 <div class="opt-price" x-text="'$' + opt.product.price_usd.toFixed(2)"></div>
                 <template x-if="opt.blocked">
-                  <div class="opt-reason" x-text="'No se puede elegir: ' + opt.reason"></div>
+                  <div class="opt-reason" x-text="opt.reason"></div>
                 </template>
-              </div>
-            </button>
-          </template>
+              </button>
+            </template>
+          </div>
         </div>
       </template>
     </div>
