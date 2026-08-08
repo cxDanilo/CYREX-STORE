@@ -94,7 +94,6 @@ document.addEventListener('alpine:init', () => {
         <span class="cart-badge" x-show="$store.cart.count > 0" x-text="$store.cart.count" x-cloak></span>
       </button>
       <a href="{{ route('pc-builder') }}" class="btn-outline-gold">Arma tu PC</a>
-      <a href="{{ route('shop') }}" class="btn-gold" style="text-decoration:none;">{{ $shopCtaText }}</a>
     </div>
   </div>
 </nav>

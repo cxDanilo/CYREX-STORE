@@ -22,7 +22,7 @@
     @if((!empty($data['boton1_texto']) && !empty($data['boton1_url'])) || (!empty($data['boton2_texto']) && !empty($data['boton2_url'])))
       <div class="cms-hero-video-buttons">
         @if(!empty($data['boton1_texto']) && !empty($data['boton1_url']))
-          <a href="{{ $data['boton1_url'] }}" class="btn btn-primary">{{ $data['boton1_texto'] }}</a>
+          <a href="{{ $data['boton1_url'] }}" class="btn-outline-gold">{{ $data['boton1_texto'] }}</a>
         @endif
         @if(!empty($data['boton2_texto']) && !empty($data['boton2_url']))
           <a href="{{ $data['boton2_url'] }}" class="btn btn-primary">{{ $data['boton2_texto'] }}</a>
