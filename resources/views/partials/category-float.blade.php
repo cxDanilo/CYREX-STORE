@@ -13,6 +13,19 @@
         clearTimeout(this.hintTimer);
         this.showHint = false;
         document.cookie = 'cyrex_cat_hint_seen=1; max-age=' + (60*60*24*365) + '; path=/; SameSite=Lax';
+      },
+      // En tablet/celular no existe :hover real — mouseenter nunca
+      // dispara, así que el submenú no había forma de abrirlo con el
+      // dedo. Acá interceptamos el primer toque para abrir el submenú
+      // en vez de navegar; un segundo toque sobre el mismo ítem (o
+      // tocar 'Ver todo en X' adentro) sí navega normal.
+      handleTap(event, id) {
+        if (window.matchMedia('(hover: hover)').matches) return;
+        if (this.hoverCat !== id) {
+          event.preventDefault();
+          this.expand();
+          this.openCat(id);
+        }
       }
     }"
     x-init="
@@ -20,7 +33,8 @@
       if (showHint) hintTimer = setTimeout(() => dismissHint(), 7000);
     "
     x-on:mouseenter="expand()"
-    x-on:mouseleave="scheduleCollapse()">
+    x-on:mouseleave="scheduleCollapse()"
+    x-on:click.outside="expanded = false; hoverCat = null;">
   <div class="cat-float-hint" x-show="showHint" x-transition.opacity.duration.400ms x-cloak>
     <span class="cat-float-hint-arrow">&larr;</span>
     <span>Escoge tus categorías desde acá</span>
@@ -29,7 +43,7 @@
   <div class="cat-float-list" :class="expanded && 'expanded'">
     @foreach($navCategories as $parent)
       <div class="cat-float-item" x-on:mouseenter="expand(); openCat({{ $parent->id }})" x-on:mouseleave="scheduleClose({{ $parent->id }})">
-        <a href="{{ route('shop', ['category' => $parent->slug]) }}" class="cat-float-link" :class="hoverCat === {{ $parent->id }} && 'active'">
+        <a href="{{ route('shop', ['category' => $parent->slug]) }}" class="cat-float-link" :class="hoverCat === {{ $parent->id }} && 'active'" x-on:click="handleTap($event, {{ $parent->id }})">
           <span class="mega-icon">@include('partials.category-icon', ['icon' => $parent->icon])</span>
           <span class="cat-float-label">{{ $parent->name }}</span>
         </a>
