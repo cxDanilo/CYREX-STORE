@@ -119,10 +119,12 @@
 .cms-media-upload-btn:hover{border-color:var(--gold);color:var(--gold);}
 .cms-repeater-row .cms-media-field{margin-bottom:0;flex:1;}
 
-.cms-repeater-trait{display:flex;flex-direction:column;gap:8px;}
-.cms-repeater-row{display:flex;gap:6px;align-items:center;}
+.cms-repeater-trait{display:flex;flex-direction:column;gap:12px;}
+.cms-repeater-row{position:relative;display:flex;flex-direction:column;gap:10px;padding:14px;padding-right:38px;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:10px;}
+.cms-repeater-field{display:flex;flex-direction:column;gap:5px;}
+.cms-repeater-field-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;}
 .cms-repeater-row .gjs-field{margin-bottom:0;}
-.cms-repeater-remove{background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:8px;width:28px;height:28px;flex-shrink:0;cursor:pointer;}
+.cms-repeater-remove{position:absolute;top:10px;right:10px;background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:8px;width:26px;height:26px;flex-shrink:0;cursor:pointer;}
 .cms-repeater-remove:hover{border-color:var(--red);color:var(--red);}
 .cms-repeater-add{background:none;border:1px dashed var(--border-strong);color:var(--text-secondary);border-radius:8px;padding:8px;cursor:pointer;font-size:12.5px;}
 .cms-repeater-add:hover{border-color:var(--gold);color:var(--gold);}

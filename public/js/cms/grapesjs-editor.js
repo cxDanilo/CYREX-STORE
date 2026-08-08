@@ -255,8 +255,32 @@
           const row = document.createElement('div');
           row.className = 'cms-repeater-row';
 
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'cms-repeater-remove';
+          removeBtn.textContent = '×';
+          removeBtn.setAttribute('aria-label', 'Eliminar');
+          removeBtn.addEventListener('click', () => {
+            const current = (component.get(trait.get('name')) || []).slice();
+            current.splice(index, 1);
+            component.set(trait.get('name'), current);
+            this.onUpdate({ elInput, component, trait });
+          });
+          row.appendChild(removeBtn);
+
+          // Cada subcampo va en su propia línea, con su etiqueta siempre
+          // visible arriba — con 3-4 subcampos por ítem (como en
+          // "Publicaciones de redes") meterlos todos lado a lado los
+          // dejaba truncados a unas pocas letras.
           Object.keys(subFields).forEach((subKey) => {
             const subField = subFields[subKey];
+            const field = document.createElement('div');
+            field.className = 'cms-repeater-field';
+
+            const label = document.createElement('label');
+            label.className = 'cms-repeater-field-label';
+            label.textContent = subField.label || subKey;
+            field.appendChild(label);
 
             if (subField.type === 'media') {
               const commit = (val) => {
@@ -266,7 +290,8 @@
                 component.set(trait.get('name'), current);
               };
               const { wrap: mediaWrap } = buildMediaWidget(item[subKey] || '', commit, mediaUploadUrl, csrfToken);
-              row.appendChild(mediaWrap);
+              field.appendChild(mediaWrap);
+              row.appendChild(field);
               return;
             }
 
@@ -295,20 +320,9 @@
               this.suppressNextUpdate = true;
               component.set(trait.get('name'), current);
             });
-            row.appendChild(input);
+            field.appendChild(input);
+            row.appendChild(field);
           });
-
-          const removeBtn = document.createElement('button');
-          removeBtn.type = 'button';
-          removeBtn.className = 'cms-repeater-remove';
-          removeBtn.textContent = '×';
-          removeBtn.addEventListener('click', () => {
-            const current = (component.get(trait.get('name')) || []).slice();
-            current.splice(index, 1);
-            component.set(trait.get('name'), current);
-            this.onUpdate({ elInput, component, trait });
-          });
-          row.appendChild(removeBtn);
 
           rowsEl.appendChild(row);
         });
