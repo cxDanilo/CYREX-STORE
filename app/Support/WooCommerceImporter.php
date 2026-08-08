@@ -28,16 +28,31 @@ use Illuminate\Support\Str;
  */
 class WooCommerceImporter
 {
+    /**
+     * WooCommerce exporta con los encabezados en el idioma del sitio de
+     * origen — acá se soportan inglés y español (confirmado contra un
+     * export real en español) comparando texto ya sin acentos ni
+     * signos de interrogación, para no depender de que coincida
+     * carácter por carácter.
+     */
     private const COLUMN_MAP = [
         'sku' => 'sku',
         'name' => 'name',
+        'nombre' => 'name',
         'regular price' => 'price',
+        'precio normal' => 'price',
         'stock' => 'stock',
+        'inventario' => 'stock',
         'categories' => 'categories',
+        'categorias' => 'categories',
         'images' => 'images',
+        'imagenes' => 'images',
         'description' => 'description',
+        'descripcion' => 'description',
         'short description' => 'short_description',
+        'descripcion corta' => 'short_description',
         'published' => 'published',
+        'publicado' => 'published',
     ];
 
     /**
@@ -99,7 +114,7 @@ class WooCommerceImporter
         $columns = [];
 
         foreach ($headerRow as $index => $header) {
-            $normalized = strtolower(trim($header));
+            $normalized = $this->normalizeHeader($header);
 
             if (isset(self::COLUMN_MAP[$normalized])) {
                 $columns[self::COLUMN_MAP[$normalized]] = $index;
@@ -107,6 +122,15 @@ class WooCommerceImporter
         }
 
         return $columns;
+    }
+
+    private function normalizeHeader(string $header): string
+    {
+        $normalized = strtolower(trim($header));
+        $normalized = strtr($normalized, ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ñ' => 'n']);
+        $normalized = str_replace(['¿', '?'], '', $normalized);
+
+        return trim($normalized);
     }
 
     private function value(array $columns, array $row, string $key): ?string
