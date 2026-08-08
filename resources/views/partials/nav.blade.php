@@ -114,9 +114,9 @@ document.addEventListener('alpine:init', () => {
     @foreach($navCategories as $parent)
       <div class="accordion-group" :class="openGroup === {{ $parent->id }} && 'is-open'">
         <button type="button" class="accordion-head" x-on:click="openGroup = (openGroup === {{ $parent->id }} ? null : {{ $parent->id }})">
-          <span style="display:flex;align-items:center;gap:10px;">
+          <span class="accordion-head-label">
             <span class="mega-icon">@include('partials.category-icon', ['icon' => $parent->icon])</span>
-            {{ $parent->name }}
+            <span class="accordion-head-text">{{ $parent->name }}</span>
           </span>
           <svg width="10" height="6" viewBox="0 0 10 6" fill="none" :style="openGroup === {{ $parent->id }} && 'transform:rotate(180deg)'" style="transition:transform .2s;flex-shrink:0;">
             <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none"/>

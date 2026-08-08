@@ -13,15 +13,33 @@ window.addEventListener('DOMContentLoaded', function () {
     var frag = document.createDocumentFragment();
     var glyphs = [];
 
+    // Cada letra va en su propio <span> para poder animarla, pero si se
+    // dejan sueltas el navegador puede cortar línea en medio de una
+    // palabra (pasaba en celular: "BUSCAS" se partía en "BUSC" / "AS").
+    // Por eso las letras de una misma palabra se agrupan en un wrapper
+    // con white-space:nowrap — el salto de línea solo puede pasar en los
+    // espacios reales entre wrappers, nunca adentro de una palabra.
     el.childNodes.forEach(function (node) {
       if (node.nodeType === Node.TEXT_NODE) {
-        node.textContent.split('').forEach(function (ch) {
-          var span = document.createElement('span');
-          span.className = 'glyph is-scrambled';
-          span.textContent = ch === ' ' ? ' ' : randomGlyph();
-          span.setAttribute('aria-hidden', 'true');
-          frag.appendChild(span);
-          if (ch !== ' ') glyphs.push({ span: span, real: ch });
+        node.textContent.split(/(\s+)/).forEach(function (segment) {
+          if (segment === '') return;
+
+          if (/^\s+$/.test(segment)) {
+            frag.appendChild(document.createTextNode(segment));
+            return;
+          }
+
+          var wordSpan = document.createElement('span');
+          wordSpan.style.whiteSpace = 'nowrap';
+          segment.split('').forEach(function (ch) {
+            var span = document.createElement('span');
+            span.className = 'glyph is-scrambled';
+            span.textContent = randomGlyph();
+            span.setAttribute('aria-hidden', 'true');
+            wordSpan.appendChild(span);
+            glyphs.push({ span: span, real: ch });
+          });
+          frag.appendChild(wordSpan);
         });
       } else if (node.nodeName === 'BR') {
         frag.appendChild(document.createElement('br'));

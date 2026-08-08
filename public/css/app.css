@@ -108,7 +108,9 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,10,11,0.92);backdrop-fi
 .mobile-search input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text-primary);font-size:14px;padding:0 14px;}
 
 .accordion-group{border-bottom:1px solid var(--border);}
-.accordion-head{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;color:var(--text-primary);font-size:14px;font-weight:500;padding:14px 4px;cursor:pointer;text-align:left;border-radius:8px;transition:background .15s,color .15s;}
+.accordion-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:none;color:var(--text-primary);font-size:14px;font-weight:500;padding:14px 4px;cursor:pointer;text-align:left;border-radius:8px;transition:background .15s,color .15s;}
+.accordion-head-label{display:flex;align-items:center;gap:10px;min-width:0;flex:1;}
+.accordion-head-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
 .accordion-head:active{background:var(--bg-elevated-2);}
 .accordion-head .mega-icon{color:var(--text-secondary);transition:color .15s;}
 .accordion-group.is-open .accordion-head{color:var(--gold);}
@@ -567,3 +569,9 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .pcb-picker-card .opt-name{font-size:12.5px;font-weight:600;margin-bottom:3px;line-height:1.3;}
 .pcb-picker-card .opt-price{font-family:var(--font-mono);font-size:12px;color:var(--gold);}
 .pcb-picker-card .opt-reason{font-size:10.5px;color:#ff8a8a;margin-top:5px;line-height:1.35;}
+
+@media (max-width:520px){
+  .picker-overlay{padding:12px;align-items:flex-end;}
+  .picker-box{padding:18px;max-height:85vh;border-radius:16px 16px 0 0;}
+  .pcb-picker-grid{grid-template-columns:repeat(2,1fr);}
+}
