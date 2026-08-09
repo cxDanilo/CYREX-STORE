@@ -97,7 +97,7 @@ class PageController extends Controller
             'slug' => [
                 'required', 'string', 'max:255', 'alpha_dash',
                 Rule::unique('pages', 'slug')->ignore($page?->id),
-                Rule::notIn(['admin', 'tienda', 'producto', 'carrito', 'buscar-sugerencias']),
+                Rule::notIn(['admin', 'tienda', 'producto', 'carrito', 'buscar-sugerencias', '404']),
             ],
             'template_id' => ['nullable', 'exists:templates,id'],
             'meta_title' => ['nullable', 'string', 'max:255'],
