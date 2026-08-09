@@ -202,7 +202,16 @@
       <button type="button" class="btn-cta"
               :class="$store.cart.has({{ $product->id }}, variant) && 'in-cart'"
               :disabled="!inStock"
-              @click="$store.cart.has({{ $product->id }}, variant) ? $store.cart.remove({{ $product->id }} + ':' + (variant ?? '')) : $store.cart.add({{ $product->id }}, variant)">
+              @click="
+                if ($store.cart.has({{ $product->id }}, variant)) {
+                  $store.cart.remove({{ $product->id }} + ':' + (variant ?? ''));
+                } else {
+                  await $store.cart.add({{ $product->id }}, variant);
+                  $el.classList.remove('btn-cta-added');
+                  void $el.offsetWidth;
+                  $el.classList.add('btn-cta-added');
+                }
+              ">
         <span x-text="!inStock ? 'Agotado' : ($store.cart.has({{ $product->id }}, variant) ? 'En el carrito ✓' : 'Agregar al carrito')">Agregar al carrito</span>
       </button>
 
