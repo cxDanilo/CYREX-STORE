@@ -25,13 +25,10 @@ class WarrantyContactPagesSeeder extends Seeder
 
     private function seedGarantia(): void
     {
-        $page = Page::where('slug', 'garantia')->first();
-
-        if (! $page) {
-            $this->command?->warn('No existe una página con slug "garantia" — se omite.');
-
-            return;
-        }
+        $page = Page::firstOrCreate(
+            ['slug' => 'garantia'],
+            ['title' => 'Garantía', 'status' => 'draft', 'show_in_footer' => true, 'footer_sort_order' => 10]
+        );
 
         $page->update([
             'title' => 'Condiciones de Garantía',
@@ -145,13 +142,10 @@ class WarrantyContactPagesSeeder extends Seeder
 
     private function seedContacto(): void
     {
-        $page = Page::where('slug', 'contacto')->first();
-
-        if (! $page) {
-            $this->command?->warn('No existe una página con slug "contacto" — se omite.');
-
-            return;
-        }
+        $page = Page::firstOrCreate(
+            ['slug' => 'contacto'],
+            ['title' => 'Contacto', 'status' => 'draft', 'show_in_footer' => true, 'footer_sort_order' => 20]
+        );
 
         $page->update([
             'title' => 'Contacto',
