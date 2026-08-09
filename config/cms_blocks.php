@@ -36,14 +36,16 @@ return [
         'view' => 'cms.blocks.hero-simple',
         'category' => 'Contenido',
         'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 10h10M7 14h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
-        'defaults' => ['eyebrow' => '', 'titulo' => '', 'titulo_destacado' => '', 'subtitulo' => '', 'cta_label' => '', 'cta_url' => '', 'tamano' => 'estandar'],
+        'defaults' => ['eyebrow' => '', 'titulo' => '', 'titulo_destacado' => '', 'subtitulo' => '', 'cta_label' => '', 'cta_url' => '', 'cta2_label' => '', 'cta2_url' => '', 'tamano' => 'estandar'],
         'fields' => [
             'eyebrow' => ['type' => 'text', 'label' => 'Texto pequeño superior (opcional)'],
             'titulo' => ['type' => 'textarea', 'label' => 'Título'],
             'titulo_destacado' => ['type' => 'text', 'label' => 'Palabras finales destacadas en dorado (opcional)'],
             'subtitulo' => ['type' => 'textarea', 'label' => 'Subtítulo'],
-            'cta_label' => ['type' => 'text', 'label' => 'Texto del botón'],
-            'cta_url' => ['type' => 'text', 'label' => 'Link del botón'],
+            'cta_label' => ['type' => 'text', 'label' => 'Texto del botón 1 (opcional)'],
+            'cta_url' => ['type' => 'text', 'label' => 'Link del botón 1'],
+            'cta2_label' => ['type' => 'text', 'label' => 'Texto del botón 2 (opcional)'],
+            'cta2_url' => ['type' => 'text', 'label' => 'Link del botón 2'],
             'tamano' => ['type' => 'select', 'label' => 'Tamaño', 'options' => [
                 ['id' => 'estandar', 'name' => 'Estándar'],
                 ['id' => 'grande', 'name' => 'Grande (portada)'],
@@ -222,6 +224,31 @@ return [
             'items' => ['type' => 'repeater', 'label' => 'Logos', 'fields' => [
                 'url' => ['type' => 'media', 'label' => 'Logo'],
                 'nombre' => ['type' => 'text', 'label' => 'Nombre de la marca'],
+            ]],
+        ],
+    ],
+
+    'sucursales' => [
+        'label' => 'Sucursales',
+        'view' => 'cms.blocks.sucursales',
+        'category' => 'Comercio',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-6.5 7-11.5A7 7 0 0 0 5 9.5C5 14.5 12 21 12 21z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="9.5" r="2.2" stroke="currentColor" stroke-width="1.5"/></svg>',
+        'defaults' => ['items' => []],
+        'fields' => [
+            'items' => ['type' => 'repeater', 'label' => 'Sucursales', 'fields' => [
+                'nombre' => ['type' => 'text', 'label' => 'Nombre (ej. "Sucursal Central")'],
+                'ciudad' => ['type' => 'text', 'label' => 'Ciudad'],
+                'direccion' => ['type' => 'text', 'label' => 'Dirección (para el mapa — opcional)'],
+                'proximamente' => ['type' => 'select', 'label' => '¿Todavía no está abierta?', 'options' => [
+                    ['id' => '', 'name' => 'No — ya está operando'],
+                    ['id' => 'si', 'name' => 'Sí — mostrar como "próximamente"'],
+                ]],
+                'mensaje_proximamente' => ['type' => 'text', 'label' => 'Mensaje de "próximamente" (opcional)'],
+                'asesores' => ['type' => 'repeater', 'label' => 'Asesores de esta sucursal', 'fields' => [
+                    'nombre' => ['type' => 'text', 'label' => 'Nombre'],
+                    'cargo' => ['type' => 'text', 'label' => 'Cargo / etiqueta (ej. "Asesor Antezana")'],
+                    'whatsapp' => ['type' => 'text', 'label' => 'WhatsApp (con código de país, ej. 59177947379 — si lo dejás vacío usa el WhatsApp general de la tienda)'],
+                ]],
             ]],
         ],
     ],

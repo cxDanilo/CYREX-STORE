@@ -159,19 +159,44 @@ class WarrantyContactPagesSeeder extends Seeder
 
         $blocks = [
             ['type' => 'hero_simple', 'data' => [
-                'eyebrow' => '',
-                'titulo' => 'Contáctanos',
+                'eyebrow' => 'Atención Cyrex Store',
+                'titulo' => 'Contáctanos fácil y rápido',
                 'titulo_destacado' => '',
-                'subtitulo' => '¿Dudas sobre un producto, un pedido o una garantía? Escribinos y te respondemos al toque.',
-                'cta_label' => '',
-                'cta_url' => '',
+                'subtitulo' => 'Elegí tu sucursal, hablá con un asesor y encontrá nuestra ubicación sin perder tiempo.',
+                'cta_label' => 'Ver sucursales',
+                'cta_url' => '#sucursales',
+                'cta2_label' => 'storecyrex@gmail.com',
+                'cta2_url' => 'mailto:storecyrex@gmail.com',
                 'tamano' => 'estandar',
             ]],
-            ['type' => 'cards', 'data' => [
+            ['type' => 'sucursales', 'data' => [
                 'items' => [
-                    ['titulo' => 'WhatsApp', 'texto' => '+591 77947379 — consultas generales y pedidos.'],
-                    ['titulo' => 'Asesor especializado', 'texto' => '+591 72768984 — armado de PC y recomendaciones técnicas.'],
-                    ['titulo' => 'Email', 'texto' => 'storecyrex@gmail.com'],
+                    [
+                        'nombre' => 'Sucursal Central', 'ciudad' => 'Cochabamba', 'direccion' => '', 'proximamente' => '',
+                        'asesores' => [
+                            ['nombre' => 'Jonatan', 'cargo' => 'Asesor Antezana', 'whatsapp' => ''],
+                            ['nombre' => 'Santiago', 'cargo' => 'Asesor Antezana', 'whatsapp' => ''],
+                        ],
+                    ],
+                    [
+                        'nombre' => 'Sucursal América', 'ciudad' => 'Cochabamba', 'direccion' => '', 'proximamente' => '',
+                        'asesores' => [
+                            ['nombre' => 'Miguel', 'cargo' => 'Asesor América', 'whatsapp' => ''],
+                            ['nombre' => 'Alan', 'cargo' => 'Asesor América', 'whatsapp' => ''],
+                        ],
+                    ],
+                    [
+                        'nombre' => 'Sucursal Santa Cruz', 'ciudad' => 'Santa Cruz', 'direccion' => '', 'proximamente' => '',
+                        'asesores' => [
+                            ['nombre' => 'Milena', 'cargo' => 'Sucursal Santa Cruz', 'whatsapp' => ''],
+                            ['nombre' => 'Aldair', 'cargo' => 'Sucursal Santa Cruz', 'whatsapp' => ''],
+                        ],
+                    ],
+                    [
+                        'nombre' => 'La Paz', 'ciudad' => '', 'direccion' => '', 'proximamente' => 'si',
+                        'mensaje_proximamente' => 'Una nueva sucursal está en camino. Si viste esto, ya sabés algo antes que todos.',
+                        'asesores' => [],
+                    ],
                 ],
             ]],
             ['type' => 'formulario', 'data' => [
