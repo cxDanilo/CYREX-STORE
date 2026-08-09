@@ -27,6 +27,7 @@
       <a href="{{ route('admin.categorias.index') }}" class="{{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">Categorías</a>
       <a href="{{ route('admin.historial.index') }}" class="{{ request()->routeIs('admin.historial.*') ? 'active' : '' }}">Historial de cambios</a>
       <a href="{{ route('admin.woocommerce.create') }}" class="{{ request()->routeIs('admin.woocommerce.*') ? 'active' : '' }}">Importar WooCommerce</a>
+      <a href="{{ route('admin.pc-builder-options.index') }}" class="{{ request()->routeIs('admin.pc-builder-options.*') ? 'active' : '' }}">Compatibilidad (Arma tu PC)</a>
 
       <div class="admin-nav-label">Contenido</div>
       <a href="{{ route('admin.paginas.index') }}" class="{{ request()->routeIs('admin.paginas.*') ? 'active' : '' }}">Páginas</a>

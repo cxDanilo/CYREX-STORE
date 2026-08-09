@@ -15,7 +15,7 @@
         categoryId: @js((string) old('category_id', $product->category_id ?? '')),
         categories: @js($categories->map(fn($c) => ['id' => (string) $c->id, 'name' => $c->name, 'componentType' => $c->component_type])->values()),
         get categoryName() { return (this.categories.find(c => c.id === this.categoryId) || {}).name || ''; },
-        componentFields: @js(config('pc_builder.fields')),
+        componentFields: @js(\App\Support\PcBuilderFields::resolved()),
         get componentType() { return (this.categories.find(c => c.id === this.categoryId) || {}).componentType || null; },
         get activeFields() { return this.componentType ? (this.componentFields[this.componentType] || {}) : {}; },
         compat: {{ Js::from((object) ($product->compat ?: [])) }}

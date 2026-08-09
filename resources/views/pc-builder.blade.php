@@ -21,7 +21,7 @@
         rate: {{ $rate }},
         types: @js($types),
         catalog: @js($catalog),
-        gpuTiers: @js(config('pc_builder.fields.gpu.tier.options', [])),
+        gpuTiers: @js(\App\Models\PcBuilderOption::optionsFor('gpu_tier')),
         stepHints: @js([
           'platform' => '¿Con qué plataforma querés armar? Esto define qué procesadores y placas madre te vamos a mostrar después.',
           'cpu' => 'El procesador es el cerebro de tu PC — te mostramos los de la plataforma que elegiste.',

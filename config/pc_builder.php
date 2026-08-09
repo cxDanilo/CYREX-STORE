@@ -2,23 +2,16 @@
 
 // Fuente única de verdad para "Arma tu PC": qué tipos de componente existen
 // y qué campos de compatibilidad tiene cada uno. La usan el formulario de
-// productos del admin (para saber qué inputs mostrar según la categoría) y,
-// más adelante, el motor de compatibilidad del armador público.
-
-$sockets = [
-    'AM4' => 'AM4',
-    'AM5' => 'AM5',
-    'LGA1700' => 'LGA1700',
-    'LGA1200' => 'LGA1200',
-];
-
-$radiatorSizes = [
-    '0' => 'No soporta / no aplica',
-    '120' => '120mm',
-    '240' => '240mm',
-    '280' => '280mm',
-    '360' => '360mm',
-];
+// productos del admin (para saber qué inputs mostrar según la categoría) y
+// el motor de compatibilidad del armador público.
+//
+// 'options' => 'dynamic:<grupo>' significa que la LISTA de valores no vive
+// acá sino en la tabla pc_builder_options (Admin → Compatibilidad) — así
+// se puede agregar un socket nuevo (ej. LGA1851 para Core Ultra) o un tipo
+// de RAM nuevo (DDR6) sin tocar código. App\Support\PcBuilderFields es
+// quien reemplaza ese string por las opciones reales antes de llegar a
+// cualquier vista. La estructura del campo (qué campos tiene cada tipo de
+// pieza, y si es select/number/checkboxes) sigue viviendo acá.
 
 return [
 
@@ -39,30 +32,30 @@ return [
     'fields' => [
         'cpu' => [
             'platform' => ['label' => 'Plataforma', 'type' => 'select', 'options' => ['AMD' => 'AMD', 'Intel' => 'Intel']],
-            'socket' => ['label' => 'Socket', 'type' => 'select', 'options' => $sockets],
+            'socket' => ['label' => 'Socket', 'type' => 'select', 'options' => 'dynamic:socket'],
             'tdp_w' => ['label' => 'TDP (watts)', 'type' => 'number'],
         ],
 
         'motherboard' => [
-            'socket' => ['label' => 'Socket', 'type' => 'select', 'options' => $sockets],
-            'ram_type' => ['label' => 'Tipo de RAM', 'type' => 'select', 'options' => ['DDR4' => 'DDR4', 'DDR5' => 'DDR5']],
-            'form_factor' => ['label' => 'Form factor', 'type' => 'select', 'options' => ['ATX' => 'ATX', 'mATX' => 'mATX', 'ITX' => 'ITX']],
+            'socket' => ['label' => 'Socket', 'type' => 'select', 'options' => 'dynamic:socket'],
+            'ram_type' => ['label' => 'Tipo de RAM', 'type' => 'select', 'options' => 'dynamic:ram_type'],
+            'form_factor' => ['label' => 'Form factor', 'type' => 'select', 'options' => 'dynamic:form_factor'],
             'max_ram_gb' => ['label' => 'RAM máxima soportada (GB)', 'type' => 'number'],
         ],
 
         'ram' => [
-            'type' => ['label' => 'Tipo', 'type' => 'select', 'options' => ['DDR4' => 'DDR4', 'DDR5' => 'DDR5']],
+            'type' => ['label' => 'Tipo', 'type' => 'select', 'options' => 'dynamic:ram_type'],
         ],
 
         'storage' => [
-            'tipo' => ['label' => 'Tipo', 'type' => 'select', 'options' => ['SSD NVMe' => 'SSD NVMe', 'SSD SATA' => 'SSD SATA', 'HDD' => 'HDD']],
+            'tipo' => ['label' => 'Tipo', 'type' => 'select', 'options' => 'dynamic:storage_type'],
             'capacity_gb' => ['label' => 'Capacidad (GB)', 'type' => 'number'],
         ],
 
         'case' => [
-            'form_factors' => ['label' => 'Placas que entran en el gabinete', 'type' => 'checkboxes', 'options' => ['ATX' => 'ATX', 'mATX' => 'mATX', 'ITX' => 'ITX']],
+            'form_factors' => ['label' => 'Placas que entran en el gabinete', 'type' => 'checkboxes', 'options' => 'dynamic:form_factor'],
             'max_gpu_length_mm' => ['label' => 'Largo máximo de tarjeta gráfica (mm)', 'type' => 'number'],
-            'max_radiator_mm' => ['label' => 'Radiador líquido máximo soportado', 'type' => 'select', 'options' => $radiatorSizes],
+            'max_radiator_mm' => ['label' => 'Radiador líquido máximo soportado', 'type' => 'select', 'options' => 'dynamic:radiator_size'],
         ],
 
         'gpu' => [
@@ -71,16 +64,12 @@ return [
             // Clasificación manual (no un número de FPS inventado) — el
             // admin la carga a criterio propio para cada tarjeta, y el
             // asistente público solo muestra la que ya cargaste.
-            'tier' => ['label' => 'Rendimiento aproximado', 'type' => 'select', 'options' => [
-                'entrada' => 'Gama de entrada — 1080p, ajustes bajos/medios',
-                'media' => 'Gama media — 1080p/1440p, ajustes altos',
-                'alta' => 'Gama alta — 1440p/4K, ajustes ultra',
-            ]],
+            'tier' => ['label' => 'Rendimiento aproximado', 'type' => 'select', 'options' => 'dynamic:gpu_tier'],
         ],
 
         'cooler' => [
-            'sockets' => ['label' => 'Sockets compatibles', 'type' => 'checkboxes', 'options' => $sockets],
-            'radiator_mm' => ['label' => 'Radiador (0 = enfriamiento por aire)', 'type' => 'select', 'options' => $radiatorSizes],
+            'sockets' => ['label' => 'Sockets compatibles', 'type' => 'checkboxes', 'options' => 'dynamic:socket'],
+            'radiator_mm' => ['label' => 'Radiador (0 = enfriamiento por aire)', 'type' => 'select', 'options' => 'dynamic:radiator_size'],
         ],
 
         'psu' => [

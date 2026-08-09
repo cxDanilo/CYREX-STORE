@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\ProductActivityLogController as AdminProductActiv
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\WooCommerceImportController as AdminWooCommerceImportController;
 use App\Http\Controllers\Admin\CacheController as AdminCacheController;
+use App\Http\Controllers\Admin\PcBuilderOptionController as AdminPcBuilderOptionController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductQuickEditController;
 use App\Http\Controllers\SitemapController;
@@ -51,6 +52,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('importar-woocommerce', [AdminWooCommerceImportController::class, 'create'])->name('woocommerce.create');
         Route::post('importar-woocommerce', [AdminWooCommerceImportController::class, 'store'])->name('woocommerce.store');
+
+        Route::get('compatibilidad', [AdminPcBuilderOptionController::class, 'index'])->name('pc-builder-options.index');
+        Route::post('compatibilidad', [AdminPcBuilderOptionController::class, 'store'])->name('pc-builder-options.store');
+        Route::put('compatibilidad/{pcBuilderOption}', [AdminPcBuilderOptionController::class, 'update'])->name('pc-builder-options.update');
+        Route::delete('compatibilidad/{pcBuilderOption}', [AdminPcBuilderOptionController::class, 'destroy'])->name('pc-builder-options.destroy');
 
         Route::get('productos', [AdminProductController::class, 'index'])->name('productos.index');
         Route::get('productos/nuevo', [AdminProductController::class, 'create'])->name('productos.create');
