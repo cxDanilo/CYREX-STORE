@@ -12,7 +12,7 @@
   <div class="cat-eyebrow">Arma tu pc</div>
   <h1>Armá tu equipo pieza por pieza</h1>
   <p style="color:var(--text-secondary);font-size:14.5px;max-width:640px;margin-top:10px;line-height:1.6;">
-    Elegí cada pieza en el orden que quieras. Si algo no es compatible con lo que ya elegiste, te lo decimos antes de que lo agregues al carrito.
+    Te vamos guiando paso a paso — elegí una pieza a la vez y te mostramos solo lo que es compatible con lo que ya elegiste.
   </p>
 </div>
 
@@ -21,24 +21,82 @@
         rate: {{ $rate }},
         types: @js($types),
         catalog: @js($catalog),
+        gpuTiers: @js(config('pc_builder.fields.gpu.tier.options', [])),
+        stepHints: @js([
+          'platform' => '¿Con qué plataforma querés armar? Esto define qué procesadores y placas madre te vamos a mostrar después.',
+          'cpu' => 'El procesador es el cerebro de tu PC — te mostramos los de la plataforma que elegiste.',
+          'motherboard' => 'La placa madre conecta todo. Ya filtramos las que no sirven con el procesador elegido.',
+          'ram' => 'La memoria RAM define cuántas cosas podés tener abiertas a la vez sin que se ponga lento.',
+          'gpu' => 'La tarjeta gráfica es la que más impacta en juegos y edición de video.',
+          'psu' => 'La fuente de poder alimenta todo el equipo — te avisamos si la elegida se queda corta.',
+          'case' => 'El gabinete tiene que tener espacio para tu placa madre, tu tarjeta gráfica y tu enfriamiento.',
+          'cooler' => 'El enfriamiento evita que el procesador se recaliente bajo uso exigente.',
+        ]),
+
+        platform: null,
         selected: {},
-        openPicker: null,
+        step: 0,
+        furthestStep: 0,
+
+        get stepTypes() { return Object.keys(this.types); },
+
+        get stepList() {
+          return [
+            { key: 'platform', label: 'Plataforma' },
+            ...this.stepTypes.map(t => ({ key: t, label: this.types[t] })),
+            { key: 'review', label: 'Listo' },
+          ];
+        },
+
+        get currentType() {
+          return this.step >= 1 && this.step <= this.stepTypes.length ? this.stepTypes[this.step - 1] : null;
+        },
+
+        get isReviewStep() { return this.step > this.stepTypes.length; },
 
         item(type) { return this.selected[type] || null; },
-
-        priceOf(product) { return product.price_usd; },
 
         totalUsd() {
           return Object.values(this.selected).reduce((sum, p) => sum + (p ? p.price_usd : 0), 0);
         },
 
+        get gpuTierLabel() {
+          const gpuTierKey = this.selected.gpu?.compat?.tier;
+          return gpuTierKey ? (this.gpuTiers[gpuTierKey] || null) : null;
+        },
+
         pick(type, product) {
           this.selected[type] = product;
-          this.openPicker = null;
+          this.next();
         },
 
         remove(type) {
           delete this.selected[type];
+        },
+
+        get canProceed() {
+          if (this.step === 0) return !!this.platform;
+          if (this.currentType) return !!this.selected[this.currentType];
+          return true;
+        },
+
+        next() {
+          if (!this.canProceed) return;
+          if (this.step < this.stepTypes.length + 1) this.step++;
+          this.furthestStep = Math.max(this.furthestStep, this.step);
+        },
+
+        back() {
+          if (this.step > 0) this.step--;
+        },
+
+        goToStep(i) {
+          if (i <= this.furthestStep) this.step = i;
+        },
+
+        choosePlatform(p) {
+          this.platform = p;
+          this.next();
         },
 
         // Compatibilidad tolerante a datos faltantes: si a cualquiera de
@@ -105,12 +163,19 @@
 
         // Se calcula una sola vez por producto acá (en vez de que :class,
         // :disabled y el x-if de abajo llamen incompatibleWith() cada uno
-        // por su cuenta) — así el picker solo tiene un getter reactivo del
-        // que depende todo, en vez de tres llamadas a función separadas
-        // sobre el mismo dato.
-        get pickerOptions() {
-          return (this.catalog[this.openPicker] || []).map(product => {
-            const errs = this.incompatibleWith(this.openPicker, product);
+        // por su cuenta) — así el paso solo tiene un getter reactivo del
+        // que depende todo, en vez de varias llamadas a función separadas
+        // sobre el mismo dato. Para 'cpu' además filtra por la plataforma
+        // elegida en el paso 0.
+        get currentOptions() {
+          const type = this.currentType;
+          if (!type) return [];
+          let list = this.catalog[type] || [];
+          if (type === 'cpu' && this.platform) {
+            list = list.filter(p => (p.compat?.platform || null) === this.platform);
+          }
+          return list.map(product => {
+            const errs = this.incompatibleWith(type, product);
             return { product, blocked: errs.length > 0, reason: errs[0]?.msg || null };
           });
         },
@@ -122,7 +187,16 @@
         }
      }">
 
-  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;" x-show="Object.keys(selected).length">
+  <div class="pcb-stepper">
+    <template x-for="(s, i) in stepList" :key="s.key">
+      <button type="button" class="pcb-step-dot" :class="{done: i < furthestStep, active: i === step, upcoming: i > furthestStep}" :disabled="i > furthestStep" @click="goToStep(i)">
+        <span class="pcb-step-dot-circle" x-text="i < furthestStep && i !== step ? '✓' : (i + 1)"></span>
+        <span class="pcb-step-dot-label" x-text="s.label"></span>
+      </button>
+    </template>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:6px;margin:20px 0;" x-show="Object.keys(selected).length">
     <template x-for="issue in currentIssues" :key="issue.msg">
       <div class="pcb-issue-pill" :class="issue.level"><span x-text="issue.level === 'err' ? '✕' : '⚠'"></span> <span x-text="issue.msg"></span></div>
     </template>
@@ -130,21 +204,84 @@
   </div>
 
   <div class="pcb-layout">
-    <div class="pcb-slots-grid">
-      @foreach($types as $typeKey => $typeLabel)
-        <div class="pcb-slot" @click="openPicker = '{{ $typeKey }}'">
-          <div class="pcb-slot-media">
-            <img :src="item('{{ $typeKey }}')?.image_url" x-show="item('{{ $typeKey }}')?.image_url" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">
-            <span x-show="!item('{{ $typeKey }}')?.image_url" style="font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">{{ mb_substr($typeLabel, 0, 1) }}</span>
+    <div class="pcb-wizard-panel">
+
+      <template x-if="step === 0">
+        <div>
+          <div class="pcb-step-hint">
+            <svg class="pcb-step-hint-arrow" width="14" height="18" viewBox="0 0 14 18" fill="none"><path d="M7 1v14M1 9l6 7 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span x-text="stepHints.platform"></span>
           </div>
-          <div class="pcb-slot-body">
-            <div class="pcb-slot-label">{{ $typeLabel }}</div>
-            <div class="pcb-slot-value" x-text="item('{{ $typeKey }}')?.name || '+ Elegir'" :class="!item('{{ $typeKey }}') && 'empty'"></div>
-            <div class="pcb-slot-sub" x-show="item('{{ $typeKey }}')" x-text="item('{{ $typeKey }}') ? '$' + item('{{ $typeKey }}').price_usd.toFixed(2) : ''"></div>
+          <div class="pcb-platform-grid">
+            <button type="button" class="pcb-platform-card" @click="choosePlatform('AMD')">
+              <span class="pcb-platform-name">AMD</span>
+              <span class="pcb-platform-sub">Ryzen y compatibles</span>
+            </button>
+            <button type="button" class="pcb-platform-card" @click="choosePlatform('Intel')">
+              <span class="pcb-platform-name">Intel</span>
+              <span class="pcb-platform-sub">Core y compatibles</span>
+            </button>
           </div>
-          <button type="button" class="pcb-slot-remove" x-show="item('{{ $typeKey }}')" @click.stop="remove('{{ $typeKey }}')" aria-label="Quitar">&times;</button>
         </div>
-      @endforeach
+      </template>
+
+      <template x-for="type in stepTypes" :key="type">
+        <template x-if="currentType === type">
+          <div>
+            <div class="pcb-step-hint">
+              <svg class="pcb-step-hint-arrow" width="14" height="18" viewBox="0 0 14 18" fill="none" x-show="step <= 1"><path d="M7 1v14M1 9l6 7 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span x-text="stepHints[type]"></span>
+            </div>
+            <h3 style="margin-bottom:14px;">Elegí: <span x-text="types[type]"></span></h3>
+            <template x-if="!currentOptions.length">
+              <p class="form-hint">
+                <template x-if="type === 'cpu' && platform">
+                  <span>Todavía no hay procesadores <span x-text="platform"></span> cargados.</span>
+                </template>
+                <template x-if="!(type === 'cpu' && platform)">
+                  <span>Todavía no hay productos cargados en esta categoría.</span>
+                </template>
+              </p>
+            </template>
+            <div class="pcb-picker-grid">
+              <template x-for="opt in currentOptions" :key="opt.product.id">
+                <button type="button" class="pcb-picker-card"
+                        :class="[opt.blocked && 'disabled', item(type)?.id === opt.product.id && 'selected']"
+                        :disabled="opt.blocked"
+                        @click="!opt.blocked && pick(type, opt.product)">
+                  <div class="pcb-picker-card-media">
+                    <img :src="opt.product.image_url" x-show="opt.product.image_url" style="width:100%;height:100%;object-fit:cover;">
+                  </div>
+                  <div class="opt-name" x-text="opt.product.name"></div>
+                  <div class="opt-price" x-text="'$' + opt.product.price_usd.toFixed(2)"></div>
+                  <template x-if="type === 'gpu' && gpuTiers[opt.product.compat?.tier]">
+                    <div class="opt-tier" x-text="gpuTiers[opt.product.compat?.tier]"></div>
+                  </template>
+                  <template x-if="opt.blocked">
+                    <div class="opt-reason" x-text="opt.reason"></div>
+                  </template>
+                </button>
+              </template>
+            </div>
+          </div>
+        </template>
+      </template>
+
+      <template x-if="isReviewStep">
+        <div class="pcb-review">
+          <div class="pcb-review-check">✓</div>
+          <h3>¡Listo! Este es tu build</h3>
+          <p class="form-hint">Revisá el resumen acá al lado — podés volver a cualquier paso de arriba para cambiar una pieza.</p>
+          <template x-if="gpuTierLabel">
+            <div class="pcb-tier-badge">🎮 Rendimiento estimado: <strong x-text="gpuTierLabel"></strong></div>
+          </template>
+        </div>
+      </template>
+
+      <div class="pcb-step-nav">
+        <button type="button" class="btn" @click="back()" x-show="step > 0">← Atrás</button>
+        <button type="button" class="btn btn-primary" @click="next()" x-show="!isReviewStep && currentType" :disabled="!canProceed" style="margin-left:auto;">Siguiente →</button>
+      </div>
     </div>
 
     <div class="pcb-summary-panel">
@@ -167,37 +304,6 @@
          target="_blank" rel="noopener" class="btn-cta-whatsapp" style="width:100%;margin-top:10px;text-decoration:none;" x-show="Object.keys(selected).length">
         Consultar por WhatsApp
       </a>
-    </div>
-  </div>
-
-  <div class="picker-overlay" x-show="openPicker" x-cloak @click.self="openPicker = null">
-    <div class="picker-box">
-      <button class="picker-close" @click="openPicker = null">&times;</button>
-      <template x-if="openPicker">
-        <div>
-          <h3 x-text="'Elegir ' + types[openPicker]"></h3>
-          <template x-if="!pickerOptions.length">
-            <p class="form-hint">Todavía no hay productos cargados en esta categoría.</p>
-          </template>
-          <div class="pcb-picker-grid">
-            <template x-for="opt in pickerOptions" :key="opt.product.id">
-              <button type="button" class="pcb-picker-card"
-                      :class="opt.blocked && 'disabled'"
-                      :disabled="opt.blocked"
-                      @click="!opt.blocked && pick(openPicker, opt.product)">
-                <div class="pcb-picker-card-media">
-                  <img :src="opt.product.image_url" x-show="opt.product.image_url" style="width:100%;height:100%;object-fit:cover;">
-                </div>
-                <div class="opt-name" x-text="opt.product.name"></div>
-                <div class="opt-price" x-text="'$' + opt.product.price_usd.toFixed(2)"></div>
-                <template x-if="opt.blocked">
-                  <div class="opt-reason" x-text="opt.reason"></div>
-                </template>
-              </button>
-            </template>
-          </div>
-        </div>
-      </template>
     </div>
   </div>
 

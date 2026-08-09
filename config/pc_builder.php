@@ -22,14 +22,17 @@ $radiatorSizes = [
 
 return [
 
+    // Orden = orden de los pasos del asistente "Arma tu PC" en el sitio
+    // público (además de cómo se listan en el admin) — pensado como una
+    // secuencia natural de armado, no alfabético.
     'component_types' => [
         'cpu' => 'Procesador',
         'motherboard' => 'Placa madre',
         'ram' => 'Memoria RAM',
-        'case' => 'Gabinete',
         'gpu' => 'Tarjeta gráfica',
-        'cooler' => 'Enfriamiento',
         'psu' => 'Fuente de poder',
+        'case' => 'Gabinete',
+        'cooler' => 'Enfriamiento',
     ],
 
     'fields' => [
@@ -59,6 +62,14 @@ return [
         'gpu' => [
             'length_mm' => ['label' => 'Largo de la tarjeta (mm)', 'type' => 'number'],
             'power_draw_w' => ['label' => 'Consumo estimado (watts)', 'type' => 'number'],
+            // Clasificación manual (no un número de FPS inventado) — el
+            // admin la carga a criterio propio para cada tarjeta, y el
+            // asistente público solo muestra la que ya cargaste.
+            'tier' => ['label' => 'Rendimiento aproximado', 'type' => 'select', 'options' => [
+                'entrada' => 'Gama de entrada — 1080p, ajustes bajos/medios',
+                'media' => 'Gama media — 1080p/1440p, ajustes altos',
+                'alta' => 'Gama alta — 1440p/4K, ajustes ultra',
+            ]],
         ],
 
         'cooler' => [
