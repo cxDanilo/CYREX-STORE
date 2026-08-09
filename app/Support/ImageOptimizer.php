@@ -82,13 +82,23 @@ class ImageOptimizer
 
     private static function load(string $path, string $mime)
     {
-        return match ($mime) {
+        $image = match ($mime) {
             'image/jpeg' => @imagecreatefromjpeg($path),
             'image/png' => @imagecreatefrompng($path),
             'image/gif' => @imagecreatefromgif($path),
             'image/webp' => @imagecreatefromwebp($path),
             default => null,
         };
+
+        // Sin esto, re-guardar un PNG/WebP/GIF con transparencia (vía
+        // save(), sin pasar por resize() que sí las seteaba) pierde el
+        // canal alfa y el fondo transparente se vuelve negro sólido.
+        if ($image && in_array($mime, ['image/png', 'image/gif', 'image/webp'], true)) {
+            imagealphablending($image, false);
+            imagesavealpha($image, true);
+        }
+
+        return $image;
     }
 
     private static function resize($image, int $maxDimension)
