@@ -13,6 +13,7 @@
       'cta_url' => route('home'),
       'cta2_label' => 'Ver tienda',
       'cta2_url' => route('shop'),
+      'personaje_url' => '',
   ], $block404?->data ?? []);
 @endphp
 
@@ -21,7 +22,7 @@
 @section('content')
 
 <div class="wrap error-404">
-  <img src="{{ asset('favicon-512.png') }}" alt="" class="error-404-mascot">
+  <img src="{{ $d404['personaje_url'] ?: asset('favicon-512.png') }}" alt="" class="error-404-mascot">
   @if(!empty($d404['eyebrow']))<div class="cat-eyebrow">{{ $d404['eyebrow'] }}</div>@endif
   <h1>{{ $d404['titulo'] }}</h1>
   <p>{{ $d404['subtitulo'] }}</p>
