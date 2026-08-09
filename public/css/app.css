@@ -266,7 +266,6 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .btn-cta:disabled:hover{background:var(--bg-elevated-2);}
 
 .stock-pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:12.5px;font-weight:600;padding:6px 14px;border-radius:100px;margin-bottom:16px;}
-.stock-pill.in-stock{background:rgba(62,207,110,.1);color:var(--green);border:1px solid rgba(62,207,110,.25);}
 .stock-pill.out-of-stock{background:rgba(226,75,74,.1);color:var(--red);border:1px solid rgba(226,75,74,.25);}
 
 .btn-cta-row{display:flex;gap:10px;margin-bottom:24px;}

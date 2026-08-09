@@ -42,6 +42,7 @@ class ProductController extends Controller
         $data['compat'] = $this->compatFromRequest($request, Category::find($data['category_id']));
         $variants = $this->variantsFromRequest($request);
         $data['has_variants'] = count($variants) > 0;
+        $data['sold_out_at'] = $data['is_sold_out'] ? now() : null;
 
         if ($request->hasFile('image')) {
             $data['image'] = $this->storeImage($request);
@@ -76,6 +77,17 @@ class ProductController extends Controller
         // pedir getOriginal() DESPUÉS de update() ya devuelve el valor
         // nuevo — hay que guardarse el snapshot de antes a mano.
         $before = $product->getAttributes();
+
+        // sold_out_at solo se toca en la transición: se fija la primera
+        // vez que se marca agotado (para poder contar los 7 días desde
+        // ahí) y se limpia apenas se destilda — si ya estaba marcado y
+        // se vuelve a guardar sin cambiar esto, la fecha original no se
+        // pisa.
+        if ($data['is_sold_out'] && ! $product->is_sold_out) {
+            $data['sold_out_at'] = now();
+        } elseif (! $data['is_sold_out']) {
+            $data['sold_out_at'] = null;
+        }
 
         if ($request->hasFile('image')) {
             $this->deleteImage($product);
@@ -133,6 +145,7 @@ class ProductController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
+        $data['is_sold_out'] = $request->boolean('is_sold_out');
         unset($data['image']);
 
         return $data;

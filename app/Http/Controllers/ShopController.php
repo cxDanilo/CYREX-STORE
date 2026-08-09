@@ -73,6 +73,13 @@ class ShopController extends Controller
         $rate = ExchangeRate::current();
         $product = Product::where('slug', $slug)->with(['variants', 'category'])->firstOrFail();
 
+        // Un producto "privado" no debe ser visible por nadie del
+        // público general aunque tenga el link directo — solo un admin
+        // logueado puede entrar a previsualizarlo antes de publicarlo.
+        if ($product->status !== 'active' && ! (auth()->check() && auth()->user()->isAdmin())) {
+            abort(404);
+        }
+
         $related = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('status', 'active')

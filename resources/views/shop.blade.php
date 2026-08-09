@@ -25,17 +25,12 @@
 
     <div class="product-grid">
       @forelse($products as $product)
-        @php
-          $isOutOfStock = $product->has_variants
-              ? $product->variants->every(fn ($v) => $v->stock <= 0)
-              : $product->stock <= 0;
-        @endphp
         <a class="card" href="{{ route('product.show', $product->slug) }}" style="display:block;"
            x-data="{
              showVariants: false,
              hasVariants: {{ $product->has_variants ? 'true' : 'false' }},
-             variants: {{ $product->variants->map(fn ($v) => ['id' => $v->id, 'name' => $v->variant_value, 'inStock' => $v->stock > 0])->toJson() }},
-             inStock: {{ $isOutOfStock ? 'false' : 'true' }},
+             variants: {{ $product->variants->map(fn ($v) => ['id' => $v->id, 'name' => $v->variant_value])->toJson() }},
+             inStock: {{ $product->is_sold_out ? 'false' : 'true' }},
              quickAdd() {
                if (!this.inStock) return;
                if (this.hasVariants) { this.showVariants = !this.showVariants; }
@@ -45,9 +40,9 @@
            @click.outside="showVariants = false">
           <div class="card-media">
             @if($product->image_url)
-              <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy">
+              <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy" style="{{ $product->is_sold_out ? 'filter:grayscale(1);' : '' }}">
             @endif
-            @if($isOutOfStock)
+            @if($product->is_sold_out)
               <span class="card-badge-agotado">Agotado</span>
             @endif
             <button type="button" class="card-quick-add" :disabled="!inStock" @click.stop.prevent="quickAdd()" aria-label="Agregar {{ $product->name }} al carrito">
@@ -59,7 +54,7 @@
                 <div class="card-variant-picker-title">Elegí una opción</div>
                 <div class="card-variant-picker-options">
                   <template x-for="v in variants" :key="v.id">
-                    <button type="button" class="card-variant-chip" :disabled="!v.inStock" :class="!v.inStock && 'out-of-stock'" @click.stop.prevent="v.inStock && ($store.cart.add({{ $product->id }}, v.id), showVariants = false)" x-text="v.name"></button>
+                    <button type="button" class="card-variant-chip" @click.stop.prevent="$store.cart.add({{ $product->id }}, v.id); showVariants = false" x-text="v.name"></button>
                   </template>
                 </div>
               </div>

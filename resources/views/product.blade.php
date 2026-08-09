@@ -28,13 +28,8 @@
         toggled: false,
         rate: {{ $rate }},
         basePrice: {{ $product->currency === 'USD' ? $product->price : $product->price / $rate }},
-        variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'name' => $v->variant_value, 'inStock' => $v->stock > 0])->toJson() }},
-        productInStock: {{ $product->stock > 0 ? 'true' : 'false' }},
-        get inStock() {
-          if (!this.variants.length) return this.productInStock;
-          const v = this.variants.find(v => v.id === this.variant);
-          return v ? v.inStock : false;
-        },
+        variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'name' => $v->variant_value])->toJson() }},
+        inStock: {{ $product->is_sold_out ? 'false' : 'true' }},
         whatsappHref() {
           const variantObj = this.variants.find(v => v.id === this.variant);
           const variantSuffix = variantObj ? ' (' + variantObj.name + ')' : '';
@@ -117,7 +112,8 @@
      }">
   <div class="gallery">
     <div class="gallery-main">
-      <img src="{{ $product->image_url }}" :src="editImagePreview || editImageUrl" x-show="editImagePreview || editImageUrl" alt="{{ $product->name }}" style="width:100%;height:100%;object-fit:cover;border-radius:20px;">
+      <img src="{{ $product->image_url }}" :src="editImagePreview || editImageUrl" x-show="editImagePreview || editImageUrl" alt="{{ $product->name }}"
+           style="width:100%;height:100%;object-fit:cover;border-radius:20px;{{ $product->is_sold_out ? 'filter:grayscale(1);' : '' }}">
       <template x-if="isAdmin && editing">
         <label class="admin-edit-image-overlay">
           <span>Cambiar imagen</span>
@@ -142,8 +138,8 @@
       <div class="variant-options">
         @foreach($product->variants as $v)
           <div class="variant-swatch"
-               :class="{ selected: variant === {{ $v->id }}, 'out-of-stock': !{{ $v->stock > 0 ? 'true' : 'false' }} }"
-               @click="{{ $v->stock > 0 ? 'true' : 'false' }} && (variant = {{ $v->id }})">
+               :class="{ selected: variant === {{ $v->id }} }"
+               @click="variant = {{ $v->id }}">
             {{ $v->variant_value }}
           </div>
         @endforeach
@@ -173,7 +169,7 @@
       @endif
     </div>
 
-    <div class="stock-pill" x-show="!editing" x-cloak :class="inStock ? 'in-stock' : 'out-of-stock'" x-text="inStock ? '✓ Disponible' : '✕ Agotado'"></div>
+    <div class="stock-pill out-of-stock" x-show="!editing && !inStock" x-cloak>✕ Agotado</div>
 
     <div class="btn-cta-row">
       <button type="button" class="btn-cta"
@@ -219,17 +215,12 @@
   <h2>También te puede interesar</h2>
   <div class="product-grid">
     @foreach($related as $r)
-      @php
-        $rOutOfStock = $r->has_variants
-            ? $r->variants->every(fn ($v) => $v->stock <= 0)
-            : $r->stock <= 0;
-      @endphp
       <a class="card" href="{{ route('product.show', $r->slug) }}" style="display:block;">
         <div class="card-media">
           @if($r->image_url)
-            <img src="{{ $r->image_url }}" alt="{{ $r->name }}" loading="lazy">
+            <img src="{{ $r->image_url }}" alt="{{ $r->name }}" loading="lazy" style="{{ $r->is_sold_out ? 'filter:grayscale(1);' : '' }}">
           @endif
-          @if($rOutOfStock)
+          @if($r->is_sold_out)
             <span class="card-badge-agotado">Agotado</span>
           @endif
         </div>

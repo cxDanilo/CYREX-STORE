@@ -120,6 +120,19 @@
           <option value="inactive" {{ old('status', $product->status) === 'inactive' ? 'selected' : '' }}>Privado</option>
         </select>
       </div>
+
+      <div class="form-group">
+        <label style="display:flex;align-items:center;gap:8px;">
+          <input type="checkbox" name="is_sold_out" value="1" {{ old('is_sold_out', $product->is_sold_out ?? false) ? 'checked' : '' }}>
+          Marcar como agotado
+        </label>
+        <div class="form-hint">
+          Independiente del número de Stock — el producto se ve "Agotado" en el sitio (imagen en blanco y negro, no se puede agregar al carrito) y a los 7 días de marcarlo se pone en Privado solo.
+          @if($product->exists && $product->is_sold_out && $product->sold_out_at)
+            <br>Agotado desde el {{ $product->sold_out_at->format('d/m/Y') }} — pasa a Privado el {{ $product->sold_out_at->copy()->addDays(7)->format('d/m/Y') }} si sigue así.
+          @endif
+        </div>
+      </div>
     </div>
 
     <div class="form-section">

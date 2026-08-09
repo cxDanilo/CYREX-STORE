@@ -14,12 +14,15 @@ class Product extends Model
     protected $fillable = [
         'category_id', 'name', 'slug', 'description', 'price', 'currency',
         'sku', 'stock', 'has_variants', 'status', 'specs', 'image', 'compat',
+        'is_sold_out', 'sold_out_at',
     ];
 
     protected $casts = [
         'specs' => 'array',
         'compat' => 'array',
         'has_variants' => 'boolean',
+        'is_sold_out' => 'boolean',
+        'sold_out_at' => 'datetime',
         'price' => 'decimal:2',
     ];
 
