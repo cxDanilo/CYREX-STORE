@@ -15,6 +15,33 @@
       : '≈ Bs '.number_format($basePriceUsd * $rate, 2);
   $whatsappNumber = \App\Models\Setting::get('whatsapp_number', '59177947379');
   $productUrl = route('product.show', $product->slug);
+
+  // Para piezas de PC, los datos de "Compatibilidad" (socket, tipo de
+  // RAM, etc.) ya se cargan una vez para que los use el armador — en vez
+  // de pedirle al admin que los vuelva a escribir a mano en
+  // "Especificaciones técnicas", se muestran acá directo, traducidos a
+  // su label legible (y con las opciones de listas dinámicas ya
+  // resueltas: Admin → Compatibilidad).
+  $compatDisplay = [];
+  if ($product->component_type && $product->compat) {
+      $fieldsDef = \App\Support\PcBuilderFields::resolved()[$product->component_type] ?? [];
+      foreach ($fieldsDef as $key => $field) {
+          $value = $product->compat[$key] ?? null;
+          if ($value === null || $value === '') {
+              continue;
+          }
+          if ($field['type'] === 'checkboxes') {
+              $compatDisplay[$field['label']] = collect((array) $value)
+                  ->map(fn ($v) => $field['options'][$v] ?? $v)
+                  ->implode(', ');
+          } elseif ($field['type'] === 'select') {
+              $compatDisplay[$field['label']] = $field['options'][$value] ?? $value;
+          } else {
+              $compatDisplay[$field['label']] = $value;
+          }
+      }
+  }
+  $displaySpecs = $compatDisplay + ($product->specs ?? []);
 @endphp
 
 <div class="wrap breadcrumb">
@@ -200,9 +227,9 @@
       </div>
     </template>
 
-    @if($product->specs)
+    @if($displaySpecs)
       <table class="spec-table">
-        @foreach($product->specs as $key => $value)
+        @foreach($displaySpecs as $key => $value)
           <tr><td>{{ $key }}</td><td>{{ $value }}</td></tr>
         @endforeach
       </table>
