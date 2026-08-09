@@ -3,7 +3,7 @@
   <div class="cms-carrusel-track">
     @foreach($items as $idx => $item)
       <div class="cms-carrusel-slide" x-show="i === {{ $idx }}" x-transition.opacity.duration.300ms>
-        <img src="{{ $item['url'] ?? '' }}" alt="">
+        <img src="{{ $item['url'] ?? '' }}" alt="" loading="lazy">
         @if(!empty($item['texto']))
           <div class="cms-carrusel-caption">{{ $item['texto'] }}</div>
         @endif

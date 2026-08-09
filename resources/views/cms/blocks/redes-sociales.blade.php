@@ -14,7 +14,7 @@
           <a href="{{ $item['url'] ?? '#' }}" target="_blank" rel="noopener" class="cms-social-card">
             <div class="cms-social-media">
               @if(!empty($item['imagen']))
-                <img src="{{ $item['imagen'] }}" alt="">
+                <img src="{{ $item['imagen'] }}" alt="" loading="lazy">
               @endif
               <span class="cms-social-badge">
                 @include('partials.social-icon', ['platform' => $item['plataforma'] ?? 'instagram'])

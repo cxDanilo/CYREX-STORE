@@ -213,7 +213,7 @@
       <a class="card" href="{{ route('product.show', $r->slug) }}" style="display:block;">
         <div class="card-media">
           @if($r->image_url)
-            <img src="{{ $r->image_url }}" alt="{{ $r->name }}">
+            <img src="{{ $r->image_url }}" alt="{{ $r->name }}" loading="lazy">
           @endif
         </div>
         <div class="card-body">

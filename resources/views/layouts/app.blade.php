@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
+@include('partials.favicon')
 @if(!empty($ga4MeasurementId))
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ $ga4MeasurementId }}"></script>
 <script>
@@ -50,7 +51,7 @@
   <div class="wrap">
     <div class="footer-grid">
       <div class="footer-brand">
-        <img src="{{ $logoUrl }}" alt="Cyrex Store" class="footer-logo">
+        <img src="{{ $logoUrl }}" alt="Cyrex Store" class="footer-logo" loading="lazy">
         <p class="footer-tagline">{{ $footerTagline }}</p>
         <a href="https://wa.me/{{ $whatsappNumber }}" target="_blank" class="footer-whatsapp-btn">
           @include('partials.whatsapp-icon')

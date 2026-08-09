@@ -575,3 +575,12 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
   .picker-box{padding:18px;max-height:85vh;border-radius:16px 16px 0 0;}
   .pcb-picker-grid{grid-template-columns:repeat(2,1fr);}
 }
+
+/* PAGINA 404 */
+.error-404{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 20px;}
+.error-404-mascot{width:120px;height:120px;margin-bottom:20px;filter:drop-shadow(0 0 30px rgba(255,217,0,.25));animation:error-404-float 3.5s ease-in-out infinite;}
+.error-404 h1{font-size:clamp(26px,4vw,40px);margin:8px 0 14px;max-width:560px;}
+.error-404 p{color:var(--text-secondary);font-size:15px;max-width:460px;line-height:1.6;margin-bottom:28px;}
+.error-404-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+@keyframes error-404-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+.motion-reduced .error-404-mascot{animation:none;}

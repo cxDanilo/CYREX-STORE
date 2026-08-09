@@ -21,7 +21,9 @@ use App\Http\Controllers\Admin\WooCommerceImportController as AdminWooCommerceIm
 use App\Http\Controllers\Admin\CacheController as AdminCacheController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductQuickEditController;
+use App\Http\Controllers\SitemapController;
 
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/arma-tu-pc', [App\Http\Controllers\PcBuilderController::class, 'index'])->name('pc-builder');
 Route::get('/tienda', [ShopController::class, 'index'])->name('shop');
