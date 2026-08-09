@@ -77,6 +77,9 @@
         editDescription: {{ Js::from($product->description ?? '') }},
         editImageUrl: {{ Js::from($product->image_url) }},
         editImagePreview: null,
+        galleryImages: {{ Js::from($product->gallery_urls) }},
+        galleryActive: null,
+        get mainImage() { return this.editImagePreview || this.galleryActive || this.editImageUrl || this.galleryImages[0] || null; },
         originalName: {{ Js::from($product->name) }},
         originalPrice: {{ (float) $product->price }},
         originalDescription: {{ Js::from($product->description ?? '') }},
@@ -139,13 +142,20 @@
      }">
   <div class="gallery">
     <div class="gallery-main">
-      <img src="{{ $product->image_url }}" :src="editImagePreview || editImageUrl" x-show="editImagePreview || editImageUrl" alt="{{ $product->name }}"
+      <img src="{{ $product->image_url }}" :src="mainImage" x-show="mainImage" alt="{{ $product->name }}"
            style="width:100%;height:100%;object-fit:cover;border-radius:20px;{{ $product->is_sold_out ? 'filter:grayscale(1);' : '' }}">
       <template x-if="isAdmin && editing">
         <label class="admin-edit-image-overlay">
           <span>Cambiar imagen</span>
           <input type="file" x-ref="quickEditImage" accept="image/png,image/jpeg,image/webp" @change="onEditImagePicked($event)" style="display:none;">
         </label>
+      </template>
+    </div>
+    <div class="gallery-thumbs" x-show="galleryImages.length > 1" x-cloak>
+      <template x-for="url in galleryImages" :key="url">
+        <button type="button" class="gallery-thumb" :class="mainImage === url && 'active'" @click="galleryActive = url">
+          <img :src="url" alt="">
+        </button>
       </template>
     </div>
   </div>

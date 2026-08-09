@@ -81,6 +81,40 @@
         </div>
         @error('image') <div class="error">{{ $message }}</div> @enderror
       </div>
+
+      <div class="form-group">
+        <label>Galería de imágenes adicionales</label>
+        <div class="form-hint" style="margin-bottom:10px;">Se muestran en la página del producto además de la imagen principal — el cliente puede pasar entre todas. JPG, PNG o WEBP, máx. 4 MB cada una.</div>
+
+        @if($product->exists && $product->images->isNotEmpty())
+          <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+            @foreach($product->images as $image)
+              <div style="width:88px;">
+                <div style="width:88px;height:88px;border-radius:10px;background:var(--bg-elevated-2);border:1px solid var(--border);overflow:hidden;">
+                  <img src="{{ $image->url }}" style="width:100%;height:100%;object-fit:cover;" alt="">
+                </div>
+                <label style="display:flex;align-items:center;gap:5px;margin-top:6px;font-size:11.5px;color:var(--text-secondary);">
+                  <input type="checkbox" name="remove_gallery_images[]" value="{{ $image->id }}">
+                  Quitar
+                </label>
+              </div>
+            @endforeach
+          </div>
+        @endif
+
+        <div x-data="{ newGalleryPreviews: [] }">
+          <input type="file" name="gallery_images[]" accept="image/png,image/jpeg,image/webp" multiple
+                 x-on:change="newGalleryPreviews = Array.from($event.target.files).map(f => URL.createObjectURL(f))">
+          <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;" x-show="newGalleryPreviews.length" x-cloak>
+            <template x-for="url in newGalleryPreviews" :key="url">
+              <div style="width:88px;height:88px;border-radius:10px;background:var(--bg-elevated-2);border:1px solid var(--gold);overflow:hidden;">
+                <img :src="url" style="width:100%;height:100%;object-fit:cover;">
+              </div>
+            </template>
+          </div>
+        </div>
+        @error('gallery_images.*') <div class="error">{{ $message }}</div> @enderror
+      </div>
     </div>
 
     <div class="form-section">

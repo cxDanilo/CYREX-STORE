@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductActivityLog;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -50,6 +51,7 @@ class ProductController extends Controller
 
         $product = Product::create($data);
         $this->syncVariants($product, $variants);
+        $this->syncGalleryImages($product, $request);
         ProductActivityLog::record($product, 'created');
 
         return redirect()->route('admin.productos.index')->with('status', 'Producto creado.');
@@ -100,6 +102,7 @@ class ProductController extends Controller
         $product->update($data);
         $this->logChanges($product, $before);
         $this->syncVariants($product, $variants);
+        $this->syncGalleryImages($product, $request);
 
         return redirect()->route('admin.productos.index')->with('status', 'Producto actualizado.');
     }
@@ -108,6 +111,9 @@ class ProductController extends Controller
     {
         ProductActivityLog::record($product, 'deleted');
         $this->deleteImage($product);
+        foreach ($product->images as $image) {
+            Storage::disk('uploads')->delete($image->path);
+        }
         $product->delete();
 
         return back()->with('status', 'Producto eliminado.');
@@ -143,10 +149,12 @@ class ProductController extends Controller
             'stock' => ['required', 'integer', 'min:0'],
             'status' => ['required', 'in:active,inactive'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'gallery_images' => ['nullable', 'array'],
+            'gallery_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
         $data['is_sold_out'] = $request->boolean('is_sold_out');
-        unset($data['image']);
+        unset($data['image'], $data['gallery_images']);
 
         return $data;
     }
@@ -164,6 +172,42 @@ class ProductController extends Controller
     {
         if ($product->image) {
             Storage::disk('uploads')->delete($product->image);
+        }
+    }
+
+    /**
+     * Galería adicional (más allá de la imagen de portada): borra primero
+     * las que el admin haya tildado para quitar, después agrega las
+     * nuevas que haya subido, siempre al final del orden actual.
+     */
+    private function syncGalleryImages(Product $product, Request $request): void
+    {
+        $toRemove = $request->input('remove_gallery_images', []);
+
+        if (! empty($toRemove)) {
+            $images = $product->images()->whereIn('id', $toRemove)->get();
+            foreach ($images as $image) {
+                Storage::disk('uploads')->delete($image->path);
+                $image->delete();
+            }
+        }
+
+        $files = $request->file('gallery_images', []);
+
+        if (empty($files)) {
+            return;
+        }
+
+        $nextOrder = $product->images()->max('sort_order') + 1;
+
+        foreach ($files as $file) {
+            $filename = Str::random(20).'.'.$file->getClientOriginalExtension();
+            $file->storeAs('products', $filename, 'uploads');
+
+            $product->images()->create([
+                'path' => 'products/'.$filename,
+                'sort_order' => $nextOrder++,
+            ]);
         }
     }
 
