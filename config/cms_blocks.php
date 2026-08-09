@@ -36,7 +36,7 @@ return [
         'view' => 'cms.blocks.hero-simple',
         'category' => 'Contenido',
         'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 10h10M7 14h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
-        'defaults' => ['eyebrow' => '', 'titulo' => '', 'titulo_destacado' => '', 'subtitulo' => '', 'cta_label' => '', 'cta_url' => '', 'cta2_label' => '', 'cta2_url' => '', 'personaje_url' => '', 'tamano' => 'estandar'],
+        'defaults' => ['eyebrow' => '', 'titulo' => '', 'titulo_destacado' => '', 'subtitulo' => '', 'cta_label' => '', 'cta_url' => '', 'cta2_label' => '', 'cta2_url' => '', 'personaje_url' => '', 'personaje_size' => '', 'tamano' => 'estandar'],
         'fields' => [
             'eyebrow' => ['type' => 'text', 'label' => 'Texto pequeño superior (opcional)'],
             'titulo' => ['type' => 'textarea', 'label' => 'Título'],
@@ -47,6 +47,7 @@ return [
             'cta2_label' => ['type' => 'text', 'label' => 'Texto del botón 2 (opcional)'],
             'cta2_url' => ['type' => 'text', 'label' => 'Link del botón 2'],
             'personaje_url' => ['type' => 'media', 'label' => 'Ilustración/personaje a la derecha (opcional, fondo transparente recomendado)'],
+            'personaje_size' => ['type' => 'number', 'label' => 'Tamaño de la ilustración en píxeles (opcional — vacío = automático)'],
             'tamano' => ['type' => 'select', 'label' => 'Tamaño', 'options' => [
                 ['id' => 'estandar', 'name' => 'Estándar'],
                 ['id' => 'grande', 'name' => 'Grande (portada)'],

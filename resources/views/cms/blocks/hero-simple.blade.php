@@ -21,6 +21,7 @@
     @endif
   </div>
   @if(!empty($data['personaje_url']))
-    <img src="{{ $data['personaje_url'] }}" alt="" class="cms-hero-personaje" aria-hidden="true">
+    <img src="{{ $data['personaje_url'] }}" alt="" class="cms-hero-personaje" aria-hidden="true"
+         @if(!empty($data['personaje_size'])) style="width:{{ (int) $data['personaje_size'] }}px;height:{{ (int) $data['personaje_size'] }}px;" @endif>
   @endif
 </section>
