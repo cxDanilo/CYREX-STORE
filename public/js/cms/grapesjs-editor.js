@@ -16,6 +16,29 @@
  * nunca es editable en línea.
  */
 (function () {
+  /**
+   * Agrega un contador "42/160" debajo de un input/textarea con maxlength
+   * — el maxlength del propio elemento ya impide escribir de más, esto
+   * solo hace visible por qué. Se reusa tanto para traits de nivel
+   * superior como para subcampos dentro de un repeater.
+   */
+  function attachMaxlengthCounter(el, maxlength) {
+    if (!maxlength) return el;
+
+    el.maxLength = maxlength;
+
+    const counter = document.createElement('div');
+    counter.className = 'cms-field-counter';
+    const update = () => { counter.textContent = `${el.value.length}/${maxlength}`; };
+    update();
+    el.addEventListener('input', update);
+
+    const holder = document.createElement('div');
+    holder.appendChild(el);
+    holder.appendChild(counter);
+    return holder;
+  }
+
   function debounce(fn, wait) {
     let timer;
     return function (...args) {
@@ -37,7 +60,7 @@
       const f = fields[key];
 
       if (f.type === 'textarea') {
-        return { type: 'textarea', name: key, label: f.label, changeProp: true };
+        return { type: 'textarea', name: key, label: f.label, changeProp: true, maxlength: f.maxlength || null };
       }
 
       if (f.type === 'select') {
@@ -189,17 +212,26 @@
     });
 
     editor.TraitManager.addType('textarea', {
-      createInput() {
+      createInput({ trait }) {
         const el = document.createElement('textarea');
         el.rows = 4;
         el.className = 'gjs-field gjs-field-textarea';
-        return el;
+        el.addEventListener('input', () => {
+          this.component.set(trait.get('name'), el.value);
+        });
+        this.input = el;
+        // Envuelve en un contenedor solo si hay límite — mantiene el caso
+        // sin límite igual de simple que antes (el propio <textarea>).
+        return attachMaxlengthCounter(el, trait.get('maxlength'));
       },
-      onEvent({ elInput, component, trait }) {
-        component.set(trait.get('name'), elInput.value);
+      onEvent() {
+        // El listener 'input' de arriba ya aplica el cambio al modelo —
+        // mismo motivo que el trait 'media', evita depender de elInput
+        // cuando createInput devuelve un contenedor en vez del campo real.
       },
-      onUpdate({ elInput, component, trait }) {
-        elInput.value = component.get(trait.get('name')) || '';
+      onUpdate({ component, trait }) {
+        this.component = component;
+        if (this.input) this.input.value = component.get(trait.get('name')) || '';
       },
     });
 
@@ -306,6 +338,11 @@
                 if (item[subKey] === opt.id) option.selected = true;
                 input.appendChild(option);
               });
+            } else if (subField.type === 'textarea') {
+              input = document.createElement('textarea');
+              input.rows = 3;
+              input.placeholder = subField.label || subKey;
+              input.value = item[subKey] || '';
             } else {
               input = document.createElement('input');
               input.type = 'text';
@@ -320,7 +357,7 @@
               this.suppressNextUpdate = true;
               component.set(trait.get('name'), current);
             });
-            field.appendChild(input);
+            field.appendChild(subField.type === 'textarea' ? attachMaxlengthCounter(input, subField.maxlength) : input);
             row.appendChild(field);
           });
 

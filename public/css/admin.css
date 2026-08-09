@@ -107,6 +107,7 @@
 .gjs-field{width:100%;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text-primary);font-size:13px;outline:none;margin-bottom:8px;}
 .gjs-field:focus{border-color:var(--gold);}
 .gjs-field-textarea{resize:vertical;}
+.cms-field-counter{font-size:10.5px;color:var(--text-muted);text-align:right;margin-top:-6px;margin-bottom:8px;}
 
 /* GrapesJS pone label y campo lado a lado por defecto (pensado para
    nombres cortos tipo "Ancho", "Color") y trunca con "..." si no entra.

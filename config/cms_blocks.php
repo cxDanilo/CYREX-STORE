@@ -388,7 +388,7 @@ return [
                     ['id' => 'truck', 'name' => 'Envío'],
                     ['id' => 'support', 'name' => 'Soporte'],
                 ]],
-                'texto' => ['type' => 'text', 'label' => 'Texto'],
+                'texto' => ['type' => 'textarea', 'label' => 'Texto', 'maxlength' => 160],
             ]],
         ],
     ],
