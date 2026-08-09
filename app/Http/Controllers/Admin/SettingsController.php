@@ -27,11 +27,12 @@ class SettingsController extends Controller
         $accentColor = Setting::get('accent_color', '#FFD900');
         $reducedMotion = Setting::get('reduced_motion', 'off');
         $ga4MeasurementId = Setting::get('ga4_measurement_id', '');
+        $shopBannerImages = json_decode(Setting::get('shop_banner_images', '[]'), true) ?: [];
 
         return view('admin.settings.edit', compact(
             'currentRate', 'currencyMode', 'defaultCurrency', 'whatsappNumber', 'categoryMenuScope',
             'logoHeight', 'logoPath', 'whatsappBtnText', 'shopCtaText', 'footerWhatsappBtnText',
-            'footerTagline', 'accentColor', 'reducedMotion', 'ga4MeasurementId'
+            'footerTagline', 'accentColor', 'reducedMotion', 'ga4MeasurementId', 'shopBannerImages'
         ));
     }
 
@@ -53,6 +54,10 @@ class SettingsController extends Controller
             'accent_color' => ['required', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'reduced_motion' => ['required', 'in:on,off'],
             'ga4_measurement_id' => ['nullable', 'string', 'regex:/^G-[A-Za-z0-9]+$/'],
+            'remove_banner_images' => ['nullable', 'array'],
+            'remove_banner_images.*' => ['string'],
+            'new_banner_images' => ['nullable', 'array'],
+            'new_banner_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
         if ($request->filled('rate') && (float) $data['rate'] !== ExchangeRate::current()) {
@@ -71,6 +76,7 @@ class SettingsController extends Controller
         Setting::set('accent_color', $data['accent_color']);
         Setting::set('reduced_motion', $data['reduced_motion']);
         Setting::set('ga4_measurement_id', $data['ga4_measurement_id'] ?? '');
+        $this->updateBannerImages($request);
 
         if ($request->hasFile('logo')) {
             $this->deleteLogo();
@@ -84,6 +90,33 @@ class SettingsController extends Controller
         }
 
         return back()->with('status', 'Ajustes guardados.');
+    }
+
+    /**
+     * El banner de Tienda es una lista simple de imágenes (guardadas
+     * como JSON en Settings, no una tabla propia) — el admin puede
+     * quitar cualquiera de las que ya están y/o subir nuevas en el
+     * mismo guardado. ShopController elige una al azar en cada visita.
+     */
+    private function updateBannerImages(Request $request): void
+    {
+        $current = json_decode(Setting::get('shop_banner_images', '[]'), true) ?: [];
+        $toRemove = $request->input('remove_banner_images', []);
+        $kept = array_values(array_diff($current, $toRemove));
+
+        foreach ($toRemove as $path) {
+            Storage::disk('uploads')->delete($path);
+        }
+
+        if ($request->hasFile('new_banner_images')) {
+            foreach ($request->file('new_banner_images') as $file) {
+                $filename = 'banners/'.Str::random(20).'.'.$file->getClientOriginalExtension();
+                $file->storeAs('', $filename, 'uploads');
+                $kept[] = $filename;
+            }
+        }
+
+        Setting::set('shop_banner_images', json_encode($kept));
     }
 
     private function deleteLogo(): void

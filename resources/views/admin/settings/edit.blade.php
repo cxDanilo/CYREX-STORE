@@ -125,6 +125,32 @@
   </div>
 
   <div class="form-section">
+    <h3>Banner de Tienda</h3>
+    <p class="form-hint" style="margin-bottom:14px;">De fondo, detrás del título "Tienda" — se elige una al azar en cada visita. Subí varias para que varíe. Recomendado: horizontal, 1600x500px aprox.</p>
+
+    @if(count($shopBannerImages))
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:16px;">
+        @foreach($shopBannerImages as $img)
+          <div>
+            <img src="{{ asset('uploads/'.$img) }}" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;border:1px solid var(--border);">
+            <label style="display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:var(--text-secondary);">
+              <input type="checkbox" name="remove_banner_images[]" value="{{ $img }}">
+              Quitar
+            </label>
+          </div>
+        @endforeach
+      </div>
+    @endif
+
+    <div class="form-group">
+      <label for="new_banner_images">Agregar imágenes</label>
+      <input type="file" id="new_banner_images" name="new_banner_images[]" accept="image/png,image/jpeg,image/webp" multiple>
+      <div class="form-hint">Podés seleccionar varias a la vez.</div>
+      @error('new_banner_images.*') <div class="error">{{ $message }}</div> @enderror
+    </div>
+  </div>
+
+  <div class="form-section">
     <h3>Navegación</h3>
 
     <div class="form-group">

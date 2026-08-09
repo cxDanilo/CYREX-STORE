@@ -31,13 +31,13 @@ class ShopController extends Controller
 
         $products = $query->orderByDesc('created_at')->paginate(12)->withQueryString();
 
-        // El banner rotativo de categorías solo tiene sentido en la
-        // entrada general a la tienda — una vez que el cliente ya
-        // filtró por una categoría puntual, mostrarlo de nuevo sería
-        // ruido en vez de ayuda para navegar.
-        $bannerCategories = $activeCategory ? collect() : Category::parents()->orderBy('sort_order')->get();
+        // Una imagen al azar (entre las que el admin cargó en Ajustes)
+        // como fondo del título — cambia en cada visita, no mientras se
+        // navega la página.
+        $bannerImages = json_decode(Setting::get('shop_banner_images', '[]'), true) ?: [];
+        $shopBannerImage = $bannerImages ? asset('uploads/'.$bannerImages[array_rand($bannerImages)]) : null;
 
-        return view('shop', compact('products', 'activeCategory', 'bannerCategories'));
+        return view('shop', compact('products', 'activeCategory', 'shopBannerImage'));
     }
 
     public function suggest(Request $request)
