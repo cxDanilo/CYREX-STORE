@@ -10,6 +10,7 @@
         variants: {{ $product->relationLoaded('variants') ? $product->variants->map(fn($v) => ['id' => $v->id, 'variant_type' => $v->variant_type, 'variant_value' => $v->variant_value, 'sku' => $v->sku, 'stock' => $v->stock, 'price_override' => $v->price_override])->toJson() : '[]' }},
         preview: @js($product->image_url),
         name: @js(old('name', $product->name) ?? ''),
+        description: @js(old('description', $product->description) ?? ''),
         price: @js((string) old('price', $product->price ?? '')),
         currency: @js(old('currency', $product->currency ?? 'USD')),
         categoryId: @js((string) old('category_id', $product->category_id ?? '')),
@@ -57,7 +58,9 @@
 
       <div class="form-group">
         <label for="description">Descripción</label>
-        <textarea id="description" name="description" rows="3">{{ old('description', $product->description) }}</textarea>
+        <textarea id="description" name="description" rows="3" maxlength="500" x-model="description"></textarea>
+        <div class="form-hint" style="text-align:right;" x-text="description.length + '/500'"></div>
+        <div class="form-hint">Para specs técnicas (socket, RAM, watts, etc.) usá los campos de Compatibilidad más abajo, no esta descripción — se muestran juntos en la página del producto.</div>
       </div>
 
       <div class="form-group">

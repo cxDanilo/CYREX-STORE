@@ -142,7 +142,7 @@ class ProductController extends Controller
                 'required', 'string', 'max:255', 'alpha_dash',
                 Rule::unique('products', 'slug')->ignore($ignoreId),
             ],
-            'description' => ['nullable', 'string'],
+            'description' => ['nullable', 'string', 'max:500'],
             'price' => ['required', 'numeric', 'min:0'],
             'currency' => ['required', 'in:USD,BOB'],
             'sku' => ['nullable', 'string', 'max:100'],
