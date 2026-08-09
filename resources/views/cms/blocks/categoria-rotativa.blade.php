@@ -20,6 +20,7 @@
   $productos = $categoria
       ? \App\Models\Product::where('status', 'active')
           ->where('category_id', $categoria->id)
+          ->with('variants')
           ->latest()
           ->take((int) ($data['limite'] ?? 4))
           ->get()
@@ -38,13 +39,18 @@
   </div>
   <div class="product-grid">
     @foreach($productos as $product)
+      @php
+        $isOutOfStock = $product->has_variants
+            ? $product->variants->every(fn ($v) => $v->stock <= 0)
+            : $product->stock <= 0;
+      @endphp
       <a class="card" href="{{ route('product.show', $product->slug) }}" style="display:block;">
         <div class="card-media">
           @if($product->image_url)
             <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy">
           @endif
-          @if($product->has_variants)
-            <span class="badge">Variantes</span>
+          @if($isOutOfStock)
+            <span class="card-badge-agotado">Agotado</span>
           @endif
         </div>
         <div class="card-body">

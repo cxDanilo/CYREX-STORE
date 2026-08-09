@@ -28,7 +28,13 @@
         toggled: false,
         rate: {{ $rate }},
         basePrice: {{ $product->currency === 'USD' ? $product->price : $product->price / $rate }},
-        variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'name' => $v->variant_value, 'stock' => $v->stock])->toJson() }},
+        variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'name' => $v->variant_value, 'inStock' => $v->stock > 0])->toJson() }},
+        productInStock: {{ $product->stock > 0 ? 'true' : 'false' }},
+        get inStock() {
+          if (!this.variants.length) return this.productInStock;
+          const v = this.variants.find(v => v.id === this.variant);
+          return v ? v.inStock : false;
+        },
         whatsappHref() {
           const variantObj = this.variants.find(v => v.id === this.variant);
           const variantSuffix = variantObj ? ' (' + variantObj.name + ')' : '';
@@ -136,8 +142,8 @@
       <div class="variant-options">
         @foreach($product->variants as $v)
           <div class="variant-swatch"
-               :class="variant === {{ $v->id }} ? 'selected' : ''"
-               @click="variant = {{ $v->id }}">
+               :class="{ selected: variant === {{ $v->id }}, 'out-of-stock': !{{ $v->stock > 0 ? 'true' : 'false' }} }"
+               @click="{{ $v->stock > 0 ? 'true' : 'false' }} && (variant = {{ $v->id }})">
             {{ $v->variant_value }}
           </div>
         @endforeach
@@ -167,11 +173,14 @@
       @endif
     </div>
 
+    <div class="stock-pill" x-show="!editing" x-cloak :class="inStock ? 'in-stock' : 'out-of-stock'" x-text="inStock ? '✓ Disponible' : '✕ Agotado'"></div>
+
     <div class="btn-cta-row">
       <button type="button" class="btn-cta"
               :class="$store.cart.has({{ $product->id }}, variant) && 'in-cart'"
+              :disabled="!inStock"
               @click="$store.cart.has({{ $product->id }}, variant) ? $store.cart.remove({{ $product->id }} + ':' + (variant ?? '')) : $store.cart.add({{ $product->id }}, variant)">
-        <span x-text="$store.cart.has({{ $product->id }}, variant) ? 'En el carrito ✓' : 'Agregar al carrito'">Agregar al carrito</span>
+        <span x-text="!inStock ? 'Agotado' : ($store.cart.has({{ $product->id }}, variant) ? 'En el carrito ✓' : 'Agregar al carrito')">Agregar al carrito</span>
       </button>
 
       <a :href="whatsappHref()" target="_blank" rel="noopener" class="btn-cta-whatsapp">
@@ -210,10 +219,18 @@
   <h2>También te puede interesar</h2>
   <div class="product-grid">
     @foreach($related as $r)
+      @php
+        $rOutOfStock = $r->has_variants
+            ? $r->variants->every(fn ($v) => $v->stock <= 0)
+            : $r->stock <= 0;
+      @endphp
       <a class="card" href="{{ route('product.show', $r->slug) }}" style="display:block;">
         <div class="card-media">
           @if($r->image_url)
             <img src="{{ $r->image_url }}" alt="{{ $r->name }}" loading="lazy">
+          @endif
+          @if($rOutOfStock)
+            <span class="card-badge-agotado">Agotado</span>
           @endif
         </div>
         <div class="card-body">

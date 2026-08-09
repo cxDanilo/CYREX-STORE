@@ -25,12 +25,19 @@
 
     <div class="product-grid">
       @forelse($products as $product)
+        @php
+          $isOutOfStock = $product->has_variants
+              ? $product->variants->every(fn ($v) => $v->stock <= 0)
+              : $product->stock <= 0;
+        @endphp
         <a class="card" href="{{ route('product.show', $product->slug) }}" style="display:block;"
            x-data="{
              showVariants: false,
              hasVariants: {{ $product->has_variants ? 'true' : 'false' }},
-             variants: {{ $product->variants->map(fn ($v) => ['id' => $v->id, 'name' => $v->variant_value])->toJson() }},
+             variants: {{ $product->variants->map(fn ($v) => ['id' => $v->id, 'name' => $v->variant_value, 'inStock' => $v->stock > 0])->toJson() }},
+             inStock: {{ $isOutOfStock ? 'false' : 'true' }},
              quickAdd() {
+               if (!this.inStock) return;
                if (this.hasVariants) { this.showVariants = !this.showVariants; }
                else { $store.cart.add({{ $product->id }}, null); }
              }
@@ -40,7 +47,10 @@
             @if($product->image_url)
               <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy">
             @endif
-            <button type="button" class="card-quick-add" @click.stop.prevent="quickAdd()" aria-label="Agregar {{ $product->name }} al carrito">
+            @if($isOutOfStock)
+              <span class="card-badge-agotado">Agotado</span>
+            @endif
+            <button type="button" class="card-quick-add" :disabled="!inStock" @click.stop.prevent="quickAdd()" aria-label="Agregar {{ $product->name }} al carrito">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.6L20 8H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.3" fill="currentColor"/><circle cx="17" cy="20" r="1.3" fill="currentColor"/></svg>
             </button>
 
@@ -49,7 +59,7 @@
                 <div class="card-variant-picker-title">Elegí una opción</div>
                 <div class="card-variant-picker-options">
                   <template x-for="v in variants" :key="v.id">
-                    <button type="button" class="card-variant-chip" @click.stop.prevent="$store.cart.add({{ $product->id }}, v.id); showVariants = false" x-text="v.name"></button>
+                    <button type="button" class="card-variant-chip" :disabled="!v.inStock" :class="!v.inStock && 'out-of-stock'" @click.stop.prevent="v.inStock && ($store.cart.add({{ $product->id }}, v.id), showVariants = false)" x-text="v.name"></button>
                   </template>
                 </div>
               </div>

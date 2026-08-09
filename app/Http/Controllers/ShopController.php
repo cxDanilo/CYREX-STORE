@@ -12,7 +12,7 @@ class ShopController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::where('status', 'active')->with('category');
+        $query = Product::where('status', 'active')->with(['category', 'variants']);
         $activeCategory = null;
 
         if ($request->filled('category')) {
@@ -76,6 +76,7 @@ class ShopController extends Controller
         $related = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('status', 'active')
+            ->with('variants')
             ->take(4)
             ->get();
 
