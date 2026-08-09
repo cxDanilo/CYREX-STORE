@@ -29,6 +29,7 @@ return [
         'cpu' => 'Procesador',
         'motherboard' => 'Placa madre',
         'ram' => 'Memoria RAM',
+        'storage' => 'Almacenamiento',
         'gpu' => 'Tarjeta gráfica',
         'psu' => 'Fuente de poder',
         'case' => 'Gabinete',
@@ -51,6 +52,11 @@ return [
 
         'ram' => [
             'type' => ['label' => 'Tipo', 'type' => 'select', 'options' => ['DDR4' => 'DDR4', 'DDR5' => 'DDR5']],
+        ],
+
+        'storage' => [
+            'tipo' => ['label' => 'Tipo', 'type' => 'select', 'options' => ['SSD NVMe' => 'SSD NVMe', 'SSD SATA' => 'SSD SATA', 'HDD' => 'HDD']],
+            'capacity_gb' => ['label' => 'Capacidad (GB)', 'type' => 'number'],
         ],
 
         'case' => [

@@ -27,6 +27,7 @@
           'cpu' => 'El procesador es el cerebro de tu PC — te mostramos los de la plataforma que elegiste.',
           'motherboard' => 'La placa madre conecta todo. Ya filtramos las que no sirven con el procesador elegido.',
           'ram' => 'La memoria RAM define cuántas cosas podés tener abiertas a la vez sin que se ponga lento.',
+          'storage' => 'Acá se guardan tu sistema operativo, tus juegos y tus archivos — un SSD NVMe carga todo mucho más rápido que un disco tradicional.',
           'gpu' => 'La tarjeta gráfica es la que más impacta en juegos y edición de video.',
           'psu' => 'La fuente de poder alimenta todo el equipo — te avisamos si la elegida se queda corta.',
           'case' => 'El gabinete tiene que tener espacio para tu placa madre, tu tarjeta gráfica y tu enfriamiento.',
@@ -213,11 +214,11 @@
             <span x-text="stepHints.platform"></span>
           </div>
           <div class="pcb-platform-grid">
-            <button type="button" class="pcb-platform-card" @click="choosePlatform('AMD')">
+            <button type="button" class="pcb-platform-card pcb-platform-amd" @click="choosePlatform('AMD')">
               <span class="pcb-platform-name">AMD</span>
               <span class="pcb-platform-sub">Ryzen y compatibles</span>
             </button>
-            <button type="button" class="pcb-platform-card" @click="choosePlatform('Intel')">
+            <button type="button" class="pcb-platform-card pcb-platform-intel" @click="choosePlatform('Intel')">
               <span class="pcb-platform-name">Intel</span>
               <span class="pcb-platform-sub">Core y compatibles</span>
             </button>
