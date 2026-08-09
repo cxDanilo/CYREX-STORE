@@ -12,6 +12,32 @@
   <h1>{{ $activeCategory ? $activeCategory->name : 'Tienda' }}</h1>
 </div>
 
+@if($bannerCategories->isNotEmpty())
+  <div class="wrap">
+    <div class="shop-banner-rotator" data-interval="4500">
+      @foreach($bannerCategories as $cat)
+        <a href="{{ route('shop', ['category' => $cat->slug]) }}"
+           class="shop-banner-slide shop-banner-gradient-{{ $loop->index % 4 }} {{ $loop->first ? 'is-active' : '' }}">
+          <div class="shop-banner-icon">@include('partials.category-icon', ['icon' => $cat->icon])</div>
+          <div class="shop-banner-text">
+            <div class="shop-banner-eyebrow">Categoría</div>
+            <div class="shop-banner-name">{{ $cat->name }}</div>
+            <div class="shop-banner-cta">Ver productos <span>→</span></div>
+          </div>
+        </a>
+      @endforeach
+
+      @if($bannerCategories->count() > 1)
+        <div class="shop-banner-dots">
+          @foreach($bannerCategories as $cat)
+            <button type="button" class="shop-banner-dot {{ $loop->first ? 'is-active' : '' }}" data-index="{{ $loop->index }}" aria-label="Ver {{ $cat->name }}"></button>
+          @endforeach
+        </div>
+      @endif
+    </div>
+  </div>
+@endif
+
 <div class="wrap shop-layout">
   <div class="shop-main">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;">
@@ -77,5 +103,11 @@
     </div>
   </div>
 </div>
+
+@section('scripts')
+  @if($bannerCategories->isNotEmpty())
+    <script src="{{ asset('js/shop-banner-rotator.js') }}?v={{ filemtime(public_path('js/shop-banner-rotator.js')) }}"></script>
+  @endif
+@endsection
 
 @endsection

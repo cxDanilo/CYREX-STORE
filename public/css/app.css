@@ -589,3 +589,37 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .error-404-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
 @keyframes error-404-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
 .motion-reduced .error-404-mascot{animation:none;}
+
+/* BANNER ROTATIVO DE CATEGORIAS (Tienda) */
+.shop-banner-rotator{position:relative;width:100%;height:260px;border-radius:20px;overflow:hidden;margin-bottom:32px;background:var(--bg-elevated);}
+.shop-banner-slide{position:absolute;inset:0;display:flex;align-items:center;gap:32px;padding:0 56px;text-decoration:none;color:#fff;opacity:0;pointer-events:none;transition:opacity .7s ease;}
+.shop-banner-slide.is-active{opacity:1;pointer-events:auto;}
+.shop-banner-gradient-0{background:linear-gradient(135deg,#141414 0%,#3a2d00 100%);}
+.shop-banner-gradient-1{background:linear-gradient(135deg,#141414 0%,#00303f 100%);}
+.shop-banner-gradient-2{background:linear-gradient(135deg,#141414 0%,#3a0d1f 100%);}
+.shop-banner-gradient-3{background:linear-gradient(135deg,#141414 0%,#0d3a1a 100%);}
+.shop-banner-icon{width:120px;height:120px;flex-shrink:0;color:#fff;opacity:.28;}
+.shop-banner-icon svg{width:100%;height:100%;}
+.shop-banner-text{min-width:0;}
+.shop-banner-eyebrow{font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:8px;}
+.shop-banner-name{font-family:var(--font-display);font-weight:700;font-size:clamp(24px,3.2vw,38px);letter-spacing:-0.01em;margin-bottom:12px;text-wrap:balance;}
+.shop-banner-cta{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#fff;padding:9px 18px;border:1px solid rgba(255,255,255,.3);border-radius:100px;transition:border-color .2s,background .2s;}
+.shop-banner-slide:hover .shop-banner-cta{border-color:var(--gold);background:rgba(255,217,0,.12);}
+.shop-banner-cta span{transition:transform .2s;}
+.shop-banner-slide:hover .shop-banner-cta span{transform:translateX(3px);}
+.shop-banner-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:5;}
+.shop-banner-dot{width:8px;height:8px;border-radius:100px;background:rgba(255,255,255,.35);border:none;cursor:pointer;padding:0;transition:background .2s,width .2s;}
+.shop-banner-dot.is-active{background:var(--gold);width:22px;}
+.motion-reduced .shop-banner-slide{transition:none;}
+
+@media (max-width:768px){
+  .shop-banner-rotator{height:190px;border-radius:16px;margin-bottom:24px;}
+  .shop-banner-slide{padding:0 24px;gap:18px;}
+  .shop-banner-icon{width:68px;height:68px;}
+  .shop-banner-eyebrow{font-size:10.5px;margin-bottom:5px;}
+  .shop-banner-name{font-size:clamp(18px,5vw,24px);margin-bottom:10px;}
+  .shop-banner-cta{font-size:12.5px;padding:7px 14px;}
+}
+@media (max-width:400px){
+  .shop-banner-icon{display:none;}
+}

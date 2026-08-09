@@ -31,7 +31,13 @@ class ShopController extends Controller
 
         $products = $query->orderByDesc('created_at')->paginate(12)->withQueryString();
 
-        return view('shop', compact('products', 'activeCategory'));
+        // El banner rotativo de categorías solo tiene sentido en la
+        // entrada general a la tienda — una vez que el cliente ya
+        // filtró por una categoría puntual, mostrarlo de nuevo sería
+        // ruido en vez de ayuda para navegar.
+        $bannerCategories = $activeCategory ? collect() : Category::parents()->orderBy('sort_order')->get();
+
+        return view('shop', compact('products', 'activeCategory', 'bannerCategories'));
     }
 
     public function suggest(Request $request)
