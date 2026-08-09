@@ -107,6 +107,11 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,10,11,0.92);backdrop-fi
 .mobile-search{width:100%;height:44px;display:flex;align-items:stretch;border:1px solid var(--border);border-radius:100px;overflow:hidden;background:var(--bg-elevated-2);}
 .mobile-search input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text-primary);font-size:14px;padding:0 14px;}
 
+/* .mobile-accordion es un <nav>, y el selector "nav{...}" de arriba
+   (pensado solo para el header del sitio) le pegaba sin querer un
+   fondo oscuro semitransparente + sticky + blur, dando el efecto de
+   "recuadro negro" en cada categoría del drawer. Se resetea acá. */
+.mobile-accordion{position:static;background:none;backdrop-filter:none;border-bottom:none;}
 .accordion-group{border-bottom:1px solid var(--border);}
 .accordion-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:none;color:var(--text-primary);font-size:14px;font-weight:500;padding:14px 4px;cursor:pointer;text-align:left;border-radius:8px;transition:background .15s,color .15s;}
 .accordion-head-label{display:flex;align-items:center;gap:10px;min-width:0;flex:1;}
