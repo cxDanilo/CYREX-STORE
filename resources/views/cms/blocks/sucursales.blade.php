@@ -1,6 +1,28 @@
 @php
+  // Google ofrece dos formas de "mapa por dirección": el embed simple
+  // (?q=texto&output=embed), que a veces no encuentra el lugar exacto y
+  // cae en el mapa mundial completo — y el embed real que da "Compartir >
+  // Insertar un mapa" en Maps, que trae el Place ID exacto del negocio y
+  // siempre apunta bien. Se prioriza ese si el admin lo pegó.
+  $mapaSrc = function (array $s) {
+      $embed = trim($s['mapa_embed'] ?? '');
+      if ($embed !== '' && preg_match('/src="([^"]+)"/', $embed, $m)) {
+          return $m[1];
+      }
+      if ($embed !== '' && str_starts_with($embed, 'http')) {
+          return $embed;
+      }
+      if (!empty($s['direccion'])) {
+          return 'https://www.google.com/maps?q='.urlencode($s['direccion']).'&output=embed';
+      }
+
+      return null;
+  };
+
   $items = $data['items'] ?? [];
-  $conMapa = collect($items)->filter(fn ($s) => empty($s['proximamente']) && !empty($s['direccion']))->values();
+  $conMapa = collect($items)
+      ->filter(fn ($s) => empty($s['proximamente']) && $mapaSrc($s))
+      ->values();
   $whatsappGeneral = \App\Models\Setting::get('whatsapp_number', '59177947379');
 @endphp
 <div class="wrap cms-block cms-sucursales" id="sucursales">
@@ -51,8 +73,10 @@
           <div class="cms-sucursal-map-card">
             <h4>{{ $s['nombre'] ?? '' }}</h4>
             <p>{{ $s['ciudad'] ?? '' }}</p>
-            <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($s['direccion']) }}" target="_blank" rel="noopener">Abrir en Maps ↗</a>
-            <iframe src="https://www.google.com/maps?q={{ urlencode($s['direccion']) }}&output=embed" loading="lazy"></iframe>
+            @if(!empty($s['direccion']))
+              <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($s['direccion']) }}" target="_blank" rel="noopener">Abrir en Maps ↗</a>
+            @endif
+            <iframe src="{{ $mapaSrc($s) }}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
           </div>
         @endforeach
       </div>

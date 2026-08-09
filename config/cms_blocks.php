@@ -239,7 +239,8 @@ return [
             'items' => ['type' => 'repeater', 'label' => 'Sucursales', 'fields' => [
                 'nombre' => ['type' => 'text', 'label' => 'Nombre (ej. "Sucursal Central")'],
                 'ciudad' => ['type' => 'text', 'label' => 'Ciudad'],
-                'direccion' => ['type' => 'text', 'label' => 'Dirección (para el mapa — opcional)'],
+                'direccion' => ['type' => 'text', 'label' => 'Dirección o texto de búsqueda (para el link "Abrir en Maps" — opcional)'],
+                'mapa_embed' => ['type' => 'textarea', 'label' => 'Mapa: pegá acá el código "Insertar un mapa" de Google Maps (Compartir → Insertar un mapa → Copiar HTML) — opcional, si no lo ponés se usa la Dirección de arriba'],
                 'proximamente' => ['type' => 'select', 'label' => '¿Todavía no está abierta?', 'options' => [
                     ['id' => '', 'name' => 'No — ya está operando'],
                     ['id' => 'si', 'name' => 'Sí — mostrar como "próximamente"'],

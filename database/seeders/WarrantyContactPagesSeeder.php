@@ -173,7 +173,8 @@ class WarrantyContactPagesSeeder extends Seeder
             ['type' => 'sucursales', 'data' => [
                 'items' => [
                     [
-                        'nombre' => 'Sucursal Central', 'ciudad' => 'Cochabamba', 'direccion' => '', 'proximamente' => '',
+                        'nombre' => 'Sucursal Central', 'ciudad' => 'Cochabamba', 'direccion' => 'Cyrex Store, Cochabamba', 'proximamente' => '',
+                        'mapa_embed' => '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3232.3122885445905!2d-66.14946710600383!3d-17.39324160579333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x93e373d6655403eb%3A0xd59bb6a5e274f63e!2sCYREX%20STORE!5e1!3m2!1ses-419!2sbo!4v1786297731336!5m2!1ses-419!2sbo" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>',
                         'asesores' => [
                             ['nombre' => 'Jonatan', 'cargo' => 'Asesor Antezana', 'whatsapp' => ''],
                             ['nombre' => 'Santiago', 'cargo' => 'Asesor Antezana', 'whatsapp' => ''],
