@@ -486,10 +486,14 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .cms-sucursal-info h3{font-family:var(--font-display);font-weight:700;font-size:19px;margin-bottom:2px;}
 .cms-sucursal-info p{font-size:13.5px;color:var(--text-secondary);}
 .cms-sucursal-asesores{display:flex;gap:12px;flex-wrap:wrap;}
-.cms-asesor{display:flex;align-items:center;gap:12px;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:12px;padding:10px 14px;}
-.cms-asesor-info{display:flex;flex-direction:column;line-height:1.35;}
-.cms-asesor-info strong{font-size:13.5px;}
-.cms-asesor-info span{font-size:12px;color:var(--text-muted);}
+.cms-asesor{display:flex;align-items:center;justify-content:space-between;gap:10px;width:236px;flex:0 0 236px;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:12px;padding:10px 14px;}
+.cms-asesor-info{display:flex;flex-direction:column;line-height:1.35;min-width:0;}
+.cms-asesor-info strong{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cms-asesor-info span{font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cms-asesor .btn-sm{flex-shrink:0;}
+@media (max-width:520px){
+  .cms-asesor{width:100%;flex:1 1 100%;}
+}
 .cms-sucursal-proximamente{border-color:var(--gold);background:linear-gradient(90deg,var(--gold-dim),var(--bg-elevated) 60%);}
 .cms-sucursales-maps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:16px;}
 .cms-sucursal-map-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:18px;transition:border-color .2s ease;}
