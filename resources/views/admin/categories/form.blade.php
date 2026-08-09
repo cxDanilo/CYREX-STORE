@@ -5,7 +5,7 @@
 @section('content')
 
 <div x-data="{ parentId: @js((string) old('parent_id', $category->parent_id ?? '')) }" style="max-width:560px;">
-  <form method="POST" action="{{ $category->exists ? route('admin.categorias.update', $category) : route('admin.categorias.store') }}" class="admin-form">
+  <form method="POST" action="{{ $category->exists ? route('admin.categorias.update', $category) : route('admin.categorias.store') }}" class="admin-form" enctype="multipart/form-data">
     @csrf
     @if($category->exists) @method('PUT') @endif
 
@@ -46,15 +46,30 @@
       </div>
 
       <div class="form-group" x-show="parentId === ''" x-cloak>
-        <label for="icon">Ícono</label>
+        <label for="icon">Ícono predefinido</label>
         <select id="icon" name="icon">
           <option value="">Genérico</option>
           @foreach($icons as $icon)
             <option value="{{ $icon }}" {{ old('icon', $category->icon) === $icon ? 'selected' : '' }}>{{ $icon }}</option>
           @endforeach
         </select>
-        <div class="form-hint">Solo se usa en categorías principales — aparece en el menú flotante de la tienda.</div>
+        <div class="form-hint">Se usa solo si no subís una imagen propia abajo.</div>
         @error('icon') <div class="error">{{ $message }}</div> @enderror
+      </div>
+
+      <div class="form-group" x-show="parentId === ''" x-cloak>
+        <label for="icon_image">Ícono personalizado</label>
+        @if($category->icon_image_url)
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <img src="{{ $category->icon_image_url }}" alt="" style="width:36px;height:36px;object-fit:contain;background:var(--bg);border-radius:8px;padding:4px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary);">
+              <input type="checkbox" name="remove_icon_image" value="1"> Quitar imagen personalizada
+            </label>
+          </div>
+        @endif
+        <input type="file" id="icon_image" name="icon_image" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+        <div class="form-hint">Reemplaza el ícono predefinido en el menú flotante y el listado. PNG/JPG/WEBP/SVG, máx 1MB.</div>
+        @error('icon_image') <div class="error">{{ $message }}</div> @enderror
       </div>
 
       <div class="form-group">
@@ -69,12 +84,11 @@
         @error('component_type') <div class="error">{{ $message }}</div> @enderror
       </div>
 
-      <div class="form-group">
-        <label for="sort_order">Orden</label>
-        <input type="number" min="0" id="sort_order" name="sort_order" value="{{ old('sort_order', $category->sort_order ?? 0) }}" required>
-        <div class="form-hint">Controla el orden en el menú de categorías — menor número aparece primero.</div>
-        @error('sort_order') <div class="error">{{ $message }}</div> @enderror
-      </div>
+      @if($category->exists)
+        <div class="form-group">
+          <div class="form-hint">El orden entre categorías se maneja arrastrando las filas en el <a href="{{ route('admin.categorias.index') }}">listado de categorías</a>.</div>
+        </div>
+      @endif
     </div>
 
     <div class="form-actions">

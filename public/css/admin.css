@@ -28,6 +28,8 @@
 .admin-table tr:last-child td{border-bottom:none;}
 .admin-table .mono{font-family:var(--font-mono);}
 .admin-table .cell-actions{display:flex;gap:8px;justify-content:flex-end;}
+.cat-drag-handle{cursor:grab;color:var(--text-muted);text-align:center;width:28px;letter-spacing:-1px;}
+.cat-row.is-dragging{opacity:.35;}
 
 .status-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;padding:4px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:0.03em;}
 .status-badge.active{background:rgba(61,220,132,0.12);color:var(--green);}

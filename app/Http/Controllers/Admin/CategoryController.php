@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
@@ -36,6 +38,15 @@ class CategoryController extends Controller
     {
         $data = $this->validated($request);
 
+        // Se agrega al final del grupo (misma categoría padre o principal)
+        // en vez de pedirle al admin un número — el orden real se maneja
+        // arrastrando las filas en el listado.
+        $data['sort_order'] = Category::where('parent_id', $data['parent_id'] ?? null)->max('sort_order') + 1;
+
+        if ($request->hasFile('icon_image')) {
+            $data['icon_image'] = $this->storeIcon($request);
+        }
+
         Category::create($data);
 
         return redirect()->route('admin.categorias.index')->with('status', 'Categoría creada.');
@@ -51,6 +62,14 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $data = $this->validated($request, $category);
+
+        if ($request->hasFile('icon_image')) {
+            $this->deleteIcon($category);
+            $data['icon_image'] = $this->storeIcon($request);
+        } elseif ($request->boolean('remove_icon_image')) {
+            $this->deleteIcon($category);
+            $data['icon_image'] = null;
+        }
 
         $category->update($data);
 
@@ -70,9 +89,29 @@ class CategoryController extends Controller
             return back()->with('error', "No se puede eliminar \"{$category->name}\": tiene {$productsCount} producto(s) asociado(s). Reasignalos a otra categoría primero.");
         }
 
+        $this->deleteIcon($category);
         $category->delete();
 
         return back()->with('status', 'Categoría eliminada.');
+    }
+
+    /**
+     * Recibe el nuevo orden (arrastrado en el listado) de las categorías
+     * de un mismo grupo — todas principales, o todas hijas de un mismo
+     * padre — y reasigna sort_order según la posición en la lista.
+     */
+    public function reorder(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:categories,id'],
+        ]);
+
+        foreach ($validated['ids'] as $position => $id) {
+            Category::where('id', $id)->update(['sort_order' => $position]);
+        }
+
+        return response()->json(['ok' => true]);
     }
 
     private function validated(Request $request, ?Category $category = null): array
@@ -99,14 +138,32 @@ class CategoryController extends Controller
             ],
             'parent_id' => $parentRules,
             'icon' => ['nullable', 'in:'.implode(',', self::ICONS)],
-            'sort_order' => ['required', 'integer', 'min:0'],
+            'icon_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:1024'],
             'component_type' => ['nullable', 'in:'.implode(',', array_keys(config('pc_builder.component_types')))],
         ]);
+
+        unset($data['icon_image']);
 
         if (! empty($data['parent_id'])) {
             $data['icon'] = null;
         }
 
         return $data;
+    }
+
+    private function storeIcon(Request $request): string
+    {
+        $file = $request->file('icon_image');
+        $filename = Str::random(20).'.'.$file->getClientOriginalExtension();
+        $file->storeAs('categories', $filename, 'uploads');
+
+        return 'categories/'.$filename;
+    }
+
+    private function deleteIcon(Category $category): void
+    {
+        if ($category->icon_image) {
+            Storage::disk('uploads')->delete($category->icon_image);
+        }
     }
 }

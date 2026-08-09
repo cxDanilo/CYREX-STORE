@@ -12,8 +12,13 @@ class Category extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'slug', 'parent_id', 'icon', 'sort_order', 'component_type',
+        'name', 'slug', 'parent_id', 'icon', 'icon_image', 'sort_order', 'component_type',
     ];
+
+    public function getIconImageUrlAttribute(): ?string
+    {
+        return $this->icon_image ? asset('uploads/'.$this->icon_image) : null;
+    }
 
     public function parent(): BelongsTo
     {

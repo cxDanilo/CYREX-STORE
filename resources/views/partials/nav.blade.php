@@ -115,7 +115,7 @@ document.addEventListener('alpine:init', () => {
       <div class="accordion-group" :class="openGroup === {{ $parent->id }} && 'is-open'">
         <button type="button" class="accordion-head" x-on:click="openGroup = (openGroup === {{ $parent->id }} ? null : {{ $parent->id }})">
           <span class="accordion-head-label">
-            <span class="mega-icon">@include('partials.category-icon', ['icon' => $parent->icon])</span>
+            <span class="mega-icon">@include('partials.category-icon', ['icon' => $parent->icon, 'iconImage' => $parent->icon_image_url])</span>
             <span class="accordion-head-text">{{ $parent->name }}</span>
           </span>
           <svg width="10" height="6" viewBox="0 0 10 6" fill="none" :style="openGroup === {{ $parent->id }} && 'transform:rotate(180deg)'" style="transition:transform .2s;flex-shrink:0;">

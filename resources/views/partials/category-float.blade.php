@@ -49,7 +49,7 @@
     @foreach($navCategories as $parent)
       <div class="cat-float-item" x-on:mouseenter="hoverEnabled && (expand(), openCat({{ $parent->id }}))" x-on:mouseleave="hoverEnabled && scheduleClose({{ $parent->id }})">
         <a href="{{ route('shop', ['category' => $parent->slug]) }}" class="cat-float-link" :class="hoverCat === {{ $parent->id }} && 'active'" x-on:click="handleTap($event, {{ $parent->id }})">
-          <span class="mega-icon">@include('partials.category-icon', ['icon' => $parent->icon])</span>
+          <span class="mega-icon">@include('partials.category-icon', ['icon' => $parent->icon, 'iconImage' => $parent->icon_image_url])</span>
           <span class="cat-float-label">{{ $parent->name }}</span>
         </a>
 

@@ -63,6 +63,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('categorias', [AdminCategoryController::class, 'index'])->name('categorias.index');
         Route::get('categorias/nueva', [AdminCategoryController::class, 'create'])->name('categorias.create');
         Route::post('categorias', [AdminCategoryController::class, 'store'])->name('categorias.store');
+        Route::post('categorias/reordenar', [AdminCategoryController::class, 'reorder'])->name('categorias.reorder');
         Route::get('categorias/{category}/editar', [AdminCategoryController::class, 'edit'])->name('categorias.edit');
         Route::put('categorias/{category}', [AdminCategoryController::class, 'update'])->name('categorias.update');
         Route::delete('categorias/{category}', [AdminCategoryController::class, 'destroy'])->name('categorias.destroy');
