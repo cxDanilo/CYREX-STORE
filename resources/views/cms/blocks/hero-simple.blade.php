@@ -1,4 +1,7 @@
-<section class="wrap cms-block cms-hero @if(($data['tamano'] ?? 'estandar') === 'grande') cms-hero-grande @endif">
+<section class="wrap cms-block cms-hero @if(($data['tamano'] ?? 'estandar') === 'grande') cms-hero-grande @endif @if(!empty($data['personaje_url'])) cms-hero-con-personaje @endif">
+  @if(!empty($data['personaje_url']))
+    <img src="{{ $data['personaje_url'] }}" alt="" class="cms-hero-personaje" aria-hidden="true">
+  @endif
   @if(!empty($data['eyebrow']))
     <div class="cms-hero-eyebrow">{{ $data['eyebrow'] }}</div>
   @endif

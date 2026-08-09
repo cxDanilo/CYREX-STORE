@@ -167,6 +167,7 @@ class WarrantyContactPagesSeeder extends Seeder
                 'cta_url' => '#sucursales',
                 'cta2_label' => 'storecyrex@gmail.com',
                 'cta2_url' => 'mailto:storecyrex@gmail.com',
+                'personaje_url' => asset('favicon-512.png'),
                 'tamano' => 'estandar',
             ]],
             ['type' => 'sucursales', 'data' => [
