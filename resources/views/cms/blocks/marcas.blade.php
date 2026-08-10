@@ -1,11 +1,16 @@
 @php($items = $data['items'] ?? [])
-<div class="wrap cms-block cms-marcas-wrap">
+@php($logoSize = (int) ($data['logo_size'] ?? 64))
+<div class="wrap cms-block cms-marcas-wrap" style="--marca-logo-size:{{ $logoSize }}px;">
   <div class="cms-marcas-track">
     @foreach($items as $item)
-      <img src="{{ $item['url'] ?? '' }}" alt="{{ $item['nombre'] ?? '' }}" class="cms-marca-logo">
+      <div class="cms-marca-item">
+        <img src="{{ $item['url'] ?? '' }}" alt="{{ $item['nombre'] ?? '' }}" class="cms-marca-logo">
+      </div>
     @endforeach
     @foreach($items as $item)
-      <img src="{{ $item['url'] ?? '' }}" alt="{{ $item['nombre'] ?? '' }}" class="cms-marca-logo" aria-hidden="true">
+      <div class="cms-marca-item" aria-hidden="true">
+        <img src="{{ $item['url'] ?? '' }}" alt="{{ $item['nombre'] ?? '' }}" class="cms-marca-logo">
+      </div>
     @endforeach
   </div>
 </div>

@@ -221,12 +221,13 @@ return [
         'view' => 'cms.blocks.marcas',
         'category' => 'Medios',
         'icon' => '<svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="1.5"/></svg>',
-        'defaults' => ['items' => []],
+        'defaults' => ['items' => [], 'logo_size' => 64],
         'fields' => [
             'items' => ['type' => 'repeater', 'label' => 'Logos', 'fields' => [
                 'url' => ['type' => 'media', 'label' => 'Logo'],
                 'nombre' => ['type' => 'text', 'label' => 'Nombre de la marca'],
             ]],
+            'logo_size' => ['type' => 'range', 'label' => 'Tamaño de los logos', 'min' => 32, 'max' => 120, 'step' => 4, 'unit' => 'px'],
         ],
     ],
 

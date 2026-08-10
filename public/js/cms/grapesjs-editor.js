@@ -71,6 +71,19 @@
         return { type: 'number', name: key, label: f.label, changeProp: true };
       }
 
+      if (f.type === 'range') {
+        return {
+          type: 'range',
+          name: key,
+          label: f.label,
+          changeProp: true,
+          min: f.min ?? 0,
+          max: f.max ?? 100,
+          step: f.step ?? 1,
+          unit: f.unit || '',
+        };
+      }
+
       if (f.type === 'media') {
         return { type: 'media', name: key, label: f.label, changeProp: true };
       }
@@ -232,6 +245,45 @@
       onUpdate({ component, trait }) {
         this.component = component;
         if (this.input) this.input.value = component.get(trait.get('name')) || '';
+      },
+    });
+
+    editor.TraitManager.addType('range', {
+      createInput({ trait }) {
+        const wrap = document.createElement('div');
+        wrap.className = 'cms-range-trait';
+
+        const input = document.createElement('input');
+        input.type = 'range';
+        input.min = trait.get('min');
+        input.max = trait.get('max');
+        input.step = trait.get('step');
+
+        const value = document.createElement('span');
+        value.className = 'cms-range-trait-value';
+
+        const unit = trait.get('unit') || '';
+        const updateLabel = () => { value.textContent = input.value + unit; };
+
+        input.addEventListener('input', () => {
+          updateLabel();
+          this.component.set(trait.get('name'), Number(input.value));
+        });
+
+        wrap.appendChild(input);
+        wrap.appendChild(value);
+        this.input = input;
+        this.valueEl = value;
+        return wrap;
+      },
+      onEvent() {
+        // El listener 'input' de arriba ya aplica el cambio al modelo.
+      },
+      onUpdate({ component, trait }) {
+        this.component = component;
+        const current = component.get(trait.get('name'));
+        this.input.value = (current === undefined || current === null || current === '') ? this.input.min : current;
+        this.valueEl.textContent = this.input.value + (trait.get('unit') || '');
       },
     });
 

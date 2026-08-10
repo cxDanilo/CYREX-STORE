@@ -592,8 +592,9 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .cms-marcas-wrap{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);}
 .cms-marcas-track{display:flex;gap:56px;align-items:center;width:max-content;animation:cms-marquee 28s linear infinite;}
 .cms-marcas-wrap:hover .cms-marcas-track{animation-play-state:paused;}
-.cms-marca-logo{height:32px;width:auto;opacity:.55;filter:grayscale(1);flex-shrink:0;transition:opacity .2s;}
-.cms-marca-logo:hover{opacity:.9;}
+.cms-marca-item{height:var(--marca-logo-size,64px);width:calc(var(--marca-logo-size,64px) * 2.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cms-marca-logo{max-height:100%;max-width:100%;width:auto;height:auto;object-fit:contain;opacity:.55;filter:grayscale(1);transition:opacity .2s;}
+.cms-marca-item:hover .cms-marca-logo{opacity:.9;}
 @keyframes cms-marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
 /* FLOATING CATEGORY MENU */
