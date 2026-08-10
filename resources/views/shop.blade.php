@@ -14,15 +14,6 @@
 
 <div class="wrap shop-layout">
   <div class="shop-main">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;">
-      <div style="color:var(--text-secondary);font-size:14px;">
-        <b style="color:var(--text-primary);">{{ $products->total() }}</b> productos
-      </div>
-      @if($activeCategory)
-        <a href="{{ route('shop') }}" class="btn btn-sm">Ver todo el catálogo ×</a>
-      @endif
-    </div>
-
     @php
       $sortOptions = [
         'predeterminado' => 'Orden predeterminado',
@@ -33,26 +24,34 @@
       ];
       $currentSort = request('orden', 'predeterminado');
     @endphp
-    <div class="shop-toolbar">
-      <div class="shop-toolbar-row">
-        <span class="shop-toolbar-label">Ordenar</span>
-        @foreach($sortOptions as $key => $label)
-          <a href="{{ route('shop', array_merge(request()->except(['orden', 'page']), $key === 'predeterminado' ? [] : ['orden' => $key])) }}"
-             class="shop-toolbar-btn {{ $currentSort === $key ? 'active' : '' }}">{{ $label }}</a>
-        @endforeach
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+      <div style="color:var(--text-secondary);font-size:14px;">
+        <b style="color:var(--text-primary);">{{ $products->total() }}</b> productos
       </div>
-      @if($filterField)
-        <div class="shop-toolbar-row">
-          <span class="shop-toolbar-label">{{ $filterLabel }}</span>
-          @foreach($filterOptions as $value => $label)
-            <a href="{{ route('shop', array_merge(request()->except(['attr', 'page']), ['attr' => $value])) }}"
-               class="shop-toolbar-btn {{ request('attr') === (string) $value ? 'active' : '' }}">{{ $label }}</a>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <select class="shop-sort-select" onchange="if(this.value) location.href=this.value;">
+          @foreach($sortOptions as $key => $label)
+            <option value="{{ route('shop', array_merge(request()->except(['orden', 'page']), $key === 'predeterminado' ? [] : ['orden' => $key])) }}" {{ $currentSort === $key ? 'selected' : '' }}>{{ $label }}</option>
           @endforeach
-          @if(request()->filled('attr'))
-            <a href="{{ route('shop', request()->except(['attr', 'page'])) }}" class="shop-toolbar-btn shop-toolbar-clear">Quitar filtro ×</a>
-          @endif
-        </div>
-      @endif
+        </select>
+        @if($activeCategory)
+          <a href="{{ route('shop') }}" class="btn btn-sm">Ver todo el catálogo ×</a>
+        @endif
+      </div>
+    </div>
+
+    @if($filterField)
+      <div class="shop-filter-row">
+        <span class="shop-toolbar-label">{{ $filterLabel }}</span>
+        @foreach($filterOptions as $value => $label)
+          <a href="{{ route('shop', array_merge(request()->except(['attr', 'page']), ['attr' => $value])) }}"
+             class="shop-filter-pill {{ request('attr') === (string) $value ? 'active' : '' }}">{{ $label }}</a>
+        @endforeach
+        @if(request()->filled('attr'))
+          <a href="{{ route('shop', request()->except(['attr', 'page'])) }}" class="shop-filter-pill shop-filter-clear">Quitar filtro ×</a>
+        @endif
+      </div>
+    @endif
     </div>
 
     <div class="product-grid">

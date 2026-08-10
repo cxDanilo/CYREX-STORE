@@ -175,13 +175,14 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 /* SHOP LAYOUT */
 .shop-layout{padding-top:28px;padding-bottom:100px;}
 
-.shop-toolbar{display:flex;flex-direction:column;gap:12px;margin-bottom:22px;padding:16px 18px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:14px;}
-.shop-toolbar-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.shop-toolbar-label{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-right:4px;}
-.shop-toolbar-btn{display:inline-flex;align-items:center;font-size:12.5px;font-weight:600;padding:8px 16px;border-radius:100px;background:var(--bg-elevated-2);border:1px solid var(--border);color:var(--text-secondary);text-decoration:none;transition:border-color .15s ease,color .15s ease,background-color .15s ease;}
-.shop-toolbar-btn:hover{border-color:var(--border-strong);color:var(--text-primary);}
-.shop-toolbar-btn.active{background:var(--gold);border-color:var(--gold);color:#0A0A0B;}
-.shop-toolbar-clear{color:var(--text-muted);background:none;border-style:dashed;}
+.shop-sort-select{appearance:none;-webkit-appearance:none;background:var(--bg-elevated) url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238E8E93' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 14px center;border:1px solid var(--border);border-radius:100px;color:var(--text-primary);font-size:12.5px;font-weight:600;padding:9px 34px 9px 16px;cursor:pointer;transition:border-color .15s ease;}
+.shop-sort-select:hover{border-color:var(--border-strong);}
+.shop-filter-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.shop-toolbar-label{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-right:2px;}
+.shop-filter-pill{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:6px 14px;border-radius:100px;background:none;border:1px solid var(--border);color:var(--text-secondary);text-decoration:none;transition:border-color .15s ease,color .15s ease,background-color .15s ease;}
+.shop-filter-pill:hover{border-color:var(--border-strong);color:var(--text-primary);}
+.shop-filter-pill.active{background:var(--gold);border-color:var(--gold);color:#0A0A0B;}
+.shop-filter-clear{color:var(--text-muted);border-style:dashed;}
 
 .product-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));gap:18px;}
 
