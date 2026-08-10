@@ -29,11 +29,24 @@
         <b style="color:var(--text-primary);">{{ $products->total() }}</b> productos
       </div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-        <select class="shop-sort-select" onchange="if(this.value) location.href=this.value;">
-          @foreach($sortOptions as $key => $label)
-            <option value="{{ route('shop', array_merge(request()->except(['orden', 'page']), $key === 'predeterminado' ? [] : ['orden' => $key])) }}" {{ $currentSort === $key ? 'selected' : '' }}>{{ $label }}</option>
-          @endforeach
-        </select>
+        <div class="shop-sort" x-data="{ open:false }" @click.outside="open=false">
+          <button type="button" class="shop-sort-trigger" @click="open=!open" :aria-expanded="open.toString()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span>{{ $sortOptions[$currentSort] }}</span>
+            <svg class="shop-sort-caret" :class="{ 'is-open': open }" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5"/></svg>
+          </button>
+          <div class="shop-sort-menu" x-show="open" x-transition.opacity.scale.95.duration.150ms x-cloak @click="open=false">
+            @foreach($sortOptions as $key => $label)
+              <a href="{{ route('shop', array_merge(request()->except(['orden', 'page']), $key === 'predeterminado' ? [] : ['orden' => $key])) }}"
+                 class="shop-sort-option {{ $currentSort === $key ? 'active' : '' }}">
+                {{ $label }}
+                @if($currentSort === $key)
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                @endif
+              </a>
+            @endforeach
+          </div>
+        </div>
         @if($activeCategory)
           <a href="{{ route('shop') }}" class="btn btn-sm">Ver todo el catálogo ×</a>
         @endif
