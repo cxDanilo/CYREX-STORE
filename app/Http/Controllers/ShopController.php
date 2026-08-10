@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\ExchangeRate;
+use App\Models\PcBuilderOption;
 use App\Models\Product;
 use App\Models\Setting;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller
@@ -14,6 +16,9 @@ class ShopController extends Controller
     {
         $query = Product::where('status', 'active')->with(['category', 'variants']);
         $activeCategory = null;
+        $filterField = null;
+        $filterLabel = null;
+        $filterOptions = [];
 
         if ($request->filled('category')) {
             $activeCategory = Category::where('slug', $request->category)->first();
@@ -22,14 +27,22 @@ class ShopController extends Controller
                     ? [$activeCategory->id]
                     : $activeCategory->children()->pluck('id')->push($activeCategory->id);
                 $query->whereIn('category_id', $ids);
+
+                [$filterField, $filterLabel, $filterOptions] = $this->resolveShopFilter($activeCategory->component_type);
             }
+        }
+
+        if ($filterField && $request->filled('attr')) {
+            $query->where('compat->'.$filterField, $request->attr);
         }
 
         if ($request->filled('q')) {
             $query->where('name', 'like', '%'.$request->q.'%');
         }
 
-        $products = $query->orderByDesc('created_at')->paginate(12)->withQueryString();
+        $this->applySort($query, $request->get('orden', 'predeterminado'));
+
+        $products = $query->paginate(12)->withQueryString();
 
         // Una imagen al azar (entre las que el admin cargó en Ajustes)
         // como fondo del título — cambia en cada visita, no mientras se
@@ -37,7 +50,56 @@ class ShopController extends Controller
         $bannerImages = json_decode(Setting::get('shop_banner_images', '[]'), true) ?: [];
         $shopBannerImage = $bannerImages ? asset('uploads/'.$bannerImages[array_rand($bannerImages)]) : null;
 
-        return view('shop', compact('products', 'activeCategory', 'shopBannerImage'));
+        return view('shop', compact('products', 'activeCategory', 'shopBannerImage', 'filterField', 'filterLabel', 'filterOptions'));
+    }
+
+    /**
+     * Busca, en los campos de compat del tipo de componente/atributo de
+     * la categoría, el (único) campo marcado 'shop_filter' => true en
+     * config/pc_builder.php — ese es el que se ofrece como filtro acá.
+     * Funciona igual para piezas de PC (ej. Procesador → Plataforma) que
+     * para categorías "solo atributo" (ej. Teclado → Tipo de switch).
+     *
+     * @return array{0: ?string, 1: ?string, 2: array<string,string>}
+     */
+    private function resolveShopFilter(?string $componentType): array
+    {
+        if (! $componentType) {
+            return [null, null, []];
+        }
+
+        foreach (config("pc_builder.fields.$componentType", []) as $key => $field) {
+            if (empty($field['shop_filter'])) {
+                continue;
+            }
+
+            $options = $field['options'] ?? [];
+            if (is_string($options) && str_starts_with($options, 'dynamic:')) {
+                $options = PcBuilderOption::optionsFor(substr($options, strlen('dynamic:')));
+            }
+
+            return [$key, $field['label'] ?? $key, $options];
+        }
+
+        return [null, null, []];
+    }
+
+    /**
+     * price se guarda en la moneda propia de cada producto (USD o BOB) —
+     * ordenar por el número crudo mezclaría ambas monedas de forma
+     * incorrecta, así que se normaliza a USD dentro del propio ORDER BY.
+     */
+    private function applySort(Builder $query, string $sort): void
+    {
+        $rate = ExchangeRate::current();
+
+        match ($sort) {
+            'precio_asc' => $query->orderByRaw("(CASE WHEN currency = 'BOB' THEN price / ? ELSE price END) ASC", [$rate]),
+            'precio_desc' => $query->orderByRaw("(CASE WHEN currency = 'BOB' THEN price / ? ELSE price END) DESC", [$rate]),
+            'recientes' => $query->orderByDesc('created_at'),
+            'nombre_az' => $query->orderBy('name'),
+            default => $query->orderBy('id'),
+        };
     }
 
     public function suggest(Request $request)

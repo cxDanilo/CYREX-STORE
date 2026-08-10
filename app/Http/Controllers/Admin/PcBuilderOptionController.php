@@ -24,6 +24,7 @@ class PcBuilderOptionController extends Controller
         'storage_type' => 'Tipos de almacenamiento',
         'gpu_tier' => 'Rendimiento aproximado de tarjeta gráfica',
         'psu_certification' => 'Certificación 80 Plus (fuentes de poder)',
+        'gpu_brand' => 'Marca de tarjeta gráfica',
     ];
 
     public function index()

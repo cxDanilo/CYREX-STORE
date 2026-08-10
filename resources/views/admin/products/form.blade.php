@@ -17,7 +17,9 @@
         categories: @js($categories->map(fn($c) => ['id' => (string) $c->id, 'name' => $c->name, 'componentType' => $c->component_type])->values()),
         get categoryName() { return (this.categories.find(c => c.id === this.categoryId) || {}).name || ''; },
         componentFields: @js(\App\Support\PcBuilderFields::resolved()),
+        pcBuilderTypes: @js(array_keys(config('pc_builder.component_types'))),
         get componentType() { return (this.categories.find(c => c.id === this.categoryId) || {}).componentType || null; },
+        get isPcPiece() { return this.pcBuilderTypes.includes(this.componentType); },
         get activeFields() { return this.componentType ? (this.componentFields[this.componentType] || {}) : {}; },
         compat: {{ Js::from((object) ($product->compat ?: [])) }}
      }">
@@ -185,8 +187,13 @@
     </div>
 
     <div class="form-section" x-show="componentType" x-cloak>
-      <h3>Compatibilidad (Arma tu PC)</h3>
-      <p class="form-hint" style="margin-bottom:14px;">Esta categoría está marcada como pieza de PC — completá estos datos para que el armador sepa con qué otras piezas es compatible este producto.</p>
+      <h3 x-text="isPcPiece ? 'Compatibilidad (Arma tu PC)' : 'Atributos de filtro'"></h3>
+      <template x-if="isPcPiece">
+        <p class="form-hint" style="margin-bottom:14px;">Esta categoría está marcada como pieza de PC — completá estos datos para que el armador sepa con qué otras piezas es compatible este producto.</p>
+      </template>
+      <template x-if="!isPcPiece">
+        <p class="form-hint" style="margin-bottom:14px;">Estos datos se usan como filtro en la tienda para esta categoría.</p>
+      </template>
 
       <template x-for="(field, key) in activeFields" :key="key">
         <div class="form-group">

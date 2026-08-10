@@ -139,7 +139,10 @@ class CategoryController extends Controller
             'parent_id' => $parentRules,
             'icon' => ['nullable', 'in:'.implode(',', self::ICONS)],
             'icon_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:1024'],
-            'component_type' => ['nullable', 'in:'.implode(',', array_keys(config('pc_builder.component_types')))],
+            'component_type' => ['nullable', 'in:'.implode(',', [
+                ...array_keys(config('pc_builder.component_types')),
+                ...array_keys(config('pc_builder.extra_attribute_types', [])),
+            ])],
         ]);
 
         unset($data['icon_image']);

@@ -29,9 +29,23 @@ return [
         'cooler' => 'Enfriamiento',
     ],
 
+    // Categorías que NO son piezas de PC (no aparecen como paso del
+    // asistente "Arma tu PC" — ver PcBuilderController, que solo itera
+    // component_types) pero igual quieren un campo estructurado con
+    // lista de valores editable, reusando exactamente el mismo mecanismo
+    // (columna compat, mismo formulario admin, mismas opciones dinámicas).
+    // Pensado para filtros de la tienda (ej. Teclados → mecánico/membrana).
+    'extra_attribute_types' => [
+        'teclado' => 'Teclado',
+    ],
+
     'fields' => [
         'cpu' => [
-            'platform' => ['label' => 'Plataforma', 'type' => 'select', 'options' => ['AMD' => 'AMD', 'Intel' => 'Intel']],
+            // 'shop_filter' => true marca qué campo se ofrece como filtro
+            // en la tienda para las categorías de este tipo (ver
+            // ShopController) — no todos los campos de compat tienen
+            // sentido como filtro (tdp_w, largo en mm, etc. no).
+            'platform' => ['label' => 'Plataforma', 'type' => 'select', 'options' => ['AMD' => 'AMD', 'Intel' => 'Intel'], 'shop_filter' => true],
             'socket' => ['label' => 'Socket', 'type' => 'select', 'options' => 'dynamic:socket'],
             'tdp_w' => ['label' => 'TDP (watts)', 'type' => 'number'],
             'graficos_integrados' => ['label' => '¿Tiene gráficos integrados?', 'type' => 'select', 'options' => ['no' => 'No', 'si' => 'Sí']],
@@ -39,6 +53,7 @@ return [
         ],
 
         'motherboard' => [
+            'platform' => ['label' => 'Plataforma', 'type' => 'select', 'options' => ['AMD' => 'AMD', 'Intel' => 'Intel'], 'shop_filter' => true],
             'socket' => ['label' => 'Socket', 'type' => 'select', 'options' => 'dynamic:socket'],
             'ram_type' => ['label' => 'Tipo de RAM', 'type' => 'select', 'options' => 'dynamic:ram_type'],
             'form_factor' => ['label' => 'Form factor', 'type' => 'select', 'options' => 'dynamic:form_factor'],
@@ -61,6 +76,7 @@ return [
         ],
 
         'gpu' => [
+            'marca' => ['label' => 'Marca', 'type' => 'select', 'options' => 'dynamic:gpu_brand', 'shop_filter' => true],
             'length_mm' => ['label' => 'Largo de la tarjeta (mm)', 'type' => 'number'],
             'power_draw_w' => ['label' => 'Consumo estimado (watts)', 'type' => 'number'],
             // Clasificación manual (no un número de FPS inventado) — el
@@ -77,6 +93,10 @@ return [
         'psu' => [
             'watts' => ['label' => 'Watts', 'type' => 'number'],
             'certificacion' => ['label' => 'Certificación 80 Plus', 'type' => 'select', 'options' => 'dynamic:psu_certification'],
+        ],
+
+        'teclado' => [
+            'tipo_switch' => ['label' => 'Tipo', 'type' => 'select', 'options' => ['mecanico' => 'Mecánico', 'membrana' => 'Membrana'], 'shop_filter' => true],
         ],
     ],
 

@@ -73,14 +73,21 @@
       </div>
 
       <div class="form-group">
-        <label for="component_type">Tipo de componente (para "Arma tu PC")</label>
+        <label for="component_type">Tipo de componente / atributos</label>
         <select id="component_type" name="component_type">
           <option value="">No aplica</option>
-          @foreach(config('pc_builder.component_types') as $key => $label)
-            <option value="{{ $key }}" {{ old('component_type', $category->component_type) === $key ? 'selected' : '' }}>{{ $label }}</option>
-          @endforeach
+          <optgroup label="Piezas de PC (aparecen en Arma tu PC)">
+            @foreach(config('pc_builder.component_types') as $key => $label)
+              <option value="{{ $key }}" {{ old('component_type', $category->component_type) === $key ? 'selected' : '' }}>{{ $label }}</option>
+            @endforeach
+          </optgroup>
+          <optgroup label="Otros (solo atributos/filtros, no aparecen en Arma tu PC)">
+            @foreach(config('pc_builder.extra_attribute_types', []) as $key => $label)
+              <option value="{{ $key }}" {{ old('component_type', $category->component_type) === $key ? 'selected' : '' }}>{{ $label }}</option>
+            @endforeach
+          </optgroup>
         </select>
-        <div class="form-hint">Marcá esto solo en la categoría real donde vas a cargar esos productos (ej: Procesadores → Procesador). Así el armador de PC sabe qué campos de compatibilidad pedirle a cada producto.</div>
+        <div class="form-hint">Marcá esto solo en la categoría real donde vas a cargar esos productos. Las piezas de PC hacen que el producto pida sus datos de compatibilidad y aparezca en el asistente "Arma tu PC" — las demás opciones solo agregan un campo extra que se puede usar como filtro en la tienda.</div>
         @error('component_type') <div class="error">{{ $message }}</div> @enderror
       </div>
 

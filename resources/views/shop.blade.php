@@ -23,6 +23,38 @@
       @endif
     </div>
 
+    @php
+      $sortOptions = [
+        'predeterminado' => 'Orden predeterminado',
+        'precio_asc' => 'Precio: menor a mayor',
+        'precio_desc' => 'Precio: mayor a menor',
+        'recientes' => 'Más recientes',
+        'nombre_az' => 'Nombre A-Z',
+      ];
+      $currentSort = request('orden', 'predeterminado');
+    @endphp
+    <div class="shop-toolbar">
+      <div class="shop-toolbar-row">
+        <span class="shop-toolbar-label">Ordenar</span>
+        @foreach($sortOptions as $key => $label)
+          <a href="{{ route('shop', array_merge(request()->except(['orden', 'page']), $key === 'predeterminado' ? [] : ['orden' => $key])) }}"
+             class="shop-toolbar-btn {{ $currentSort === $key ? 'active' : '' }}">{{ $label }}</a>
+        @endforeach
+      </div>
+      @if($filterField)
+        <div class="shop-toolbar-row">
+          <span class="shop-toolbar-label">{{ $filterLabel }}</span>
+          @foreach($filterOptions as $value => $label)
+            <a href="{{ route('shop', array_merge(request()->except(['attr', 'page']), ['attr' => $value])) }}"
+               class="shop-toolbar-btn {{ request('attr') === (string) $value ? 'active' : '' }}">{{ $label }}</a>
+          @endforeach
+          @if(request()->filled('attr'))
+            <a href="{{ route('shop', request()->except(['attr', 'page'])) }}" class="shop-toolbar-btn shop-toolbar-clear">Quitar filtro ×</a>
+          @endif
+        </div>
+      @endif
+    </div>
+
     <div class="product-grid">
       @forelse($products as $product)
         <a class="card" href="{{ route('product.show', $product->slug) }}" style="display:block;"

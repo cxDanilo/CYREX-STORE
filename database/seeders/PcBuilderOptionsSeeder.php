@@ -51,6 +51,11 @@ class PcBuilderOptionsSeeder extends Seeder
                 'media' => 'Gama media — 1080p/1440p, ajustes altos',
                 'alta' => 'Gama alta — 1440p/4K, ajustes ultra',
             ],
+            'gpu_brand' => [
+                'Nvidia' => 'Nvidia',
+                'AMD' => 'AMD',
+                'Intel' => 'Intel Arc',
+            ],
             'psu_certification' => [
                 'ninguna' => 'Sin certificación (genérica)',
                 '80plus' => '80 Plus (blanco)',
