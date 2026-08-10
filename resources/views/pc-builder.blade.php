@@ -39,6 +39,7 @@
         step: 0,
         furthestStep: 0,
         ramQty: 1,
+        totalFlashReady: false,
         // Estos dos pasos se pueden saltar sin elegir nada — no todos los
         // armados necesitan una tarjeta dedicada (CPU con gráficos
         // integrados) ni un cooler aparte (CPU que ya incluye uno de stock).
@@ -256,16 +257,16 @@
 
   <div style="display:flex;flex-direction:column;gap:6px;margin:20px 0;" x-show="Object.keys(selected).length">
     <template x-for="issue in currentIssues" :key="issue.msg">
-      <div class="pcb-issue-pill" :class="issue.level"><span x-text="issue.level === 'err' ? '✕' : '⚠'"></span> <span x-text="issue.msg"></span></div>
+      <div class="pcb-issue-pill" :class="issue.level" x-transition:enter="pcb-card-enter" x-transition:enter-start="pcb-card-enter-start" x-transition:enter-end="pcb-card-enter-end"><span x-text="issue.level === 'err' ? '✕' : '⚠'"></span> <span x-text="issue.msg"></span></div>
     </template>
-    <div class="pcb-issue-pill ok" x-show="Object.keys(selected).length && currentIssues.length === 0">✓ Sin conflictos detectados hasta ahora</div>
+    <div class="pcb-issue-pill ok" x-show="Object.keys(selected).length && currentIssues.length === 0" x-transition>✓ Sin conflictos detectados hasta ahora</div>
   </div>
 
   <div class="pcb-layout">
     <div class="pcb-wizard-panel">
 
       <template x-if="step === 0">
-        <div>
+        <div x-transition:enter="pcb-step-enter" x-transition:enter-start="pcb-step-enter-start" x-transition:enter-end="pcb-step-enter-end">
           <div class="pcb-step-hint">
             <svg class="pcb-step-hint-arrow" width="14" height="18" viewBox="0 0 14 18" fill="none"><path d="M7 1v14M1 9l6 7 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span x-text="stepHints.platform"></span>
@@ -285,7 +286,7 @@
 
       <template x-for="type in stepTypes" :key="type">
         <template x-if="currentType === type">
-          <div>
+          <div x-transition:enter="pcb-step-enter" x-transition:enter-start="pcb-step-enter-start" x-transition:enter-end="pcb-step-enter-end">
             <div class="pcb-step-hint">
               <svg class="pcb-step-hint-arrow" width="14" height="18" viewBox="0 0 14 18" fill="none" x-show="step <= 1"><path d="M7 1v14M1 9l6 7 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
               <span x-text="stepHints[type]"></span>
@@ -318,7 +319,8 @@
                 <button type="button" class="pcb-picker-card"
                         :class="[opt.blocked && 'disabled', item(type)?.id === opt.product.id && 'selected']"
                         :disabled="opt.blocked"
-                        @click="!opt.blocked && pick(type, opt.product)">
+                        @click="!opt.blocked && pick(type, opt.product)"
+                        x-transition:enter="pcb-card-enter" x-transition:enter-start="pcb-card-enter-start" x-transition:enter-end="pcb-card-enter-end">
                   <div class="pcb-picker-card-media">
                     <img :src="opt.product.image_url" x-show="opt.product.image_url" style="width:100%;height:100%;object-fit:cover;">
                   </div>
@@ -338,7 +340,7 @@
       </template>
 
       <template x-if="isReviewStep">
-        <div class="pcb-review">
+        <div class="pcb-review" x-transition:enter="pcb-step-enter" x-transition:enter-start="pcb-step-enter-start" x-transition:enter-end="pcb-step-enter-end">
           <div class="pcb-review-check">✓</div>
           <h3>¡Listo! Este es tu build</h3>
           <p class="form-hint">Revisá el resumen acá al lado — podés volver a cualquier paso de arriba para cambiar una pieza.</p>
@@ -371,7 +373,8 @@
           @endif
         </div>
       @endforeach
-      <div class="pcb-summary-total"><span>Total</span><span class="v" x-text="'$' + totalUsd().toFixed(2)"></span></div>
+      <div class="pcb-summary-total"><span>Total</span><span class="v" x-text="'$' + totalUsd().toFixed(2)"
+           x-effect="totalUsd(); if (!totalFlashReady) { totalFlashReady = true; } else { $el.classList.remove('pcb-total-flash'); void $el.offsetWidth; $el.classList.add('pcb-total-flash'); }"></span></div>
       @if($currencyMode === 'both')
         <div class="pcb-summary-alt" x-text="'≈ Bs ' + (totalUsd() * rate).toFixed(2)"></div>
       @endif
