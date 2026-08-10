@@ -151,7 +151,7 @@
         </label>
       </template>
     </div>
-    <div class="gallery-thumbs" x-show="galleryImages.length > 1" x-cloak>
+    <div class="gallery-thumbs" x-show="galleryImages.length > 1">
       <template x-for="url in galleryImages" :key="url">
         <button type="button" class="gallery-thumb" :class="mainImage === url && 'active'" @click="galleryActive = url">
           <img :src="url" alt="">
@@ -161,12 +161,21 @@
   </div>
 
   <div class="product-info">
-    <template x-if="isAdmin">
-      <button type="button" class="admin-edit-toggle" :class="editing && 'is-active'" @click="toggleEdit()" x-text="editing ? 'Cancelar edición' : '✏️ Editar producto'"></button>
-    </template>
+    <div class="admin-toggle-row">
+      <template x-if="isAdmin">
+        <button type="button" class="admin-edit-toggle" :class="editing && 'is-active'" @click="toggleEdit()" x-text="editing ? 'Cancelar edición' : '✏️ Editar producto'"></button>
+      </template>
+      <template x-if="isAdmin">
+        <form method="POST" action="{{ route('admin.productos.toggle-status', $product) }}">
+          @csrf
+          @method('PATCH')
+          <button type="submit" class="admin-edit-toggle">{{ $product->status === 'active' ? '🔒 Poner en privado' : '🌐 Publicar' }}</button>
+        </form>
+      </template>
+    </div>
 
     <div class="cat-eyebrow">{{ $product->category->name }}</div>
-    <h1 x-show="!editing" x-cloak x-text="editName">{{ $product->name }}</h1>
+    <h1 x-show="!editing" x-text="editName">{{ $product->name }}</h1>
     <template x-if="isAdmin">
       <input type="text" x-show="editing" x-cloak x-model="editName" class="admin-edit-input admin-edit-input-name" x-transition>
     </template>
@@ -190,7 +199,7 @@
       </div>
     </template>
 
-    <div class="price-block" x-show="!editing" x-cloak>
+    <div class="price-block" x-show="!editing">
       @if($currencyMode === 'both')
         <div class="currency-toggle" style="margin-bottom:14px;">
           <div class="toggle-thumb" :class="toggled ? (showBob ? 'to-bob' : 'to-usd') : (showBob ? 'at-bob' : 'at-usd')"></div>
@@ -206,7 +215,7 @@
       @endif
     </div>
 
-    <div class="stock-pill out-of-stock" x-show="!editing && !inStock" x-cloak>✕ Agotado</div>
+    <div class="stock-pill out-of-stock" x-show="!editing && !inStock">✕ Agotado</div>
 
     <div class="btn-cta-row">
       <button type="button" class="btn-cta"
@@ -235,7 +244,7 @@
          (listas de specs, etc.) — mismo criterio que el bloque html_libre del CMS,
          contenido cargado por el admin, no por un usuario del sitio.
          x-html la mantiene actualizada en vivo tras guardar una edición rápida. --}}
-    <div class="product-description" x-show="!editing && editDescription" x-cloak x-html="editDescription">@if($product->description){!! $product->description !!}@endif</div>
+    <div class="product-description" x-show="!editing && editDescription" x-html="editDescription">@if($product->description){!! $product->description !!}@endif</div>
     <template x-if="isAdmin">
       <div x-show="editing" x-cloak x-transition>
         <textarea x-model="editDescription" class="admin-edit-input admin-edit-textarea" placeholder="Descripción (se puede usar HTML)"></textarea>

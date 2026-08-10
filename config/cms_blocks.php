@@ -224,7 +224,7 @@ return [
         'defaults' => ['items' => [], 'logo_size' => 64],
         'fields' => [
             'items' => ['type' => 'repeater', 'label' => 'Logos', 'fields' => [
-                'url' => ['type' => 'media', 'label' => 'Logo'],
+                'url' => ['type' => 'media', 'label' => 'Logo', 'trim' => true],
                 'nombre' => ['type' => 'text', 'label' => 'Nombre de la marca'],
             ]],
             'logo_size' => ['type' => 'range', 'label' => 'Tamaño de los logos', 'min' => 32, 'max' => 120, 'step' => 4, 'unit' => 'px'],

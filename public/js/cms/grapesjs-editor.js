@@ -85,7 +85,7 @@
       }
 
       if (f.type === 'media') {
-        return { type: 'media', name: key, label: f.label, changeProp: true };
+        return { type: 'media', name: key, label: f.label, changeProp: true, trim: !!f.trim };
       }
 
       if (f.type === 'repeater') {
@@ -109,7 +109,7 @@
    * a la Biblioteca de Medios y completa la URL solo. Una sola
    * implementación para no mantener la lógica de subida duplicada.
    */
-  function buildMediaWidget(initialValue, onChange, mediaUploadUrl, csrfToken) {
+  function buildMediaWidget(initialValue, onChange, mediaUploadUrl, csrfToken, trim) {
     const wrap = document.createElement('div');
     wrap.className = 'cms-media-field';
 
@@ -156,6 +156,11 @@
       uploadLabel.textContent = 'Subiendo…';
       const formData = new FormData();
       formData.append('files[]', file);
+      // Solo para campos marcados 'trim' en config/cms_blocks.php (ej. los
+      // logos de Marcas): recorta el margen transparente sobrante del PNG
+      // antes de guardarlo, para que todos los logos ocupen su caja de
+      // forma pareja sin importar cuánto "aire" traía el archivo original.
+      if (trim) formData.append('trim', '1');
 
       fetch(mediaUploadUrl, {
         method: 'POST',
@@ -205,7 +210,8 @@
             this.component.set(trait.get('name'), val);
           },
           mediaUploadUrl,
-          csrfToken
+          csrfToken,
+          trait.get('trim')
         );
         this.input = textInput;
         return wrap;
@@ -373,7 +379,7 @@
                 this.suppressNextUpdate = true;
                 component.set(trait.get('name'), current);
               };
-              const { wrap: mediaWrap } = buildMediaWidget(item[subKey] || '', commit, mediaUploadUrl, csrfToken);
+              const { wrap: mediaWrap } = buildMediaWidget(item[subKey] || '', commit, mediaUploadUrl, csrfToken, subField.trim);
               field.appendChild(mediaWrap);
               row.appendChild(field);
               return;

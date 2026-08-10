@@ -80,6 +80,85 @@ class ImageOptimizer
         return self::process($absolutePath, $relativePath, $mimeType);
     }
 
+    /**
+     * Recorta el margen transparente sobrante alrededor del contenido real
+     * de un PNG/GIF/WebP — pensado para logos de marcas subidos con
+     * cantidades de "aire" muy distintas entre sí, que hacían que, aunque
+     * se normalice la caja donde se muestran (mismo alto para todos), el
+     * dibujo visible dentro de cada caja quedara de tamaño bien distinto.
+     * No hace nada si el archivo no tiene canal alfa (ej. JPEG) o si ya
+     * está bien ajustado — solo se llama para campos marcados 'trim' en
+     * config/cms_blocks.php, nunca en la subida genérica de la Biblioteca.
+     */
+    public static function trimTransparentPadding(string $absolutePath, string $mimeType): void
+    {
+        if (! in_array($mimeType, ['image/png', 'image/gif', 'image/webp'], true) || ! file_exists($absolutePath)) {
+            return;
+        }
+
+        $image = self::load($absolutePath, $mimeType);
+
+        if (! $image) {
+            return;
+        }
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+
+        $left = $width;
+        $right = -1;
+        $top = $height;
+        $bottom = -1;
+
+        for ($y = 0; $y < $height; $y++) {
+            for ($x = 0; $x < $width; $x++) {
+                // GD guarda el alfa en 7 bits: 0 = opaco, 127 = totalmente
+                // transparente. 120 deja un pequeño margen para píxeles casi
+                // transparentes del antialiasing del borde del logo.
+                $alpha = (imagecolorat($image, $x, $y) >> 24) & 0x7F;
+                if ($alpha < 120) {
+                    if ($x < $left) $left = $x;
+                    if ($x > $right) $right = $x;
+                    if ($y < $top) $top = $y;
+                    if ($y > $bottom) $bottom = $y;
+                }
+            }
+        }
+
+        if ($right < $left || $bottom < $top) {
+            imagedestroy($image);
+
+            return;
+        }
+
+        $pad = (int) round(max($right - $left, $bottom - $top) * 0.04);
+        $left = max(0, $left - $pad);
+        $top = max(0, $top - $pad);
+        $right = min($width - 1, $right + $pad);
+        $bottom = min($height - 1, $bottom + $pad);
+
+        $newWidth = $right - $left + 1;
+        $newHeight = $bottom - $top + 1;
+
+        if ($newWidth === $width && $newHeight === $height) {
+            imagedestroy($image);
+
+            return;
+        }
+
+        $cropped = imagecreatetruecolor($newWidth, $newHeight);
+        imagealphablending($cropped, false);
+        imagesavealpha($cropped, true);
+        $transparent = imagecolorallocatealpha($cropped, 0, 0, 0, 127);
+        imagefill($cropped, 0, 0, $transparent);
+        imagecopy($cropped, $image, 0, 0, $left, $top, $newWidth, $newHeight);
+
+        self::save($cropped, $absolutePath, $mimeType);
+
+        imagedestroy($cropped);
+        imagedestroy($image);
+    }
+
     private static function load(string $path, string $mime)
     {
         $image = match ($mime) {

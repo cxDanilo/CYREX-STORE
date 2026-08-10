@@ -62,6 +62,11 @@ class MediaController extends Controller
             $file->storeAs('', $filename, 'uploads');
 
             $absolutePath = Storage::disk('uploads')->path($filename);
+
+            if ($request->boolean('trim')) {
+                ImageOptimizer::trimTransparentPadding($absolutePath, $file->getMimeType());
+            }
+
             $derivatives = ImageOptimizer::process($absolutePath, $filename, $file->getMimeType());
 
             $media = Media::create([
