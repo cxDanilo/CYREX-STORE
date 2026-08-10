@@ -1,3 +1,20 @@
+/* Fuentes alojadas localmente (antes en Google Fonts vía <link>): ese
+   CSS externo llegaba después del primer layout, así que el texto se
+   pintaba con la fuente de respaldo del sistema y, milisegundos
+   después, saltaba al tamaño real de Inter/Space Grotesk/JetBrains
+   Mono — ese salto de alto de línea es lo que movía el footer. Al
+   quedar el archivo en el propio dominio y precargado en el <head>,
+   la fuente ya está lista antes de que el navegador calcule el layout. */
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:optional;src:url('/fonts/inter-latin.woff2') format('woff2');}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:optional;src:url('/fonts/inter-latin.woff2') format('woff2');}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:optional;src:url('/fonts/inter-latin.woff2') format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400;font-display:optional;src:url('/fonts/jetbrains-mono-latin.woff2') format('woff2');}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:500;font-display:optional;src:url('/fonts/jetbrains-mono-latin.woff2') format('woff2');}
+@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:400;font-display:optional;src:url('/fonts/space-grotesk-latin.woff2') format('woff2');}
+@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:500;font-display:optional;src:url('/fonts/space-grotesk-latin.woff2') format('woff2');}
+@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:600;font-display:optional;src:url('/fonts/space-grotesk-latin.woff2') format('woff2');}
+@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:700;font-display:optional;src:url('/fonts/space-grotesk-latin.woff2') format('woff2');}
+
 :root{
   --bg:#080808;--bg-elevated:#131313;--bg-elevated-2:#1C1C1C;
   --gold:#FFD900;--gold-dim:#3A3300;
