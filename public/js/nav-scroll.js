@@ -15,7 +15,18 @@ window.addEventListener('DOMContentLoaded', function () {
   var endAt = heroHeight;
   var span = Math.max(endAt - startAt, 1);
 
-  function onScroll() {
+  // El handler de scroll puede dispararse muchas veces por segundo
+  // (sobre todo con scroll de mouse/trackpad con inercia) — sin esto,
+  // cada evento recalculaba en el momento un backdrop-filter (blur), que
+  // es de las propiedades más caras de repintar que hay. El navegador no
+  // llega a mantener el ritmo y el header se siente trabado, más notorio
+  // al scrollear rápido y volver. rAF agrupa todo eso a como máximo una
+  // vez por frame (~60/s), que es todo lo que la pantalla puede mostrar
+  // igual — no cambia la sensación de "atado al scroll", solo evita
+  // trabajo repetido de más.
+  var ticking = false;
+
+  function update() {
     if (nav) {
       var progress = (window.scrollY - startAt) / span;
       progress = Math.min(1, Math.max(0, progress));
@@ -28,8 +39,16 @@ window.addEventListener('DOMContentLoaded', function () {
     if (hint) {
       hint.style.opacity = Math.max(0, 1 - window.scrollY / 150);
     }
+
+    ticking = false;
+  }
+
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  update();
 });
