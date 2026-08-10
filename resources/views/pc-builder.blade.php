@@ -38,6 +38,11 @@
         selected: {},
         step: 0,
         furthestStep: 0,
+        ramQty: 1,
+        // Estos dos pasos se pueden saltar sin elegir nada — no todos los
+        // armados necesitan una tarjeta dedicada (CPU con gráficos
+        // integrados) ni un cooler aparte (CPU que ya incluye uno de stock).
+        optionalSteps: ['gpu', 'cooler'],
 
         get stepTypes() { return Object.keys(this.types); },
 
@@ -58,12 +63,28 @@
         item(type) { return this.selected[type] || null; },
 
         totalUsd() {
-          return Object.values(this.selected).reduce((sum, p) => sum + (p ? p.price_usd : 0), 0);
+          return Object.entries(this.selected).reduce((sum, [type, p]) => {
+            if (!p) return sum;
+            const qty = type === 'ram' ? this.ramQty : 1;
+            return sum + p.price_usd * qty;
+          }, 0);
         },
 
         get gpuTierLabel() {
           const gpuTierKey = this.selected.gpu?.compat?.tier;
           return gpuTierKey ? (this.gpuTiers[gpuTierKey] || null) : null;
+        },
+
+        // Hint extra según lo que ya se eligió — ej. avisar que el CPU
+        // elegido ya trae gráficos integrados justo en el paso de GPU.
+        get extraHint() {
+          if (this.currentType === 'gpu' && this.selected.cpu?.compat?.graficos_integrados === 'si') {
+            return 'Tu procesador ya tiene gráficos integrados — si no vas a jugar a alto nivel ni editar video pesado, podés saltar este paso.';
+          }
+          if (this.currentType === 'cooler' && this.selected.cpu?.compat?.incluye_cooler === 'si') {
+            return 'Tu procesador ya incluye un cooler de stock — podés saltar este paso si te alcanza con eso.';
+          }
+          return null;
         },
 
         pick(type, product) {
@@ -75,9 +96,20 @@
           delete this.selected[type];
         },
 
+        resetBuild() {
+          this.selected = {};
+          this.platform = null;
+          this.ramQty = 1;
+          this.step = 0;
+          this.furthestStep = 0;
+        },
+
         get canProceed() {
           if (this.step === 0) return !!this.platform;
-          if (this.currentType) return !!this.selected[this.currentType];
+          if (this.currentType) {
+            if (this.optionalSteps.includes(this.currentType)) return true;
+            return !!this.selected[this.currentType];
+          }
           return true;
         },
 
@@ -136,8 +168,22 @@
           if (s.motherboard && s.ram && mobo.ram_type && ram.type && mobo.ram_type !== ram.type) {
             issues.push({level:'err', msg: `${s.ram.name} es ${ram.type} y ${s.motherboard.name} solo soporta ${mobo.ram_type}.`});
           }
-          if (s.motherboard && s.case && mobo.form_factor && kase.form_factors?.length && !kase.form_factors.includes(mobo.form_factor)) {
-            issues.push({level:'err', msg: `${s.case.name} no soporta placas ${mobo.form_factor} (la elegida lo es).`});
+          // Una placa más chica siempre entra en un gabinete pensado para
+          // una más grande (un ATX trae los parantes para mATX/ITX
+          // también) — comparamos por tamaño, no por si está tildado el
+          // valor exacto. Si algún form factor no es de los 3 estándar
+          // (ATX/mATX/ITX), cae al chequeo exacto de siempre.
+          if (s.motherboard && s.case && mobo.form_factor && kase.form_factors?.length) {
+            const FORM_FACTOR_RANK = { ITX: 1, mATX: 2, ATX: 3 };
+            const moboRank = FORM_FACTOR_RANK[mobo.form_factor];
+            const caseRanks = kase.form_factors.map(f => FORM_FACTOR_RANK[f]);
+            const allKnown = moboRank !== undefined && caseRanks.every(r => r !== undefined);
+            const fits = allKnown
+              ? Math.max(...caseRanks) >= moboRank
+              : kase.form_factors.includes(mobo.form_factor);
+            if (!fits) {
+              issues.push({level:'err', msg: `${s.case.name} no soporta placas ${mobo.form_factor} (la elegida lo es).`});
+            }
           }
           if (s.gpu && s.case && gpu.length_mm && kase.max_gpu_length_mm && Number(gpu.length_mm) > Number(kase.max_gpu_length_mm)) {
             issues.push({level:'err', msg: `${s.gpu.name} mide ${gpu.length_mm}mm y no entra en ${s.case.name} (máx ${kase.max_gpu_length_mm}mm).`});
@@ -153,6 +199,13 @@
             if (Number(psu.watts) < need) {
               issues.push({level:'warn', msg: `Se recomienda una fuente de al menos ${need}W para esta combinación; la elegida es de ${psu.watts}W.`});
             }
+          }
+          // Una fuente 'genérica' (sin certificación 80 Plus) casi nunca
+          // entrega de verdad el wattage que anuncia en la caja — se avisa
+          // aparte del cálculo de watts necesarios, que asume que el dato
+          // cargado es real.
+          if (s.psu && (!psu.certificacion || psu.certificacion === 'ninguna')) {
+            issues.push({level:'warn', msg: `${s.psu.name} no tiene certificación 80 Plus — las fuentes genéricas suelen no entregar el wattage real que anuncian. Se recomienda una certificada, sobre todo para este armado.`});
           }
           return issues;
         },
@@ -181,6 +234,10 @@
           });
         },
 
+        // El carrito no maneja cantidades (decisión de diseño ya tomada
+        // para todo el sitio) — si se eligieron 2 memorias, acá solo se
+        // agrega 1 unidad al carrito; la cantidad real sí queda reflejada
+        // en el total de este armador y en el mensaje de WhatsApp.
         async addAllToCart() {
           for (const product of Object.values(this.selected)) {
             await $store.cart.add(product.id, null);
@@ -233,7 +290,19 @@
               <svg class="pcb-step-hint-arrow" width="14" height="18" viewBox="0 0 14 18" fill="none" x-show="step <= 1"><path d="M7 1v14M1 9l6 7 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
               <span x-text="stepHints[type]"></span>
             </div>
+            <template x-if="extraHint">
+              <div class="pcb-step-hint pcb-step-hint-extra">
+                <span x-text="extraHint"></span>
+              </div>
+            </template>
             <h3 style="margin-bottom:14px;">Elegí: <span x-text="types[type]"></span></h3>
+            <template x-if="type === 'ram' && item('ram')">
+              <div class="pcb-ram-qty">
+                <span>Cantidad:</span>
+                <button type="button" :class="ramQty === 1 && 'active'" @click="ramQty = 1">×1</button>
+                <button type="button" :class="ramQty === 2 && 'active'" @click="ramQty = 2">×2 (dual-channel)</button>
+              </div>
+            </template>
             <template x-if="!currentOptions.length">
               <p class="form-hint">
                 <template x-if="type === 'cpu' && platform">
@@ -281,16 +350,25 @@
 
       <div class="pcb-step-nav">
         <button type="button" class="btn" @click="back()" x-show="step > 0">← Atrás</button>
-        <button type="button" class="btn btn-primary" @click="next()" x-show="!isReviewStep && currentType" :disabled="!canProceed" style="margin-left:auto;">Siguiente →</button>
+        <button type="button" class="btn btn-primary" @click="next()" x-show="!isReviewStep && currentType" :disabled="!canProceed" style="margin-left:auto;">
+          <span x-text="optionalSteps.includes(currentType) && !item(currentType) ? 'Saltar este paso →' : 'Siguiente →'"></span>
+        </button>
       </div>
     </div>
 
     <div class="pcb-summary-panel">
-      <h3>Tu build</h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <h3 style="margin-bottom:0;">Tu build</h3>
+        <button type="button" class="pcb-reset-btn" @click="resetBuild()" x-show="platform || Object.keys(selected).length">Limpiar todo</button>
+      </div>
       @foreach($types as $typeKey => $typeLabel)
         <div class="pcb-summary-row">
           <span class="k">{{ $typeLabel }}</span>
-          <span class="v" :class="!item('{{ $typeKey }}') && 'empty'" x-text="item('{{ $typeKey }}')?.name || 'Sin elegir'"></span>
+          @if($typeKey === 'ram')
+            <span class="v" :class="!item('ram') && 'empty'" x-text="item('ram') ? (ramQty > 1 ? ramQty + '× ' : '') + item('ram').name : 'Sin elegir'"></span>
+          @else
+            <span class="v" :class="!item('{{ $typeKey }}') && 'empty'" x-text="item('{{ $typeKey }}')?.name || 'Sin elegir'"></span>
+          @endif
         </div>
       @endforeach
       <div class="pcb-summary-total"><span>Total</span><span class="v" x-text="'$' + totalUsd().toFixed(2)"></span></div>
@@ -301,7 +379,7 @@
       <button type="button" class="btn-cta" style="width:100%;margin-top:16px;" :disabled="!Object.keys(selected).length || hasBlockingIssues" @click="addAllToCart()">
         Agregar todo al carrito
       </button>
-      <a :href="'https://wa.me/{{ \App\Models\Setting::get('whatsapp_number', '59177947379') }}?text=' + encodeURIComponent('Hola! Quiero armar esta PC:\n' + Object.values(selected).map(p => '- ' + p.name).join('\n') + '\nTotal aprox: $' + totalUsd().toFixed(2))"
+      <a :href="'https://wa.me/{{ \App\Models\Setting::get('whatsapp_number', '59177947379') }}?text=' + encodeURIComponent('Hola! Quiero armar esta PC:\n' + Object.entries(selected).map(([type, p]) => '- ' + (type === 'ram' && ramQty > 1 ? ramQty + 'x ' : '') + p.name).join('\n') + '\nTotal aprox: $' + totalUsd().toFixed(2))"
          target="_blank" rel="noopener" class="btn-cta-whatsapp" style="width:100%;margin-top:10px;text-decoration:none;" x-show="Object.keys(selected).length">
         Consultar por WhatsApp
       </a>

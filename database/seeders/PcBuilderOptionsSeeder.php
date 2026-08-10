@@ -51,6 +51,15 @@ class PcBuilderOptionsSeeder extends Seeder
                 'media' => 'Gama media — 1080p/1440p, ajustes altos',
                 'alta' => 'Gama alta — 1440p/4K, ajustes ultra',
             ],
+            'psu_certification' => [
+                'ninguna' => 'Sin certificación (genérica)',
+                '80plus' => '80 Plus (blanco)',
+                '80plus_bronze' => '80 Plus Bronze',
+                '80plus_silver' => '80 Plus Silver',
+                '80plus_gold' => '80 Plus Gold',
+                '80plus_platinum' => '80 Plus Platinum',
+                '80plus_titanium' => '80 Plus Titanium',
+            ],
         ];
 
         foreach ($groups as $group => $options) {

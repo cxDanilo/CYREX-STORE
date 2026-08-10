@@ -23,6 +23,7 @@ class PcBuilderOptionController extends Controller
         'radiator_size' => 'Tamaños de radiador',
         'storage_type' => 'Tipos de almacenamiento',
         'gpu_tier' => 'Rendimiento aproximado de tarjeta gráfica',
+        'psu_certification' => 'Certificación 80 Plus (fuentes de poder)',
     ];
 
     public function index()

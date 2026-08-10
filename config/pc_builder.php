@@ -34,6 +34,8 @@ return [
             'platform' => ['label' => 'Plataforma', 'type' => 'select', 'options' => ['AMD' => 'AMD', 'Intel' => 'Intel']],
             'socket' => ['label' => 'Socket', 'type' => 'select', 'options' => 'dynamic:socket'],
             'tdp_w' => ['label' => 'TDP (watts)', 'type' => 'number'],
+            'graficos_integrados' => ['label' => '¿Tiene gráficos integrados?', 'type' => 'select', 'options' => ['no' => 'No', 'si' => 'Sí']],
+            'incluye_cooler' => ['label' => '¿Incluye cooler de stock?', 'type' => 'select', 'options' => ['no' => 'No', 'si' => 'Sí']],
         ],
 
         'motherboard' => [
@@ -74,6 +76,7 @@ return [
 
         'psu' => [
             'watts' => ['label' => 'Watts', 'type' => 'number'],
+            'certificacion' => ['label' => 'Certificación 80 Plus', 'type' => 'select', 'options' => 'dynamic:psu_certification'],
         ],
     ],
 
