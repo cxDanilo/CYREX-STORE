@@ -42,8 +42,8 @@
 .admin-empty{padding:60px 20px;text-align:center;color:var(--text-muted);font-size:14px;}
 
 /* FORM */
-.admin-form{max-width:1400px;flex:1;min-width:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:20px;align-items:start;}
-.form-section{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:24px;}
+.admin-form{max-width:1400px;flex:1;min-width:0;columns:420px;column-gap:20px;}
+.form-section{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:24px;break-inside:avoid;-webkit-column-break-inside:avoid;margin-bottom:20px;}
 .form-section h3{font-family:var(--font-display);font-size:15px;font-weight:600;margin-bottom:16px;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
 .form-group{margin-bottom:16px;}
