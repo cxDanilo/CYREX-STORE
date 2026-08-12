@@ -15,19 +15,42 @@ window.addEventListener('DOMContentLoaded', function () {
 
   var currentController = null;
 
-  // Solo tienda↔producto — nunca toca category=... del mega-menú/
-  // footer/home ni ningún otro link del sitio, a propósito: esas
+  // Solo tienda↔producto (nunca home, admin, contacto, etc. — esas
   // páginas no comparten este mismo "molde" y no tiene sentido meterlas
-  // acá sin pensarlo por separado. pathname !== location.pathname es
-  // clave: sin eso, este listener también capturaría los links de
-  // orden/filtro/paginación DENTRO de /tienda, que ya maneja
-  // shop-ajax.js — con los dos escuchando el mismo click a la vez.
+  // acá sin pensarlo por separado). Esto SÍ incluye links a /tienda que
+  // vienen de fuera de <main> — el mega-menú, la barra lateral flotante
+  // de categorías y el footer viven en partials/nav.blade.php, antes
+  // del <main> en el layout, así que un link ahí nunca se pierde por un
+  // reemplazo de contenido (el propio <nav> nunca se destruye).
+  //
+  // La única exclusión real es "adentro de .shop-main" — eso ya lo
+  // maneja shop-ajax.js con su propio swap más chico y más rápido (solo
+  // el fragmento, no la página entera). Sin esa exclusión, un click en
+  // "ordenar" dispararía los dos scripts a la vez sobre el mismo link.
   function isEligible(link) {
-    return link.origin === location.origin
-      && !link.hasAttribute('data-no-ajax')
-      && main.contains(link)
-      && link.pathname !== location.pathname
-      && (link.pathname === '/tienda' || link.pathname.indexOf('/producto/') === 0);
+    if (link.origin !== location.origin) return false;
+
+    // Mismo lugar exacto (mismo path Y mismos parámetros) — no hay
+    // nada que navegar, esto sería un ancla o un link a la página tal
+    // cual está.
+    if (link.pathname === location.pathname && link.search === location.search) return false;
+
+    // Un link DENTRO de .shop-main que sigue apuntando al MISMO
+    // pathname (/tienda) es orden/filtro/paginación — eso ya lo maneja
+    // shop-ajax.js con su propio swap más chico y más rápido (solo el
+    // fragmento, no la página entera). Ojo: esto NO debe excluir las
+    // cards de producto de la grilla (aunque también viven dentro de
+    // .shop-main) — esas apuntan a OTRO pathname (/producto/...), así
+    // que el chequeo de pathname de abajo ya las deja pasar solas. Solo
+    // "Ver todo el catálogo ×" necesita el escape explícito con
+    // data-page-nav, porque cambia de categoría manteniendo el mismo
+    // pathname /tienda (afecta el encabezado, que shop-ajax.js no toca).
+    var shopMain = document.querySelector('.shop-main');
+    if (shopMain && shopMain.contains(link) && link.pathname === location.pathname && !link.hasAttribute('data-page-nav')) {
+      return false;
+    }
+
+    return link.pathname === '/tienda' || link.pathname.indexOf('/producto/') === 0;
   }
 
   function loadPage(url, opts) {

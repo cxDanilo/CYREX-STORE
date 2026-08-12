@@ -32,7 +32,14 @@
       </div>
     </div>
     @if($activeCategory)
-      <a href="{{ route('shop') }}" class="btn btn-sm" data-no-ajax>Ver todo el catálogo ×</a>
+      {{-- data-no-ajax: shop-ajax.js no puede manejar este link (cambia
+           de categoría, y su swap de solo el fragmento no toca el
+           encabezado de arriba). data-page-nav: aun así queremos que
+           page-nav.js sí lo intercepte (su swap completo del <main> sí
+           actualiza el encabezado bien) — sin este segundo atributo,
+           page-nav.js lo excluiría igual por estar dentro de
+           .shop-main, junto con orden/filtro/paginación. --}}
+      <a href="{{ route('shop') }}" class="btn btn-sm" data-no-ajax data-page-nav>Ver todo el catálogo ×</a>
     @endif
   </div>
 </div>
