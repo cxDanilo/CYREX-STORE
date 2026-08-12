@@ -88,6 +88,28 @@
         editing: false,
         saving: false,
         imageSwapTimer: null,
+        // Antes esto solo esperaba los 180ms del fade y recién ahí
+        // pisaba el src — pero cambiar el src no hace que la foto
+        // aparezca al instante, el navegador todavía tiene que
+        // bajarla de la red. Si tardaba (sobre todo la primera vez
+        // que se pedía esa foto), se veía la imagen vieja/en blanco
+        // un momento y la nueva 'aparecía de golpe' — el mismo
+        // parpadeo de siempre, con otra causa. Precargando la foto
+        // en un <img> aparte y esperando a que esa SÍ termine de
+        // cargar (o falle) antes de recién ahí pisar el src visible,
+        // nunca se muestra nada a medio cargar.
+        swapMainImage(el, url) {
+          clearTimeout(this.imageSwapTimer);
+          el.classList.add('img-fading');
+          this.imageSwapTimer = setTimeout(() => {
+            const preload = new Image();
+            const apply = () => { el.src = url; el.classList.remove('img-fading'); };
+            preload.onload = apply;
+            preload.onerror = apply;
+            preload.src = url;
+            if (preload.complete) apply();
+          }, 180);
+        },
         editName: {{ Js::from($product->name) }},
         editPrice: {{ (float) $product->price }},
         editCurrency: {{ Js::from($product->currency) }},
@@ -175,12 +197,7 @@
       <img src="{{ $product->image_url }}" x-show="mainImage" alt="{{ $product->name }}"
            class="gallery-main-img"
            x-init="if (mainImage) $el.src = mainImage;"
-           x-effect="
-             if (!mainImage || $el.src === mainImage) return;
-             clearTimeout(imageSwapTimer);
-             $el.classList.add('img-fading');
-             imageSwapTimer = setTimeout(() => { $el.src = mainImage; $el.classList.remove('img-fading'); }, 180);
-           "
+           x-effect="if (mainImage && $el.src !== mainImage) swapMainImage($el, mainImage)"
            style="width:100%;height:100%;object-fit:cover;border-radius:20px;{{ $product->is_sold_out ? 'filter:grayscale(1);' : '' }}">
       <template x-if="isAdmin && editing">
         <label class="admin-edit-image-overlay">
@@ -201,7 +218,10 @@
   <div class="product-info">
     <div class="admin-toggle-row">
       <template x-if="isAdmin">
-        <button type="button" class="admin-edit-toggle" :class="editing && 'is-active'" @click="toggleEdit()" x-text="editing ? 'Cancelar edición' : '✏️ Editar producto'"></button>
+        <a href="{{ route('admin.productos.edit', $product) }}" class="admin-edit-toggle" data-no-ajax>✏️ Editar producto</a>
+      </template>
+      <template x-if="isAdmin">
+        <button type="button" class="admin-edit-toggle" :class="editing && 'is-active'" @click="toggleEdit()" x-text="editing ? 'Cancelar edición' : '⚡ Edición rápida'"></button>
       </template>
       <template x-if="isAdmin">
         <form method="POST" action="{{ route('admin.productos.toggle-status', $product) }}">
