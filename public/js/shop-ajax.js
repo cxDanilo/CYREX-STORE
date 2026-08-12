@@ -1,6 +1,10 @@
 window.addEventListener('DOMContentLoaded', function () {
-  var shopMain = document.querySelector('.shop-main');
-  if (!shopMain) return;
+  // El listener va en document (no en .shop-main) porque .shop-main se
+  // puede destruir y volver a crear entera si se navega a un producto
+  // y se vuelve (ver public/js/page-nav.js, que reemplaza el <main>
+  // completo) — un listener enganchado directo al nodo viejo quedaría
+  // muerto. Por eso .shop-main se vuelve a buscar en cada click, nunca
+  // se guarda en una variable de afuera.
 
   // Pedido en vuelo — si el visitante clickea "Siguiente" dos veces
   // rápido, se cancela el primer pedido en vez de dejar que una
@@ -8,17 +12,20 @@ window.addEventListener('DOMContentLoaded', function () {
   var currentController = null;
 
   // Solo se intercepta un link si: es del mismo sitio, apunta a esta
-  // MISMA página (/tienda), y no está marcado data-no-ajax — así
-  // "Ver todo el catálogo ×" (que cambia de categoría, y por lo tanto
-  // debería actualizar también el título/breadcrumb de arriba, que
-  // este intercambio no toca) sigue siendo una navegación normal.
-  function isAjaxEligible(link) {
+  // MISMA página (/tienda), no está marcado data-no-ajax, y está
+  // DENTRO de .shop-main — así un link del footer o del mega-menú que
+  // también apunte a /tienda (pero cambiando de categoría) sigue
+  // siendo una navegación normal: si se interceptara, la grilla se
+  // actualizaría pero el título/breadcrumb de arriba (fuera de
+  // .shop-main) se quedarían con el nombre de la categoría vieja.
+  function isAjaxEligible(shopMain, link) {
     return link.origin === location.origin
       && link.pathname === location.pathname
-      && !link.hasAttribute('data-no-ajax');
+      && !link.hasAttribute('data-no-ajax')
+      && shopMain.contains(link);
   }
 
-  function loadUrl(url, opts) {
+  function loadUrl(shopMain, url, opts) {
     if (currentController) currentController.abort();
     currentController = new AbortController();
     var signal = currentController.signal;
@@ -31,6 +38,14 @@ window.addEventListener('DOMContentLoaded', function () {
         return res.text();
       })
       .then(function (html) {
+        // Si mientras esperábamos la respuesta el visitante ya se fue
+        // a otra página (public/js/page-nav.js reemplazó el <main>),
+        // este .shop-main quedó desconectado del documento — aplicar
+        // el swap igual no se ve (nada renderiza un nodo huérfano)
+        // pero sí pushearía una entrada de historial con la URL vieja
+        // encima de la página nueva. Cortar acá evita eso.
+        if (!shopMain.isConnected) return;
+
         shopMain.innerHTML = html;
         shopMain.classList.remove('shop-main-loading');
         shopMain.classList.add('shop-main-enter');
@@ -41,7 +56,15 @@ window.addEventListener('DOMContentLoaded', function () {
         // primer cambio de página/orden/filtro.
         window.Alpine.initTree(shopMain);
 
-        if (opts.pushState) history.pushState({ shopAjax: true }, '', url);
+        if (opts.pushState) {
+          // Guarda dónde estaba scrolleada la entrada ACTUAL antes de
+          // avanzar a la nueva — así, si el visitante vuelve acá con
+          // el botón atrás, public/js/page-nav.js (dueño único del
+          // popstate de todo el sitio) puede restaurar el scroll en
+          // vez de arrancar arriba de todo.
+          history.replaceState(Object.assign({}, history.state, { scrollY: window.scrollY }), '', location.href);
+          history.pushState({ scrollY: 0 }, '', url);
+        }
 
         if (opts.scrollIntoView && window.scrollY > shopMain.offsetTop) {
           shopMain.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -57,21 +80,14 @@ window.addEventListener('DOMContentLoaded', function () {
       });
   }
 
-  shopMain.addEventListener('click', function (event) {
+  document.addEventListener('click', function (event) {
+    var shopMain = document.querySelector('.shop-main');
+    if (!shopMain) return;
+
     var link = event.target.closest('a');
-    if (!link || !shopMain.contains(link) || !isAjaxEligible(link)) return;
+    if (!link || !isAjaxEligible(shopMain, link)) return;
 
     event.preventDefault();
-    loadUrl(link.href, { pushState: true, scrollIntoView: true });
-  });
-
-  // El botón atrás/adelante del navegador no dispara 'click' — sin
-  // esto, romperían history.pushState (quedarían mostrando el
-  // contenido viejo con la URL ya cambiada). No se fuerza el scroll
-  // acá: al volver atrás, el navegador ya restaura la posición de
-  // scroll que tenía esa página — forzar otro scroll encima se siente
-  // como que "te empuja" de vuelta arriba de la nada.
-  window.addEventListener('popstate', function () {
-    loadUrl(location.href, { pushState: false, scrollIntoView: false });
+    loadUrl(shopMain, link.href, { pushState: true, scrollIntoView: true });
   });
 });

@@ -304,6 +304,15 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
   .shop-main-enter .product-grid > .card{animation:none;opacity:1;}
 }
 
+/* Navegación sin recarga entre tienda y producto (ver
+   public/js/page-nav.js) — mismo criterio que arriba: atenuado breve
+   mientras llega la página, fade al entrar el <main> nuevo. */
+body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s ease;}
+@keyframes page-nav-in{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+main.page-nav-enter{animation:page-nav-in .35s ease-out;}
+.motion-reduced main.page-nav-enter{animation:none;}
+@media (prefers-reduced-motion:reduce){main.page-nav-enter{animation:none;}}
+
 /* PRODUCT PAGE */
 .product-hero{display:grid;grid-template-columns:1fr 1fr;gap:56px;padding-top:8px;padding-bottom:60px;align-items:start;}
 .gallery{position:sticky;top:90px;}

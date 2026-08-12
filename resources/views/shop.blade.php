@@ -22,4 +22,5 @@
 
 @section('scripts')
 <script src="{{ asset('js/shop-ajax.js') }}?v={{ filemtime(public_path('js/shop-ajax.js')) }}"></script>
+<script src="{{ asset('js/page-nav.js') }}?v={{ filemtime(public_path('js/page-nav.js')) }}"></script>
 @endsection
