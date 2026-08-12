@@ -385,10 +385,21 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .gallery-main{position:relative;aspect-ratio:1/1;background:var(--bg-elevated);border:1px solid var(--border);border-radius:20px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:zoom-in;}
 .gallery-main img{transition:transform .2s ease;}
 .gallery-main:hover img{transform:scale(1.8);}
+/* Al cambiar de variante (o de miniatura, o la imagen de una edición
+   rápida del admin), la foto principal se reemplaza de golpe — sin
+   esto se siente como un salto brusco en vez de un cambio de foto.
+   No es un crossfade real (seguiría siendo la misma etiqueta <img>,
+   no se puede interpolar entre dos src distintos con CSS solo) sino
+   un fade-in corto cada vez que cambia, que ya alcanza para que se
+   sienta intencional. */
+@keyframes gallery-img-swap{from{opacity:0;}to{opacity:1;}}
+.gallery-main-img.img-swap{animation:gallery-img-swap .3s ease;}
 @media (prefers-reduced-motion: reduce){
   .gallery-main img{transition:none;}
   .gallery-main:hover img{transform:none;}
+  .gallery-main-img.img-swap{animation:none;}
 }
+.motion-reduced .gallery-main-img.img-swap{animation:none;}
 @media (hover:none){
   .gallery-main{cursor:default;}
   .gallery-main:hover img{transform:none;}
