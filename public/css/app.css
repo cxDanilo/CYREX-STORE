@@ -387,19 +387,29 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .gallery-main:hover img{transform:scale(1.8);}
 /* Al cambiar de variante (o de miniatura, o la imagen de una edición
    rápida del admin), la foto principal se reemplaza de golpe — sin
-   esto se siente como un salto brusco en vez de un cambio de foto.
-   No es un crossfade real (seguiría siendo la misma etiqueta <img>,
-   no se puede interpolar entre dos src distintos con CSS solo) sino
-   un fade-in corto cada vez que cambia, que ya alcanza para que se
-   sienta intencional. */
-@keyframes gallery-img-swap{from{opacity:0;}to{opacity:1;}}
-.gallery-main-img.img-swap{animation:gallery-img-swap .3s ease;}
+   esto se siente como un salto brusco. No es un crossfade real
+   (sigue siendo la misma etiqueta <img>, no se puede interpolar entre
+   dos src distintos con CSS solo): primero se atenúa a 0 (.img-fading,
+   puesta por JS), RECIÉN AHÍ — con la imagen ya invisible — se cambia
+   el src (ver x-effect en product.blade.php, con un setTimeout que
+   coincide con esta misma duración), y se saca la clase para que
+   vuelva a aparecer. El primer intento usaba una animación con
+   remove/reflow/add para "reiniciarla" en cada cambio, pero ese
+   truco deja al elemento sin animación por un instante — en ese
+   instante vuelve a su opacidad normal (visible) con el src TODAVÍA
+   viejo, así que se veía un parpadeo de la foto anterior antes de
+   pasar a la nueva. Con una transición simple de opacidad en vez de
+   una animación por keyframes, no hace falta ningún truco de reinicio
+   — y como el cambio de src ocurre recién cuando ya está en 0, nunca
+   hay un frame con la foto vieja a opacidad completa. */
+.gallery-main-img{transition:opacity .18s ease;}
+.gallery-main-img.img-fading{opacity:0;}
 @media (prefers-reduced-motion: reduce){
   .gallery-main img{transition:none;}
   .gallery-main:hover img{transform:none;}
-  .gallery-main-img.img-swap{animation:none;}
+  .gallery-main-img{transition:none;}
 }
-.motion-reduced .gallery-main-img.img-swap{animation:none;}
+.motion-reduced .gallery-main-img{transition:none;}
 @media (hover:none){
   .gallery-main{cursor:default;}
   .gallery-main:hover img{transform:none;}

@@ -87,6 +87,7 @@
         isAdmin: {{ (auth()->check() && auth()->user()->isAdmin()) ? 'true' : 'false' }},
         editing: false,
         saving: false,
+        imageSwapTimer: null,
         editName: {{ Js::from($product->name) }},
         editPrice: {{ (float) $product->price }},
         editCurrency: {{ Js::from($product->currency) }},
@@ -171,9 +172,15 @@
      }">
   <div class="gallery">
     <div class="gallery-main">
-      <img src="{{ $product->image_url }}" :src="mainImage" x-show="mainImage" alt="{{ $product->name }}"
+      <img src="{{ $product->image_url }}" x-show="mainImage" alt="{{ $product->name }}"
            class="gallery-main-img"
-           x-effect="mainImage; $el.classList.remove('img-swap'); void $el.offsetWidth; $el.classList.add('img-swap')"
+           x-init="if (mainImage) $el.src = mainImage;"
+           x-effect="
+             if (!mainImage || $el.src === mainImage) return;
+             clearTimeout(imageSwapTimer);
+             $el.classList.add('img-fading');
+             imageSwapTimer = setTimeout(() => { $el.src = mainImage; $el.classList.remove('img-fading'); }, 180);
+           "
            style="width:100%;height:100%;object-fit:cover;border-radius:20px;{{ $product->is_sold_out ? 'filter:grayscale(1);' : '' }}">
       <template x-if="isAdmin && editing">
         <label class="admin-edit-image-overlay">

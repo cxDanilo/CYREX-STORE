@@ -90,7 +90,11 @@
 
         pick(type, product) {
           this.selected[type] = product;
-          this.next();
+          // La RAM es el único paso que no avanza solo: recién al
+          // elegirla aparece el botón de ×1/×2 (dual-channel), y si
+          // se avanza de una el visitante nunca llega a verlo — hay
+          // que darle la chance de tocarlo antes de seguir.
+          if (type !== 'ram') this.next();
         },
 
         remove(type) {
