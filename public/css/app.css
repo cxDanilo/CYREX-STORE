@@ -211,14 +211,31 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .shop-filter-pill.active{background:var(--gold);border-color:var(--gold);color:#0A0A0B;}
 .shop-filter-clear{color:var(--text-muted);border-style:dashed;}
 
-.product-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));gap:18px;}
+/* flex, no grid: con grid, la última fila de una página incompleta
+   (ej. 2 productos donde entrarían 5) deja un hueco vacío a la derecha
+   porque el ancho de columna es una propiedad del grid entero, no de
+   cada fila — no hay forma de "centrar" solo la fila final. Con flex +
+   wrap, justify-content:center sí actúa fila por fila: las filas
+   completas quedan pegadas a los bordes igual que antes (no sobra
+   espacio para centrar), y la última fila incompleta se centra sola. */
+.product-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:18px;}
+.product-grid > .card{flex:1 1 220px;}
+
+/* El tope de ancho (para que la última fila incompleta no crezca
+   mucho más grande que las filas llenas) solo tiene sentido con
+   varias columnas — en celular de una sola columna, la card debe
+   seguir ocupando todo el ancho disponible como antes. */
+@media (min-width:768px){
+  .product-grid > .card{max-width:240px;}
+}
 
 /* En celulares angostos (ej. iPhone SE, ~375px) una sola columna deja
    más espacio a cada card; en celulares anchos (ej. iPhone Pro Max,
    ~430px) el piso de 220px de arriba no alcanza a entrar 2 — se fuerzan
    2 columnas acá porque a ese ancho ya entran cómodas. */
 @media (min-width:420px) and (max-width:767px){
-  .product-grid{grid-template-columns:repeat(2, 1fr);gap:12px;}
+  .product-grid{gap:12px;}
+  .product-grid > .card{flex-basis:calc(50% - 6px);max-width:calc(50% - 6px);}
 }
 .card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:border-color .2s,transform .2s;transform-style:preserve-3d;}
 .card:hover{border-color:var(--border-strong);transform:translateY(-2px);}
@@ -247,6 +264,8 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .card-price small{font-size:10px;color:var(--text-muted);}
 
 .pagination-links{margin-top:32px;}
+.pagination-current{background:var(--gold);border-color:var(--gold);color:#0A0A0B;cursor:default;}
+.pagination-ellipsis{color:var(--text-muted);padding:0 4px;user-select:none;}
 
 /* PRODUCT PAGE */
 .product-hero{display:grid;grid-template-columns:1fr 1fr;gap:56px;padding-top:8px;padding-bottom:60px;align-items:start;}

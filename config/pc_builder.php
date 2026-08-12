@@ -58,6 +58,7 @@ return [
             'ram_type' => ['label' => 'Tipo de RAM', 'type' => 'select', 'options' => 'dynamic:ram_type'],
             'form_factor' => ['label' => 'Form factor', 'type' => 'select', 'options' => 'dynamic:form_factor'],
             'max_ram_gb' => ['label' => 'RAM máxima soportada (GB)', 'type' => 'number'],
+            'wifi' => ['label' => '¿Tiene WiFi integrado?', 'type' => 'select', 'options' => ['no' => 'No', 'si' => 'Sí']],
         ],
 
         'ram' => [

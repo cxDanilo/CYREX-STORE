@@ -202,6 +202,14 @@
           <template x-if="field.type === 'select'">
             <select :name="'compat[' + key + ']'" x-model="compat[key]">
               <option value="">Seleccioná...</option>
+              <!-- Si el valor guardado ya no está en la lista de opciones actual
+                   (se renombró/borró en Compatibilidad, o viene de datos viejos
+                   con otro formato) el <select> lo mostraba en blanco — y al
+                   guardar de nuevo se perdía sin avisar. Esta opción extra lo
+                   muestra tal cual quedó guardado, para que nunca desaparezca solo. -->
+              <template x-if="compat[key] && !(compat[key] in field.options)">
+                <option :value="compat[key]" x-text="compat[key] + ' (guardado, ya no está en la lista)'"></option>
+              </template>
               <template x-for="[optKey, optLabel] in Object.entries(field.options)" :key="optKey">
                 <option :value="optKey" x-text="optLabel"></option>
               </template>
