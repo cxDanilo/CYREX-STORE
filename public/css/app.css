@@ -267,6 +267,16 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .pagination-current{background:var(--gold);border-color:var(--gold);color:#0A0A0B;cursor:default;}
 .pagination-ellipsis{color:var(--text-muted);padding:0 4px;user-select:none;}
 
+/* Orden/filtro/paginación de la tienda ahora se piden por AJAX (ver
+   public/js/shop-ajax.js) — mientras llega la respuesta se atenúa todo
+   el bloque de resultados, y al llegar entra con un fade + leve subida
+   en vez de aparecer de golpe. */
+.shop-main-loading{opacity:.45;pointer-events:none;transition:opacity .2s ease;}
+@keyframes shop-results-in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.shop-main-enter{animation:shop-results-in .35s ease;}
+.motion-reduced .shop-main-enter{animation:none;}
+@media (prefers-reduced-motion:reduce){.shop-main-enter{animation:none;}}
+
 /* PRODUCT PAGE */
 .product-hero{display:grid;grid-template-columns:1fr 1fr;gap:56px;padding-top:8px;padding-bottom:60px;align-items:start;}
 .gallery{position:sticky;top:90px;}

@@ -50,6 +50,15 @@ class ShopController extends Controller
         $bannerImages = json_decode(Setting::get('shop_banner_images', '[]'), true) ?: [];
         $shopBannerImage = $bannerImages ? asset('uploads/'.$bannerImages[array_rand($bannerImages)]) : null;
 
+        // Pedido AJAX (orden/filtro/página cambiados sin recargar, ver
+        // public/js/shop-ajax.js): solo el fragmento de resultados, no la
+        // página completa — activeCategory/shopBannerImage se pasan igual
+        // porque el fragmento también decide si mostrar "Ver todo el
+        // catálogo ×" en base a activeCategory.
+        if ($request->ajax()) {
+            return view('partials.shop-results', compact('products', 'activeCategory', 'filterField', 'filterLabel', 'filterOptions'));
+        }
+
         return view('shop', compact('products', 'activeCategory', 'shopBannerImage', 'filterField', 'filterLabel', 'filterOptions'));
     }
 
