@@ -7,7 +7,7 @@
 <div style="display:flex;gap:32px;align-items:flex-start;"
      x-data="{
         specs: {{ collect($product->specs ?? [])->map(fn($v, $k) => ['key' => $k, 'value' => $v])->values()->toJson() }},
-        variants: {{ $product->relationLoaded('variants') ? $product->variants->map(fn($v) => ['id' => $v->id, 'variant_type' => $v->variant_type, 'variant_value' => $v->variant_value, 'sku' => $v->sku, 'stock' => $v->stock, 'price_override' => $v->price_override])->toJson() : '[]' }},
+        variants: {{ $product->relationLoaded('variants') ? $product->variants->map(fn($v) => ['id' => $v->id, 'variant_type' => $v->variant_type, 'variant_value' => $v->variant_value, 'sku' => $v->sku, 'stock' => $v->stock, 'price_override' => $v->price_override, 'image' => $v->image_url, 'imagePreview' => null, 'removeImage' => false])->toJson() : '[]' }},
         preview: @js($product->image_url),
         name: @js(old('name', $product->name) ?? ''),
         description: @js(old('description', $product->description) ?? ''),
@@ -245,16 +245,25 @@
       <h3>Variantes</h3>
       <p class="form-hint" style="margin-bottom:14px;">Si el producto viene en más de una opción (ej. color), agregalas acá — no crees un producto nuevo por cada variante.</p>
       <template x-for="(variant, i) in variants" :key="i">
-        <div class="repeater-row">
+        <div class="repeater-row" style="grid-template-columns:auto 1fr 1fr 1fr 1fr auto;">
+          <div class="variant-thumb" @click="$event.target.closest('.variant-thumb').querySelector('input[type=file]').click()" title="Foto de esta variante (opcional)">
+            <img :src="variant.imagePreview || variant.image" x-show="variant.imagePreview || variant.image" alt="">
+            <span x-show="!variant.imagePreview && !variant.image" class="variant-thumb-empty">+</span>
+            <button type="button" x-show="variant.imagePreview || variant.image" @click.stop="variant.imagePreview = null; variant.image = null; variant.removeImage = true" class="variant-thumb-clear" aria-label="Sacar imagen de la variante">×</button>
+            <input type="file" accept="image/png,image/jpeg,image/webp" style="display:none;"
+                   :name="'variants[' + i + '][image]'"
+                   @change="variant.imagePreview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null; if ($event.target.files[0]) variant.removeImage = false">
+          </div>
           <input type="hidden" :name="'variants[' + i + '][id]'" x-model="variant.id">
           <input type="text" x-model="variant.variant_type" :name="'variants[' + i + '][variant_type]'" placeholder="Tipo (ej: Color)">
           <input type="text" x-model="variant.variant_value" :name="'variants[' + i + '][variant_value]'" placeholder="Valor (ej: Blanco)">
           <input type="number" min="0" x-model="variant.stock" :name="'variants[' + i + '][stock]'" placeholder="Stock">
           <input type="number" step="0.01" min="0" x-model="variant.price_override" :name="'variants[' + i + '][price_override]'" placeholder="Precio (opcional)">
+          <input type="hidden" :name="'variants[' + i + '][remove_image]'" :value="variant.removeImage ? '1' : '0'">
           <button type="button" class="repeater-remove" x-on:click="variants.splice(i, 1)">×</button>
         </div>
       </template>
-      <button type="button" class="btn btn-sm" x-on:click="variants.push({id: '', variant_type: 'Color', variant_value: '', sku: '', stock: 0, price_override: ''})">+ Agregar variante</button>
+      <button type="button" class="btn btn-sm" x-on:click="variants.push({id: '', variant_type: 'Color', variant_value: '', sku: '', stock: 0, price_override: '', image: null, imagePreview: null, removeImage: false})">+ Agregar variante</button>
     </div>
 
     <div class="form-actions">

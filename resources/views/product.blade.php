@@ -54,9 +54,25 @@
         showBob: {{ $currencyMode === 'bob_only' || ($currencyMode === 'both' && $defaultCurrency === 'BOB') ? 'true' : 'false' }},
         toggled: false,
         rate: {{ $rate }},
-        basePrice: {{ $product->currency === 'USD' ? $product->price : $product->price / $rate }},
-        variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'name' => $v->variant_value])->toJson() }},
+        // basePrice era un valor fijo calculado una sola vez en el
+        // servidor — nunca se actualizaba al cambiar de variante. Ahora
+        // es un getter: cada variante puede traer su propio
+        // price_override (ver Cart.php, que YA lo respeta al agregar al
+        // carrito — acá solo faltaba reflejarlo en la pantalla).
+        get basePrice() {
+          const v = this.variants.find(v => v.id === this.variant);
+          const raw = (v && v.price_override !== null && v.price_override !== undefined) ? v.price_override : this.originalPrice;
+          return this.editCurrency === 'USD' ? raw : raw / this.rate;
+        },
+        variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'name' => $v->variant_value, 'price_override' => $v->price_override !== null ? (float) $v->price_override : null, 'image' => $v->image_url])->toJson() }},
         inStock: {{ $product->is_sold_out ? 'false' : 'true' }},
+        flashPrice() {
+          this.$root.querySelectorAll('.price-main, .price-alt').forEach(el => {
+            el.classList.remove('price-flash');
+            void el.offsetWidth;
+            el.classList.add('price-flash');
+          });
+        },
         whatsappHref() {
           const variantObj = this.variants.find(v => v.id === this.variant);
           const variantSuffix = variantObj ? ' (' + variantObj.name + ')' : '';
@@ -79,7 +95,21 @@
         editImagePreview: null,
         galleryImages: {{ Js::from($product->gallery_urls) }},
         galleryActive: null,
-        get mainImage() { return this.editImagePreview || this.galleryActive || this.editImageUrl || this.galleryImages[0] || null; },
+        get selectedVariantImage() {
+          const v = this.variants.find(v => v.id === this.variant);
+          return v ? v.image : null;
+        },
+        // galleryActive (una miniatura clickeada a mano) va ANTES que
+        // selectedVariantImage a propósito: si fuera al revés, con una
+        // variante-con-foto elegida, clickear una miniatura de la
+        // galería no haría nada (quedaría tapado siempre por la foto
+        // de la variante). El init() de abajo limpia galleryActive al
+        // cambiar de variante, para que la foto de la variante nueva
+        // se vea sin tener que tocar nada más.
+        get mainImage() { return this.editImagePreview || this.galleryActive || this.selectedVariantImage || this.editImageUrl || this.galleryImages[0] || null; },
+        init() {
+          this.$watch('variant', () => { this.galleryActive = null; });
+        },
         originalName: {{ Js::from($product->name) }},
         originalPrice: {{ (float) $product->price }},
         originalDescription: {{ Js::from($product->description ?? '') }},
@@ -130,7 +160,6 @@
             this.editDescription = this.originalDescription = data.description ?? '';
             this.editImageUrl = data.image_url;
             this.editImagePreview = null;
-            this.basePrice = this.editCurrency === 'USD' ? data.price : data.price / this.rate;
             if (this.$refs.quickEditImage) this.$refs.quickEditImage.value = '';
             this.editing = false;
           } catch (e) {
@@ -185,7 +214,7 @@
         @foreach($product->variants as $v)
           <div class="variant-swatch"
                :class="{ selected: variant === {{ $v->id }} }"
-               @click="variant = {{ $v->id }}">
+               @click="variant = {{ $v->id }}; flashPrice()">
             {{ $v->variant_value }}
           </div>
         @endforeach

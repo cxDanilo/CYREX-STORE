@@ -25,6 +25,8 @@ class PcBuilderOptionController extends Controller
         'gpu_tier' => 'Rendimiento aproximado de tarjeta gráfica',
         'psu_certification' => 'Certificación 80 Plus (fuentes de poder)',
         'gpu_brand' => 'Marca de tarjeta gráfica',
+        'cooler_type' => 'Tipo de enfriamiento',
+        'switch_type' => 'Tipo de switch (teclados)',
     ];
 
     public function index()

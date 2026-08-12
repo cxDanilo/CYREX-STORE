@@ -114,6 +114,11 @@ class ProductController extends Controller
         foreach ($product->images as $image) {
             Storage::disk('uploads')->delete($image->path);
         }
+        foreach ($product->variants as $variant) {
+            if ($variant->image) {
+                Storage::disk('uploads')->delete($variant->image);
+            }
+        }
         $product->delete();
 
         return back()->with('status', 'Producto eliminado.');
@@ -161,7 +166,11 @@ class ProductController extends Controller
 
     private function storeImage(Request $request): string
     {
-        $file = $request->file('image');
+        return $this->storeUploadedImage($request->file('image'));
+    }
+
+    private function storeUploadedImage(\Illuminate\Http\UploadedFile $file): string
+    {
         $filename = Str::random(20).'.'.$file->getClientOriginalExtension();
         $file->storeAs('products', $filename, 'uploads');
 
@@ -274,7 +283,12 @@ class ProductController extends Controller
     {
         $variants = [];
 
-        foreach ($request->input('variants', []) as $variant) {
+        // El índice $i tiene que ser el del array de request tal cual
+        // (no un contador aparte) porque más abajo se usa exactamente
+        // ese mismo índice para buscar el archivo "variants.$i.image"
+        // — si se contara aparte, saltear una fila vacía desalinearía
+        // texto e imagen.
+        foreach ($request->input('variants', []) as $i => $variant) {
             if (empty($variant['variant_value'])) {
                 continue;
             }
@@ -286,12 +300,20 @@ class ProductController extends Controller
                 'sku' => $variant['sku'] ?? null,
                 'stock' => ($variant['stock'] ?? '') !== '' ? (int) $variant['stock'] : 0,
                 'price_override' => ($variant['price_override'] ?? '') !== '' ? $variant['price_override'] : null,
+                'image_file' => $request->file("variants.$i.image"),
+                'remove_image' => $request->boolean("variants.$i.remove_image"),
             ];
         }
 
         return $variants;
     }
 
+    /**
+     * A diferencia de los demás campos (que solo se pisan con lo que
+     * venga del form), la imagen de cada variante necesita el modelo
+     * existente ANTES de actualizar — para saber si hay que borrar un
+     * archivo viejo del disco al reemplazarla o sacarla.
+     */
     private function syncVariants(Product $product, array $variants): void
     {
         $keptIds = [];
@@ -300,14 +322,38 @@ class ProductController extends Controller
             $id = $variant['id'];
             unset($variant['id']);
 
-            if ($id && $product->variants()->where('id', $id)->exists()) {
-                $product->variants()->where('id', $id)->update($variant);
-                $keptIds[] = $id;
+            $imageFile = $variant['image_file'];
+            $removeImage = $variant['remove_image'];
+            unset($variant['image_file'], $variant['remove_image']);
+
+            $existing = $id ? $product->variants()->where('id', $id)->first() : null;
+
+            if ($imageFile) {
+                if ($existing?->image) {
+                    Storage::disk('uploads')->delete($existing->image);
+                }
+                $variant['image'] = $this->storeUploadedImage($imageFile);
+            } elseif ($removeImage) {
+                if ($existing?->image) {
+                    Storage::disk('uploads')->delete($existing->image);
+                }
+                $variant['image'] = null;
+            }
+
+            if ($existing) {
+                $existing->update($variant);
+                $keptIds[] = $existing->id;
             } else {
                 $keptIds[] = $product->variants()->create($variant)->id;
             }
         }
 
+        $removed = $product->variants()->whereNotIn('id', $keptIds)->get();
+        foreach ($removed as $variant) {
+            if ($variant->image) {
+                Storage::disk('uploads')->delete($variant->image);
+            }
+        }
         $product->variants()->whereNotIn('id', $keptIds)->delete();
     }
 }

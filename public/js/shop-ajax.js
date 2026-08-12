@@ -25,6 +25,23 @@ window.addEventListener('DOMContentLoaded', function () {
       && shopMain.contains(link);
   }
 
+  // Marca cada <img> de card como "ya cargada" para que su fade-in (ver
+  // app.css, .shop-main-enter .card-media img) dispare apenas la foto
+  // en sí termine de bajar — no apenas se insertó el HTML, que es
+  // bastante antes. img.complete cubre el caso de una imagen que ya
+  // estaba en caché del navegador (ahí 'load' nunca dispararía porque
+  // ya disparó antes de que este listener existiera).
+  function fadeInImages(container) {
+    container.querySelectorAll('.card-media img').forEach(function (img) {
+      if (img.complete) {
+        img.classList.add('is-loaded');
+      } else {
+        img.addEventListener('load', function () { img.classList.add('is-loaded'); });
+        img.addEventListener('error', function () { img.classList.add('is-loaded'); });
+      }
+    });
+  }
+
   function loadUrl(shopMain, url, opts) {
     if (currentController) currentController.abort();
     currentController = new AbortController();
@@ -49,6 +66,7 @@ window.addEventListener('DOMContentLoaded', function () {
         shopMain.innerHTML = html;
         shopMain.classList.remove('shop-main-loading');
         shopMain.classList.add('shop-main-enter');
+        fadeInImages(shopMain);
 
         // El HTML recién insertado con innerHTML no lo detecta Alpine
         // solo — sin esto, el desplegable de orden y los botones de

@@ -65,6 +65,18 @@ class PcBuilderOptionsSeeder extends Seeder
                 '80plus_platinum' => '80 Plus Platinum',
                 '80plus_titanium' => '80 Plus Titanium',
             ],
+            'cooler_type' => [
+                'aire' => 'Aire',
+                'liquido' => 'Líquido',
+                'stock' => 'Stock',
+            ],
+            // Mismas claves (mecanico/membrana) que antes estaban
+            // hardcodeadas en config/pc_builder.php — así los teclados
+            // ya cargados con ese valor lo siguen mostrando bien.
+            'switch_type' => [
+                'mecanico' => 'Mecánico',
+                'membrana' => 'Membrana',
+            ],
         ];
 
         foreach ($groups as $group => $options) {

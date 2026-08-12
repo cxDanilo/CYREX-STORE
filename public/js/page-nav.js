@@ -53,6 +53,21 @@ window.addEventListener('DOMContentLoaded', function () {
     return link.pathname === '/tienda' || link.pathname.indexOf('/producto/') === 0;
   }
 
+  // Ver shop-ajax.js: mismo motivo — la card entra antes de que la
+  // imagen en sí termine de bajar de la red, así que la foto necesita
+  // su propio fade-in disparado por 'load', no por la inserción del
+  // HTML.
+  function fadeInImages(container) {
+    container.querySelectorAll('.card-media img').forEach(function (img) {
+      if (img.complete) {
+        img.classList.add('is-loaded');
+      } else {
+        img.addEventListener('load', function () { img.classList.add('is-loaded'); });
+        img.addEventListener('error', function () { img.classList.add('is-loaded'); });
+      }
+    });
+  }
+
   function loadPage(url, opts) {
     if (currentController) currentController.abort();
     currentController = new AbortController();
@@ -81,6 +96,7 @@ window.addEventListener('DOMContentLoaded', function () {
         main.classList.remove('page-nav-enter');
         void main.offsetWidth;
         main.classList.add('page-nav-enter');
+        fadeInImages(main);
 
         // Igual que en shop-ajax.js: el HTML inyectado con innerHTML
         // no lo detecta Alpine solo.

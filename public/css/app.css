@@ -242,6 +242,24 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .card.is-tilting{transition:border-color .2s,transform .05s linear;}
 .card-media{aspect-ratio:1/1;background:var(--bg-elevated-2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
 .card-media img{width:100%;height:100%;object-fit:cover;}
+/* Cuando la card viene de un reemplazo AJAX (tienda/producto), la
+   animación de entrada de la card ya terminó bastante antes de que la
+   imagen en sí termine de bajar de la red — sin esto, la card
+   "aparece" con el hueco vacío del fondo y la foto se mete de golpe
+   después, se ve roto. Con este fade la imagen entra suave apenas
+   termina de cargar, sea cual sea el momento — el hueco de atrás
+   (.card-media ya tiene su propio color de fondo) hace de placeholder
+   mientras tanto, así nunca se ve un espacio en blanco. */
+.shop-main-enter .card-media img,
+.page-nav-enter .card-media img{opacity:0;transition:opacity .25s ease;}
+.shop-main-enter .card-media img.is-loaded,
+.page-nav-enter .card-media img.is-loaded{opacity:1;}
+.motion-reduced .shop-main-enter .card-media img,
+.motion-reduced .page-nav-enter .card-media img{opacity:1;transition:none;}
+@media (prefers-reduced-motion:reduce){
+  .shop-main-enter .card-media img,
+  .page-nav-enter .card-media img{opacity:1;transition:none;}
+}
 .badge{position:absolute;top:12px;left:12px;font-family:var(--font-mono);font-size:10px;padding:4px 10px;border-radius:100px;background:var(--gold);color:#0A0A0B;font-weight:600;}
 .card-quick-add{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(8,8,8,.75);backdrop-filter:blur(4px);border:1px solid var(--border);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .15s,opacity .2s;z-index:3;opacity:0;pointer-events:none;}
 .card:hover .card-quick-add{opacity:1;pointer-events:auto;}

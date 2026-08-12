@@ -11,11 +11,16 @@ class ProductVariant extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_id', 'variant_type', 'variant_value', 'sku', 'stock', 'price_override',
+        'product_id', 'variant_type', 'variant_value', 'sku', 'stock', 'price_override', 'image',
     ];
 
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image ? asset('uploads/'.$this->image) : null;
     }
 }

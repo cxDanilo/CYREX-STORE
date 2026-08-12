@@ -87,6 +87,7 @@ return [
         ],
 
         'cooler' => [
+            'tipo' => ['label' => 'Tipo de enfriamiento', 'type' => 'select', 'options' => 'dynamic:cooler_type', 'shop_filter' => true],
             'sockets' => ['label' => 'Sockets compatibles', 'type' => 'checkboxes', 'options' => 'dynamic:socket'],
             'radiator_mm' => ['label' => 'Radiador (0 = enfriamiento por aire)', 'type' => 'select', 'options' => 'dynamic:radiator_size'],
         ],
@@ -97,7 +98,7 @@ return [
         ],
 
         'teclado' => [
-            'tipo_switch' => ['label' => 'Tipo', 'type' => 'select', 'options' => ['mecanico' => 'Mecánico', 'membrana' => 'Membrana'], 'shop_filter' => true],
+            'tipo_switch' => ['label' => 'Tipo', 'type' => 'select', 'options' => 'dynamic:switch_type', 'shop_filter' => true],
         ],
     ],
 
