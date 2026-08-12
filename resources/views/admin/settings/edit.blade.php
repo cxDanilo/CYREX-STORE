@@ -125,6 +125,26 @@
   </div>
 
   <div class="form-section">
+    <h3>Banner de cotización PDF</h3>
+    <p class="form-hint" style="margin-bottom:14px;">Texto y color del banner en el PDF de "Arma tu PC" — cambialo por temporada (Navidad, Año Nuevo, Día de la madre, etc.).</p>
+
+    <div class="form-group">
+      <label for="quote_banner_text">Texto del banner</label>
+      <input type="text" id="quote_banner_text" name="quote_banner_text" value="{{ old('quote_banner_text', $quoteBannerText) }}" maxlength="60" required>
+      @error('quote_banner_text') <div class="error">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="form-group">
+      <label for="quote_banner_color">Color del banner</label>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <input type="color" id="quote_banner_color_picker" value="{{ old('quote_banner_color', $quoteBannerColor) }}" style="width:44px;height:38px;padding:2px;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:8px;cursor:pointer;" onchange="document.getElementById('quote_banner_color').value = this.value;">
+        <input type="text" id="quote_banner_color" name="quote_banner_color" value="{{ old('quote_banner_color', $quoteBannerColor) }}" style="flex:1;" oninput="document.getElementById('quote_banner_color_picker').value = this.value;" required>
+      </div>
+      @error('quote_banner_color') <div class="error">{{ $message }}</div> @enderror
+    </div>
+  </div>
+
+  <div class="form-section">
     <h3>Banner de Tienda</h3>
     <p class="form-hint" style="margin-bottom:14px;">De fondo, detrás del título "Tienda" — se elige una al azar en cada visita. Subí varias para que varíe. Recomendado: horizontal, 1600x500px aprox.</p>
 

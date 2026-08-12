@@ -27,6 +27,7 @@ use App\Http\Controllers\SitemapController;
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/arma-tu-pc', [App\Http\Controllers\PcBuilderController::class, 'index'])->name('pc-builder');
+Route::post('/arma-tu-pc/cotizacion', [App\Http\Controllers\PcBuilderQuoteController::class, 'download'])->name('pc-builder.quote');
 Route::get('/tienda', [ShopController::class, 'index'])->name('shop');
 Route::get('/producto/{slug}', [ShopController::class, 'show'])->name('product.show');
 Route::get('/buscar-sugerencias', [ShopController::class, 'suggest'])->name('shop.suggest');

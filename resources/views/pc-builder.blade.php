@@ -247,6 +247,32 @@
           for (const product of Object.values(this.selected)) {
             await $store.cart.add(product.id, null);
           }
+        },
+
+        // El PDF se arma en el servidor a partir de los IDs elegidos
+        // (recalcula precios ahí, nunca confía en lo que mande el
+        // navegador) — se manda como POST normal (no fetch) para que
+        // el navegador maneje la descarga solo, vía el header
+        // Content-Disposition que devuelve el controller.
+        downloadQuotePdf() {
+          const items = Object.entries(this.selected).map(([type, p]) => ({ type, id: p.id }));
+          if (!items.length) return;
+
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '{{ route('pc-builder.quote') }}';
+          form.style.display = 'none';
+
+          form.appendChild(Object.assign(document.createElement('input'), { name: '_token', value: '{{ csrf_token() }}' }));
+          items.forEach((item, i) => {
+            form.appendChild(Object.assign(document.createElement('input'), { name: `items[${i}][type]`, value: item.type }));
+            form.appendChild(Object.assign(document.createElement('input'), { name: `items[${i}][id]`, value: item.id }));
+          });
+          form.appendChild(Object.assign(document.createElement('input'), { name: 'ram_qty', value: this.ramQty }));
+
+          document.body.appendChild(form);
+          form.submit();
+          form.remove();
         }
      }">
 
@@ -385,6 +411,9 @@
 
       <button type="button" class="btn-cta" style="width:100%;margin-top:16px;" :disabled="!Object.keys(selected).length || hasBlockingIssues" @click="addAllToCart()">
         Agregar todo al carrito
+      </button>
+      <button type="button" class="btn-cta-whatsapp" style="width:100%;margin-top:10px;" :disabled="!Object.keys(selected).length" x-show="Object.keys(selected).length" @click="downloadQuotePdf()">
+        Descargar PDF
       </button>
       <a :href="'https://wa.me/{{ \App\Models\Setting::get('whatsapp_number', '59177947379') }}?text=' + encodeURIComponent('Hola! Quiero armar esta PC:\n' + Object.entries(selected).map(([type, p]) => '- ' + (type === 'ram' && ramQty > 1 ? ramQty + 'x ' : '') + p.name).join('\n') + '\nTotal aprox: $' + totalUsd().toFixed(2))"
          target="_blank" rel="noopener" class="btn-cta-whatsapp" style="width:100%;margin-top:10px;text-decoration:none;" x-show="Object.keys(selected).length">

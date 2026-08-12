@@ -28,11 +28,14 @@ class SettingsController extends Controller
         $reducedMotion = Setting::get('reduced_motion', 'off');
         $ga4MeasurementId = Setting::get('ga4_measurement_id', '');
         $shopBannerImages = json_decode(Setting::get('shop_banner_images', '[]'), true) ?: [];
+        $quoteBannerText = Setting::get('quote_banner_text', 'COTIZACIÓN');
+        $quoteBannerColor = Setting::get('quote_banner_color', '#FFD900');
 
         return view('admin.settings.edit', compact(
             'currentRate', 'currencyMode', 'defaultCurrency', 'whatsappNumber', 'categoryMenuScope',
             'logoHeight', 'logoPath', 'whatsappBtnText', 'shopCtaText', 'footerWhatsappBtnText',
-            'footerTagline', 'accentColor', 'reducedMotion', 'ga4MeasurementId', 'shopBannerImages'
+            'footerTagline', 'accentColor', 'reducedMotion', 'ga4MeasurementId', 'shopBannerImages',
+            'quoteBannerText', 'quoteBannerColor'
         ));
     }
 
@@ -58,6 +61,8 @@ class SettingsController extends Controller
             'remove_banner_images.*' => ['string'],
             'new_banner_images' => ['nullable', 'array'],
             'new_banner_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'quote_banner_text' => ['required', 'string', 'max:60'],
+            'quote_banner_color' => ['required', 'regex:/^#[0-9A-Fa-f]{6}$/'],
         ]);
 
         if ($request->filled('rate') && (float) $data['rate'] !== ExchangeRate::current()) {
@@ -76,6 +81,8 @@ class SettingsController extends Controller
         Setting::set('accent_color', $data['accent_color']);
         Setting::set('reduced_motion', $data['reduced_motion']);
         Setting::set('ga4_measurement_id', $data['ga4_measurement_id'] ?? '');
+        Setting::set('quote_banner_text', $data['quote_banner_text']);
+        Setting::set('quote_banner_color', $data['quote_banner_color']);
         $this->updateBannerImages($request);
 
         if ($request->hasFile('logo')) {
