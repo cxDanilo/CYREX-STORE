@@ -56,7 +56,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,10,11,0.92);backdrop-fi
    75% del alto del video y recién ahí empieza a subir hasta 1, así el
    cambio se siente atado al scroll real y no un salto brusco. En el
    resto del sitio el nav no tiene esta clase y se comporta como siempre. */
-.nav-hero-mode{position:fixed;left:0;right:0;transition:none;background:rgba(10,10,11,calc(var(--nav-progress, 0) * .92));backdrop-filter:blur(calc(var(--nav-progress, 0) * 12px));border-bottom:1px solid rgba(255,255,255,calc(var(--nav-progress, 0) * .08));}
+.nav-hero-mode{position:fixed;left:0;right:0;transition:none;will-change:backdrop-filter,background-color;background:rgba(10,10,11,calc(var(--nav-progress, 0) * .92));backdrop-filter:blur(calc(var(--nav-progress, 0) * 8px));border-bottom:1px solid rgba(255,255,255,calc(var(--nav-progress, 0) * .08));}
 .nav-hero-mode .nav-inner{min-height:calc(88px - (30px * var(--nav-progress, 0)));position:relative;z-index:1;text-shadow:0 1px 4px rgba(0,0,0,.55);transition:none;}
 .nav-hero-mode .logo-full{height:calc(60px - (20px * var(--nav-progress, 0)));transition:none;}
 

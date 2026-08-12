@@ -30,6 +30,14 @@ window.addEventListener('DOMContentLoaded', function () {
     if (nav) {
       var progress = (window.scrollY - startAt) / span;
       progress = Math.min(1, Math.max(0, progress));
+      // El blur del header (backdrop-filter) es carísimo de recalcular, y
+      // cada valor de --nav-progress distinto dispara un recálculo nuevo.
+      // Con progress "crudo" (precisión de punto flotante atada 1:1 al
+      // scroll en píxeles) eso son decenas de recálculos por segundo al
+      // scrollear rápido — de ahí el trabón. Redondeando a pasos de 5% se
+      // ve igual de fluido (20 pasos en ~200px de scroll es imperceptible)
+      // pero corta esa cantidad de recálculos a una fracción.
+      progress = Math.round(progress * 20) / 20;
       nav.style.setProperty('--nav-progress', progress);
     }
 
