@@ -27,7 +27,7 @@ use App\Http\Controllers\SitemapController;
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/arma-tu-pc', [App\Http\Controllers\PcBuilderController::class, 'index'])->name('pc-builder');
-Route::post('/arma-tu-pc/cotizacion', [App\Http\Controllers\PcBuilderQuoteController::class, 'download'])->name('pc-builder.quote');
+Route::post('/arma-tu-pc/cotizacion', [App\Http\Controllers\PcBuilderQuoteController::class, 'download'])->middleware('throttle:6,1')->name('pc-builder.quote');
 Route::get('/tienda', [ShopController::class, 'index'])->name('shop');
 Route::get('/producto/{slug}', [ShopController::class, 'show'])->name('product.show');
 Route::get('/buscar-sugerencias', [ShopController::class, 'suggest'])->name('shop.suggest');
@@ -50,9 +50,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         Route::get('historial', [AdminProductActivityLogController::class, 'index'])->name('historial.index');
-
-        Route::get('importar-woocommerce', [AdminWooCommerceImportController::class, 'create'])->name('woocommerce.create');
-        Route::post('importar-woocommerce', [AdminWooCommerceImportController::class, 'store'])->name('woocommerce.store');
 
         Route::get('compatibilidad', [AdminPcBuilderOptionController::class, 'index'])->name('pc-builder-options.index');
         Route::post('compatibilidad', [AdminPcBuilderOptionController::class, 'store'])->name('pc-builder-options.store');
@@ -85,6 +82,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('usuarios/{user}', [AdminUserController::class, 'destroy'])->name('usuarios.destroy');
 
             Route::post('cache/purgar', [AdminCacheController::class, 'purge'])->name('cache.purge');
+
+            // Descarga URLs externas del CSV al servidor (riesgo de SSRF /
+            // ejecución de archivos maliciosos si el CSV no es confiable) —
+            // se restringe a admin, no alcanza con estar logueado.
+            Route::get('importar-woocommerce', [AdminWooCommerceImportController::class, 'create'])->name('woocommerce.create');
+            Route::post('importar-woocommerce', [AdminWooCommerceImportController::class, 'store'])->name('woocommerce.store');
         });
 
         Route::get('ajustes', [AdminSettingsController::class, 'edit'])->name('settings.edit');

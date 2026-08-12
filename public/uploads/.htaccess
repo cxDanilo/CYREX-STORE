@@ -1,0 +1,12 @@
+# Los archivos acá adentro son subidos por usuarios (productos, medios,
+# importaciones CSV) — nunca deben ejecutarse como script, pase lo que
+# pase con la validación de la app. Bloqueo defensivo a nivel servidor.
+<FilesMatch "\.(php|php3|php4|php5|php7|phtml|pl|py|cgi|sh|asp|aspx|exe)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Deny,Allow
+        Deny from all
+    </IfModule>
+</FilesMatch>

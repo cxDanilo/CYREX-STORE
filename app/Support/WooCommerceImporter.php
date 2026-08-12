@@ -264,8 +264,28 @@ class WooCommerceImporter
 
         $first = trim(explode(',', $imagesField)[0]);
 
-        return filter_var($first, FILTER_VALIDATE_URL) ? $first : null;
+        if (! filter_var($first, FILTER_VALIDATE_URL)) {
+            return null;
+        }
+
+        return in_array(strtolower(parse_url($first, PHP_URL_SCHEME) ?? ''), ['http', 'https'], true) ? $first : null;
     }
+
+    /**
+     * Mapa de Content-Type real → extensión — nunca confiamos en la
+     * extensión que traiga la URL del CSV (un link a "foto.jpg" podría
+     * en realidad servir cualquier cosa). Solo se acepta lo que esté
+     * en esta lista, y además se valida el binario con getimagesizefromstring
+     * antes de guardarlo, por si el servidor remoto miente en el header.
+     */
+    private const ALLOWED_IMAGE_TYPES = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+        'image/gif' => 'gif',
+    ];
+
+    private const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 
     private function downloadImage(string $url): ?string
     {
@@ -276,7 +296,13 @@ class WooCommerceImporter
                 return null;
             }
 
-            $extension = pathinfo(parse_url($url, PHP_URL_PATH) ?? '', PATHINFO_EXTENSION) ?: 'jpg';
+            $contentType = strtolower(explode(';', $response->header('Content-Type') ?? '')[0]);
+            $extension = self::ALLOWED_IMAGE_TYPES[$contentType] ?? null;
+
+            if (! $extension || strlen($response->body()) > self::MAX_IMAGE_BYTES || ! @getimagesizefromstring($response->body())) {
+                return null;
+            }
+
             $filename = 'products/'.Str::random(20).'.'.$extension;
 
             Storage::disk('uploads')->put($filename, $response->body());
