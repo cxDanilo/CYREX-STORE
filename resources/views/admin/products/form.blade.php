@@ -21,7 +21,7 @@
         get componentType() { return (this.categories.find(c => c.id === this.categoryId) || {}).componentType || null; },
         get isPcPiece() { return this.pcBuilderTypes.includes(this.componentType); },
         get activeFields() { return this.componentType ? (this.componentFields[this.componentType] || {}) : {}; },
-        compat: {{ Js::from((object) ($product->compat ?: [])) }}
+        compat: {{ Js::from((object) (old('compat', $product->compat) ?: [])) }}
      }">
   <form method="POST" action="{{ $product->exists ? route('admin.productos.update', $product) : route('admin.productos.store') }}" class="admin-form" enctype="multipart/form-data" style="flex:1;min-width:0;">
     @csrf
