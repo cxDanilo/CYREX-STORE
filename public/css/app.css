@@ -162,6 +162,10 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .footer-whatsapp-btn svg{color:#25D366;flex-shrink:0;}
 .footer-whatsapp-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--bg-elevated);transform:translateY(-1px);}
 
+.footer-community-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:100px;border:1px solid rgba(37,211,102,.35);background:rgba(37,211,102,.08);color:#25D366;font-size:13px;font-weight:500;white-space:nowrap;margin-top:10px;transition:border-color .15s,background .15s,transform .15s;}
+.footer-community-btn svg{color:#25D366;flex-shrink:0;}
+.footer-community-btn:hover{border-color:#25D366;background:rgba(37,211,102,.15);transform:translateY(-1px);}
+
 .footer-social{display:flex;gap:12px;margin-top:16px;}
 .footer-social-icon{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:100px;border:1px solid var(--border);color:var(--text-secondary);transition:border-color .15s,color .15s;}
 .footer-social-icon svg{width:16px;height:16px;}
@@ -449,6 +453,7 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .currency-toggle button.active{color:#0A0A0B;}
 .currency-toggle button:not(.active):hover{color:var(--text-secondary);}
 .price-main{font-family:var(--font-mono);font-size:38px;font-weight:500;color:var(--gold);line-height:1;}
+.exchange-rate-note{font-family:var(--font-mono);font-size:11.5px;color:var(--text-muted);margin-top:8px;}
 .price-alt{font-family:var(--font-mono);font-size:13px;color:var(--text-muted);margin-top:8px;}
 .price-main.price-flash,.price-alt.price-flash{animation:price-flash .25s ease;}
 @keyframes price-flash{0%{opacity:.35;}100%{opacity:1;}}

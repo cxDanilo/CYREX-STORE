@@ -39,6 +39,16 @@
       </select>
       <div class="form-hint">Se usa cuando el modo de arriba es "Ambas" — define qué precio se ve primero en la página de producto.</div>
     </div>
+
+    <div class="form-group">
+      <label for="show_exchange_rate_badge">Mostrar la tasa del día en la página de producto</label>
+      <select id="show_exchange_rate_badge" name="show_exchange_rate_badge" required>
+        <option value="on" {{ old('show_exchange_rate_badge', $showExchangeRateBadge) === 'on' ? 'selected' : '' }}>Sí</option>
+        <option value="off" {{ old('show_exchange_rate_badge', $showExchangeRateBadge) === 'off' ? 'selected' : '' }}>No</option>
+      </select>
+      <div class="form-hint">Un texto chico ("1 USD = Bs {{ number_format($currentRate, 2) }}") junto al selector USD/BOB, solo aplica cuando arriba está en "Ambas".</div>
+      @error('show_exchange_rate_badge') <div class="error">{{ $message }}</div> @enderror
+    </div>
   </div>
 
   <div class="form-section">
@@ -202,6 +212,19 @@
       <input type="text" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number', $whatsappNumber) }}" placeholder="59177947379" required>
       <div class="form-hint">A este número llega el mensaje de "Finalizar por WhatsApp" del carrito.</div>
       @error('whatsapp_number') <div class="error">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="form-group">
+      <label for="whatsapp_community_url">Link de la comunidad de WhatsApp</label>
+      <input type="url" id="whatsapp_community_url" name="whatsapp_community_url" value="{{ old('whatsapp_community_url', $whatsappCommunityUrl) }}" placeholder="https://chat.whatsapp.com/...">
+      <div class="form-hint">Agrega un botón en el footer del sitio. Dejalo vacío para no mostrar el botón.</div>
+      @error('whatsapp_community_url') <div class="error">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="form-group">
+      <label for="whatsapp_community_btn_text">Texto del botón de la comunidad</label>
+      <input type="text" id="whatsapp_community_btn_text" name="whatsapp_community_btn_text" value="{{ old('whatsapp_community_btn_text', $whatsappCommunityBtnText) }}" maxlength="60" required>
+      @error('whatsapp_community_btn_text') <div class="error">{{ $message }}</div> @enderror
     </div>
   </div>
 

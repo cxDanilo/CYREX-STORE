@@ -69,6 +69,8 @@ class AppServiceProvider extends ServiceProvider
                 'footerCategories' => Cache::remember('footer.categories', self::NAV_CACHE_TTL, fn () => Category::parents()->get()),
                 'footerPages' => Cache::remember('footer.pages', self::NAV_CACHE_TTL, fn () => Page::inFooter()->published()->get()),
                 'whatsappNumber' => Setting::get('whatsapp_number', '59177947379'),
+                'whatsappCommunityUrl' => Setting::get('whatsapp_community_url', ''),
+                'whatsappCommunityBtnText' => Setting::get('whatsapp_community_btn_text', 'Únete a nuestra comunidad'),
                 'footerWhatsappBtnText' => Setting::get('footer_whatsapp_btn_text', 'Escríbenos por WhatsApp'),
                 'footerTagline' => Setting::get('footer_tagline', 'Componentes y periféricos gamer en Bolivia. Santa Cruz y Cochabamba.'),
                 'accentColor' => Setting::get('accent_color', '#FFD900'),

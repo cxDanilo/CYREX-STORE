@@ -264,6 +264,9 @@
           <button type="button" @click="toggled = true; showBob = false" :class="!showBob && 'active'">USD</button>
           <button type="button" @click="toggled = true; showBob = true" :class="showBob && 'active'">BOB</button>
         </div>
+        @if(\App\Models\Setting::get('show_exchange_rate_badge', 'on') === 'on')
+          <div class="exchange-rate-note">1 USD = Bs {{ number_format($rate, 2) }}</div>
+        @endif
       @endif
       <div class="price-main" x-text="showBob ? 'Bs ' + (basePrice * rate).toFixed(2) : '$' + basePrice.toFixed(2)"
            x-effect="showBob; if (toggled) { $el.classList.remove('price-flash'); void $el.offsetWidth; $el.classList.add('price-flash'); }">{{ $priceMainInitial }}</div>

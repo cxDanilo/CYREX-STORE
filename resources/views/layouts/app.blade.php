@@ -55,6 +55,12 @@
           @include('partials.whatsapp-icon')
           {{ $footerWhatsappBtnText }}
         </a>
+        @if($whatsappCommunityUrl)
+          <a href="{{ $whatsappCommunityUrl }}" target="_blank" rel="noopener" class="footer-community-btn">
+            @include('partials.whatsapp-icon')
+            {{ $whatsappCommunityBtnText }}
+          </a>
+        @endif
         @if($socialLinks->isNotEmpty())
           <div class="footer-social">
             @foreach($socialLinks as $link)

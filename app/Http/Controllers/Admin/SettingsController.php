@@ -30,12 +30,16 @@ class SettingsController extends Controller
         $shopBannerImages = json_decode(Setting::get('shop_banner_images', '[]'), true) ?: [];
         $quoteBannerText = Setting::get('quote_banner_text', 'COTIZACIÓN');
         $quoteBannerColor = Setting::get('quote_banner_color', '#FFD900');
+        $showExchangeRateBadge = Setting::get('show_exchange_rate_badge', 'on');
+        $whatsappCommunityUrl = Setting::get('whatsapp_community_url', '');
+        $whatsappCommunityBtnText = Setting::get('whatsapp_community_btn_text', 'Únete a nuestra comunidad');
 
         return view('admin.settings.edit', compact(
             'currentRate', 'currencyMode', 'defaultCurrency', 'whatsappNumber', 'categoryMenuScope',
             'logoHeight', 'logoPath', 'whatsappBtnText', 'shopCtaText', 'footerWhatsappBtnText',
             'footerTagline', 'accentColor', 'reducedMotion', 'ga4MeasurementId', 'shopBannerImages',
-            'quoteBannerText', 'quoteBannerColor'
+            'quoteBannerText', 'quoteBannerColor', 'showExchangeRateBadge', 'whatsappCommunityUrl',
+            'whatsappCommunityBtnText'
         ));
     }
 
@@ -63,6 +67,9 @@ class SettingsController extends Controller
             'new_banner_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'quote_banner_text' => ['required', 'string', 'max:60'],
             'quote_banner_color' => ['required', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'show_exchange_rate_badge' => ['required', 'in:on,off'],
+            'whatsapp_community_url' => ['nullable', 'url', 'max:255'],
+            'whatsapp_community_btn_text' => ['required', 'string', 'max:60'],
         ]);
 
         if ($request->filled('rate') && (float) $data['rate'] !== ExchangeRate::current()) {
@@ -83,6 +90,9 @@ class SettingsController extends Controller
         Setting::set('ga4_measurement_id', $data['ga4_measurement_id'] ?? '');
         Setting::set('quote_banner_text', $data['quote_banner_text']);
         Setting::set('quote_banner_color', $data['quote_banner_color']);
+        Setting::set('show_exchange_rate_badge', $data['show_exchange_rate_badge']);
+        Setting::set('whatsapp_community_url', $data['whatsapp_community_url'] ?? '');
+        Setting::set('whatsapp_community_btn_text', $data['whatsapp_community_btn_text']);
         $this->updateBannerImages($request);
 
         if ($request->hasFile('logo')) {
