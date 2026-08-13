@@ -10,9 +10,28 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    public function showLogin()
+    /**
+     * El mensaje de "demasiados intentos" viene por defecto de un
+     * withErrors() flasheado, que solo sobrevive UN request — si el
+     * visitante refresca la página en vez de reenviar el form, el
+     * contador desaparece aunque el bloqueo real (en RateLimiter)
+     * sigue activo. Para que la página muestre el estado real incluso
+     * después de un refresh, guardamos el último email intentado en
+     * sesión normal (no flash) y volvemos a chequear el límite acá.
+     */
+    public function showLogin(Request $request)
     {
-        return view('admin.auth.login');
+        $lockoutSeconds = null;
+        $email = $request->session()->get('login_throttle_email');
+
+        if ($email) {
+            $throttleKey = $this->throttleKey($request, $email);
+            if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+                $lockoutSeconds = RateLimiter::availableIn($throttleKey);
+            }
+        }
+
+        return view('admin.auth.login', ['lockoutSeconds' => $lockoutSeconds]);
     }
 
     /**
@@ -28,7 +47,8 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        $throttleKey = Str::transliterate(Str::lower($credentials['email'])).'|'.$request->ip();
+        $request->session()->put('login_throttle_email', $credentials['email']);
+        $throttleKey = $this->throttleKey($request, $credentials['email']);
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             $seconds = RateLimiter::availableIn($throttleKey);
@@ -47,9 +67,15 @@ class AuthController extends Controller
         }
 
         RateLimiter::clear($throttleKey);
+        $request->session()->forget('login_throttle_email');
         $request->session()->regenerate();
 
         return redirect()->intended(route('admin.dashboard'));
+    }
+
+    private function throttleKey(Request $request, string $email): string
+    {
+        return Str::transliterate(Str::lower($email)).'|'.$request->ip();
     }
 
     public function logout(Request $request)

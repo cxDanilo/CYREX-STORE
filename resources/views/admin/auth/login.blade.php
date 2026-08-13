@@ -17,24 +17,47 @@
     <div class="admin-login-logo">CYREX<span>.</span></div>
     <div class="admin-login-sub">Acceso administradores</div>
 
-    @if($errors->any())
+    @if($lockoutSeconds)
+      <div class="form-group"><div class="error" id="lockout-msg">Demasiados intentos. Probá de nuevo en <span id="lockout-seconds">{{ $lockoutSeconds }}</span> segundos.</div></div>
+    @elseif($errors->any())
       <div class="form-group"><div class="error">{{ $errors->first() }}</div></div>
     @endif
 
-    <form method="POST" action="{{ route('admin.login') }}">
+    <form method="POST" action="{{ route('admin.login') }}" id="login-form">
       @csrf
       <div class="form-group">
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus>
+        <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus {{ $lockoutSeconds ? 'disabled' : '' }}>
       </div>
       <div class="form-group">
         <label for="password">Contraseña</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password" required {{ $lockoutSeconds ? 'disabled' : '' }}>
       </div>
-      <button type="submit" class="btn btn-primary">Ingresar</button>
+      <button type="submit" class="btn btn-primary" id="login-submit" {{ $lockoutSeconds ? 'disabled' : '' }}>Ingresar</button>
     </form>
   </div>
 </div>
+
+@if($lockoutSeconds)
+<script>
+  (function() {
+    var remaining = {{ (int) $lockoutSeconds }};
+    var secondsEl = document.getElementById('lockout-seconds');
+    var timer = setInterval(function() {
+      remaining -= 1;
+      if (remaining <= 0) {
+        clearInterval(timer);
+        document.getElementById('lockout-msg').textContent = 'Ya podés volver a intentar.';
+        document.getElementById('email').disabled = false;
+        document.getElementById('password').disabled = false;
+        document.getElementById('login-submit').disabled = false;
+        return;
+      }
+      secondsEl.textContent = remaining;
+    }, 1000);
+  })();
+</script>
+@endif
 
 </body>
 </html>
