@@ -15,7 +15,7 @@ class Product extends Model
     protected $fillable = [
         'category_id', 'name', 'slug', 'description', 'price', 'currency',
         'sku', 'stock', 'has_variants', 'status', 'specs', 'image', 'compat',
-        'is_sold_out', 'sold_out_at',
+        'is_sold_out', 'sold_out_at', 'promotion_id',
     ];
 
     protected $casts = [
@@ -30,6 +30,32 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function promotion(): BelongsTo
+    {
+        return $this->belongsTo(Promotion::class);
+    }
+
+    /**
+     * Un producto está en promo si se le asignó una directamente, o si su
+     * categoría entera está marcada en la promo activa ahora mismo.
+     */
+    public function activePromotion(?Promotion $activePromotion): ?Promotion
+    {
+        if (! $activePromotion) {
+            return null;
+        }
+
+        if ($this->promotion_id === $activePromotion->id) {
+            return $activePromotion;
+        }
+
+        if ($activePromotion->category_id && $activePromotion->category_id === $this->category_id) {
+            return $activePromotion;
+        }
+
+        return null;
     }
 
     public function variants(): HasMany

@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\ExchangeRate;
 use App\Models\Menu;
 use App\Models\Page;
+use App\Models\Promotion;
 use App\Models\Setting;
 use App\Models\SocialLink;
 use App\Support\Cart;
@@ -63,6 +64,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('layouts.app', function ($view) {
+            // La activa siempre tiene prioridad sobre la de teaser — nunca
+            // se muestran las dos a la vez en la barra de anuncio, aunque
+            // ambas existan (ej. Navidad activa + teaser de Año Nuevo).
+            $activePromotion = Promotion::active();
+
             $view->with([
                 'logoHeight' => Setting::get('logo_height', '60'),
                 'logoUrl' => $this->resolveLogoUrl(),
@@ -77,8 +83,20 @@ class AppServiceProvider extends ServiceProvider
                 'reducedMotion' => Setting::get('reduced_motion', 'off'),
                 'socialLinks' => Cache::remember('footer.social_links', self::NAV_CACHE_TTL, fn () => SocialLink::ordered()->get()),
                 'ga4MeasurementId' => Setting::get('ga4_measurement_id', ''),
+                'promoBarActive' => $activePromotion,
+                'promoBarTeaser' => $activePromotion ? null : Promotion::inTeaser(),
+                'promoModal' => $activePromotion?->show_as_modal ? $activePromotion : null,
             ]);
         });
+
+        // Comparten la promo activa las 4 vistas que renderizan cards de
+        // producto (ver Product::activePromotion()) — separado del
+        // composer de arriba porque partials.shop-results se renderiza
+        // solo (fragmento AJAX), sin pasar por layouts.app.
+        View::composer(
+            ['partials.shop-results', 'cms.blocks.productos', 'cms.blocks.categoria-rotativa', 'product'],
+            fn ($view) => $view->with('cardActivePromotion', Promotion::active())
+        );
     }
 
     private function resolveLogoUrl(): string

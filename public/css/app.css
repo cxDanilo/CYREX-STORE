@@ -37,6 +37,36 @@ button,input,select{font-family:inherit;}
 .admin-session-bar{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;background:var(--gold);color:#0A0A0B;font-family:var(--font-mono);font-size:12px;padding:7px 20px;text-align:center;}
 .admin-session-bar strong{font-weight:700;}
 .admin-session-bar-actions{display:flex;align-items:center;gap:14px;}
+
+/* PROMO BAR — nivel 1 del sistema de promociones: tira delgada, nunca fixed, empuja el resto de la página (nav incluido) hacia abajo. */
+.promo-bar{width:100%;overflow:hidden;}
+.promo-bar-enter{transition:opacity .35s ease,transform .35s ease;}
+.promo-bar-enter-start{opacity:0;transform:translateY(-100%);}
+.promo-bar-enter-end{opacity:1;transform:translateY(0);}
+.promo-bar-inner{display:flex;align-items:center;justify-content:center;gap:14px;padding:9px 44px;position:relative;text-align:center;}
+.promo-bar-text{font-size:13px;font-weight:500;}
+.promo-bar-countdown{font-family:var(--font-mono);font-weight:700;margin-left:8px;letter-spacing:.02em;}
+.promo-bar-active{background:var(--gold);color:#0A0A0B;}
+.promo-bar-teaser{background:var(--bg-elevated);color:var(--text-secondary);border-bottom:1px solid var(--gold-dim);}
+.promo-bar-close{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;line-height:1;cursor:pointer;color:inherit;opacity:.6;padding:6px;transition:opacity .15s;}
+.promo-bar-close:hover{opacity:1;}
+.motion-reduced .promo-bar-enter{transition:none;}
+
+/* PROMO MODAL — nivel 3, reservado para 1-2 fechas grandes al año. */
+.promo-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;}
+.promo-modal-overlay-enter,.promo-modal-overlay-leave{transition:opacity .3s ease;}
+.promo-modal-overlay-enter-start,.promo-modal-overlay-leave-end{opacity:0;}
+.promo-modal-overlay-enter-end,.promo-modal-overlay-leave-start{opacity:1;}
+.promo-modal{position:relative;width:100%;max-width:440px;background:var(--bg-elevated);border:1px solid var(--gold-dim);border-radius:20px;padding:44px 36px;text-align:center;}
+.promo-modal-enter{transition:opacity .35s ease,transform .35s ease;}
+.promo-modal-enter-start{opacity:0;transform:translateY(12px) scale(.97);}
+.promo-modal-enter-end{opacity:1;transform:translateY(0) scale(1);}
+.promo-modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-muted);font-size:22px;line-height:1;cursor:pointer;padding:6px;transition:color .15s;}
+.promo-modal-close:hover{color:var(--text-primary);}
+.promo-modal-eyebrow{font-family:var(--font-mono);font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;}
+.promo-modal-title{font-family:var(--font-display);font-size:26px;line-height:1.25;margin-bottom:26px;}
+.promo-modal-cta{display:inline-flex;}
+.motion-reduced .promo-modal-overlay-enter,.motion-reduced .promo-modal-overlay-leave,.motion-reduced .promo-modal-enter{transition:none;}
 .admin-session-bar-actions a,.admin-session-bar-actions button{background:none;border:none;color:#0A0A0B;font-family:inherit;font-size:12px;font-weight:600;text-decoration:underline;cursor:pointer;padding:0;transition:opacity .15s;}
 .admin-session-bar-actions a:hover,.admin-session-bar-actions button:hover{opacity:.65;}
 body.has-admin-bar{padding-top:34px;}
@@ -270,7 +300,10 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .card-quick-add:hover{background:var(--gold);border-color:var(--gold);color:#0A0A0B;transform:scale(1.08);}
 .card-quick-add:disabled{opacity:0;pointer-events:none;}
 
-.card-badge-agotado{position:absolute;top:12px;left:12px;font-family:var(--font-mono);font-size:10px;padding:4px 10px;border-radius:100px;background:var(--red);color:#fff;font-weight:600;z-index:3;}
+.card-badges{position:absolute;top:12px;left:12px;z-index:3;display:flex;flex-direction:column;align-items:flex-start;gap:6px;}
+.card-badge-agotado,.card-badge-promo{font-family:var(--font-mono);font-size:10px;padding:4px 10px;border-radius:100px;font-weight:600;white-space:nowrap;}
+.card-badge-agotado{background:var(--red);color:#fff;}
+.card-badge-promo{background:var(--gold);color:#0A0A0B;font-weight:700;}
 
 .card-variant-picker{position:absolute;top:52px;left:10px;right:10px;background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:12px;padding:12px;z-index:4;box-shadow:0 12px 30px rgba(0,0,0,.5);}
 .card-variant-picker-title{font-family:var(--font-mono);font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px;}

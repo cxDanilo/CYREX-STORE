@@ -22,9 +22,12 @@
 <style>:root{--logo-height:{{ $logoHeight }}px;--gold:{{ $accentColor ?? '#FFD900' }};}</style>
 <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script>document.addEventListener('alpine:init', () => Alpine.store('promoModal', { open: false }));</script>
 @yield('styles')
 </head>
 <body class="{{ ($reducedMotion ?? 'off') === 'on' ? 'motion-reduced' : '' }} {{ auth()->check() ? 'has-admin-bar' : '' }}">
+
+@include('partials.promo-bar')
 
 @auth
   <div class="admin-session-bar">
@@ -102,6 +105,10 @@
     </div>
   </div>
 </footer>
+
+@if(request()->routeIs('home'))
+  @include('partials.promo-modal')
+@endif
 
 <script src="{{ asset('js/product-tilt.js') }}?v={{ filemtime(public_path('js/product-tilt.js')) }}"></script>
 <script src="{{ asset('js/nav-scroll.js') }}?v={{ filemtime(public_path('js/nav-scroll.js')) }}"></script>

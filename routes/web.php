@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\WooCommerceImportController as AdminWooCommerceImportController;
 use App\Http\Controllers\Admin\CacheController as AdminCacheController;
 use App\Http\Controllers\Admin\PcBuilderOptionController as AdminPcBuilderOptionController;
+use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductQuickEditController;
 use App\Http\Controllers\SitemapController;
@@ -71,6 +72,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('categorias/{category}/editar', [AdminCategoryController::class, 'edit'])->name('categorias.edit');
         Route::put('categorias/{category}', [AdminCategoryController::class, 'update'])->name('categorias.update');
         Route::delete('categorias/{category}', [AdminCategoryController::class, 'destroy'])->name('categorias.destroy');
+
+        Route::get('promociones', [AdminPromotionController::class, 'index'])->name('promociones.index');
+        Route::get('promociones/nueva', [AdminPromotionController::class, 'create'])->name('promociones.create');
+        Route::post('promociones', [AdminPromotionController::class, 'store'])->name('promociones.store');
+        Route::get('promociones/{promotion}/editar', [AdminPromotionController::class, 'edit'])->name('promociones.edit');
+        Route::put('promociones/{promotion}', [AdminPromotionController::class, 'update'])->name('promociones.update');
+        Route::delete('promociones/{promotion}', [AdminPromotionController::class, 'destroy'])->name('promociones.destroy');
+        Route::patch('promociones/{promotion}/estado', [AdminPromotionController::class, 'toggleActive'])->name('promociones.toggle-active');
 
         Route::get('usuarios', [AdminUserController::class, 'index'])->name('usuarios.index');
 

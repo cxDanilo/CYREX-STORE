@@ -336,9 +336,14 @@
           @if($r->image_url)
             <img src="{{ $r->image_url }}" alt="{{ $r->name }}" loading="lazy" style="{{ $r->is_sold_out ? 'filter:grayscale(1);' : '' }}">
           @endif
-          @if($r->is_sold_out)
-            <span class="card-badge-agotado">Agotado</span>
-          @endif
+          <div class="card-badges">
+            @if($r->is_sold_out)
+              <span class="card-badge-agotado">Agotado</span>
+            @endif
+            @if($promo = $r->activePromotion($cardActivePromotion ?? null))
+              <span class="card-badge-promo">{{ $promo->discount_label ?: 'Oferta' }}</span>
+            @endif
+          </div>
         </div>
         <div class="card-body">
           <div class="card-cat">{{ $r->category->name }}</div>

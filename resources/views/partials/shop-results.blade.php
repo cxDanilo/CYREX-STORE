@@ -76,9 +76,14 @@
         @if($product->image_url)
           <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy" style="{{ $product->is_sold_out ? 'filter:grayscale(1);' : '' }}">
         @endif
-        @if($product->is_sold_out)
-          <span class="card-badge-agotado">Agotado</span>
-        @endif
+        <div class="card-badges">
+          @if($product->is_sold_out)
+            <span class="card-badge-agotado">Agotado</span>
+          @endif
+          @if($promo = $product->activePromotion($cardActivePromotion ?? null))
+            <span class="card-badge-promo">{{ $promo->discount_label ?: 'Oferta' }}</span>
+          @endif
+        </div>
         <button type="button" class="card-quick-add" :disabled="!inStock" @click.stop.prevent="quickAdd()" aria-label="Agregar {{ $product->name }} al carrito">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.6L20 8H6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.3" fill="currentColor"/><circle cx="17" cy="20" r="1.3" fill="currentColor"/></svg>
         </button>
