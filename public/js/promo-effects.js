@@ -227,14 +227,20 @@ window.addEventListener('DOMContentLoaded', function () {
     ctx.globalAlpha = 1;
   }
 
+  // El propio navegador ya pausa/retoma requestAnimationFrame solo al
+  // ocultar/mostrar la pestaña — "running" acá es solo para saltear el
+  // trabajo pesado mientras está oculta, NUNCA para volver a arrancar
+  // el loop a mano. Hacerlo a mano (como se hacía antes) sumaba una
+  // cadena de rAF nueva cada vez, en paralelo a la que el navegador
+  // retomaba solo, y cada ida y vuelta a la pestaña hacía que la nieve
+  // cayera más rápido (dos, tres, cuatro loops corriendo a la vez).
   var running = true;
   document.addEventListener('visibilitychange', function () {
     running = !document.hidden;
-    if (running) requestAnimationFrame(tick);
   });
 
   function tick() {
-    if (!running) return;
+    if (running) {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -330,6 +336,7 @@ window.addEventListener('DOMContentLoaded', function () {
       drawBat(bat.x, bat.y + Math.sin(bat.t) * 8, bat.t);
     });
 
+    }
     requestAnimationFrame(tick);
   }
 
