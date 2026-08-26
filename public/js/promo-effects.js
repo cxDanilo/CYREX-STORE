@@ -20,7 +20,7 @@ window.addEventListener('DOMContentLoaded', function () {
   if (document.body.classList.contains('motion-reduced')) return;
 
   var PRESETS = {
-    snow: { count: 60, color: '255,255,255', speedY: [0.4, 1.1], speedX: [-0.3, 0.3], size: [1.5, 3.5], shape: 'circle', spawnTop: true, interactive: true, piles: true },
+    snow: { count: 46, color: '255,255,255', speedY: [0.4, 1.1], speedX: [-0.3, 0.3], size: [1.6, 3.6], shape: 'circle', spawnTop: true, interactive: true, piles: true },
     confetti: { count: 45, colors: ['255,217,0', '255,255,255'], speedY: [1.2, 2.4], speedX: [-1, 1], size: [4, 7], shape: 'rect', spawnTop: true, rotate: true },
     sparkle: { count: 26, color: '255,217,0', speedY: [-0.25, -0.08], speedX: [-0.15, 0.15], size: [1.3, 2.8], shape: 'circle', twinkle: true },
     spooky: { count: 24, color: '190,140,255', speedY: [-0.3, -0.1], speedX: [-0.2, 0.2], size: [1.5, 3], shape: 'circle', twinkle: true, bats: true },
@@ -283,11 +283,10 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       }
 
-      var opacity = config.twinkle ? p.opacity * (0.4 + 0.6 * Math.sin(p.phase)) : p.opacity;
-      ctx.globalAlpha = Math.max(0, opacity);
-      ctx.fillStyle = 'rgb(' + p.color + ')';
+      var opacity = Math.max(0, config.twinkle ? p.opacity * (0.4 + 0.6 * Math.sin(p.phase)) : p.opacity);
 
       if (config.shape === 'rect') {
+        ctx.fillStyle = 'rgba(' + p.color + ',' + opacity + ')';
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(p.rotation);
@@ -295,8 +294,21 @@ window.addEventListener('DOMContentLoaded', function () {
         ctx.restore();
         p.rotation += p.vr;
       } else {
+        // Glow suave detrás del núcleo, en 3 capas — un círculo duro y
+        // chico se lee como una mota de polvo; con degradé se lee nieve.
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 2.6, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(' + p.color + ',' + (opacity * 0.12) + ')';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 1.7, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(' + p.color + ',' + (opacity * 0.3) + ')';
+        ctx.fill();
+
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(' + p.color + ',' + opacity + ')';
         ctx.fill();
       }
 
@@ -305,7 +317,6 @@ window.addEventListener('DOMContentLoaded', function () {
         if (config.spawnTop) p.y = -10;
       }
     });
-    ctx.globalAlpha = 1;
 
     if (config.piles) {
       piles.forEach(drawPile);
