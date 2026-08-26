@@ -20,6 +20,9 @@
 @endif
 <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
 <style>:root{--logo-height:{{ $logoHeight }}px;--gold:{{ $accentColor ?? '#FFD900' }};}</style>
+@if(($promoBarActive ?? null)?->custom_css)
+<style>{!! $promoBarActive->custom_css !!}</style>
+@endif
 <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script>document.addEventListener('alpine:init', () => Alpine.store('promoModal', { open: false }));</script>

@@ -81,6 +81,7 @@ class PromotionController extends Controller
             'category_id' => ['nullable', 'exists:categories,id'],
             'active' => ['nullable', 'boolean'],
             'effect' => ['required', Rule::in(array_keys(Promotion::EFFECTS))],
+            'custom_css' => ['nullable', 'string', 'max:5000'],
         ]);
 
         $data['is_recurring'] = $request->boolean('is_recurring');
@@ -96,7 +97,7 @@ class PromotionController extends Controller
         // "nullable" salta las DEMÁS reglas cuando está vacío) — sin esto,
         // un select/date/input vacío guarda '' literal, y category_id=''
         // rompe la FK contra categories.
-        foreach (['category_id', 'teaser_text', 'teaser_starts_at', 'discount_label'] as $key) {
+        foreach (['category_id', 'teaser_text', 'teaser_starts_at', 'discount_label', 'custom_css'] as $key) {
             if (($data[$key] ?? null) === '') {
                 $data[$key] = null;
             }

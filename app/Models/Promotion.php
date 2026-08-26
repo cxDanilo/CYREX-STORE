@@ -24,7 +24,7 @@ class Promotion extends Model
     protected $fillable = [
         'name', 'slug', 'banner_text', 'teaser_text', 'teaser_starts_at',
         'starts_at', 'ends_at', 'discount_label', 'is_recurring',
-        'recurring_month', 'recurring_day', 'show_as_modal', 'category_id', 'active', 'effect',
+        'recurring_month', 'recurring_day', 'show_as_modal', 'category_id', 'active', 'effect', 'custom_css',
     ];
 
     protected $casts = [

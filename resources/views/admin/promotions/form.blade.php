@@ -136,6 +136,13 @@
         <div class="form-hint">Sutil, no bloquea clics — solo corre mientras la promo está ACTIVA (no en fase de expectativa), y se apaga solo si el visitante tiene animaciones reducidas.</div>
         @error('effect') <div class="error">{{ $message }}</div> @enderror
       </div>
+
+      <div class="form-group">
+        <label for="custom_css">CSS personalizado (opcional)</label>
+        <textarea id="custom_css" name="custom_css" rows="6" style="font-family:var(--font-mono);font-size:12.5px;" placeholder=".hero h1 { color: #C0392B; }">{{ old('custom_css', $promotion->custom_css) }}</textarea>
+        <div class="form-hint">Se inyecta tal cual en la página SOLO mientras esta promo está activa — se va sola cuando termina. Si algo se ve raro en el sitio, revisá primero acá. No hace falta &lt;style&gt;, solo las reglas.</div>
+        @error('custom_css') <div class="error">{{ $message }}</div> @enderror
+      </div>
     </div>
 
     <div class="form-actions">
