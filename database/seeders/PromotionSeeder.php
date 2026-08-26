@@ -59,7 +59,7 @@ class PromotionSeeder extends Seeder
                 'is_recurring' => true,
                 'recurring_month' => 5,
                 'recurring_day' => 27,
-                'effect' => 'sparkle',
+                'effect' => 'hearts',
             ],
             [
                 'slug' => 'dia-del-amor-y-la-amistad',
@@ -72,7 +72,7 @@ class PromotionSeeder extends Seeder
                 'is_recurring' => true,
                 'recurring_month' => 9,
                 'recurring_day' => 21,
-                'effect' => 'sparkle',
+                'effect' => 'hearts',
             ],
             [
                 // OJO: no es una fecha fija (es "el último viernes de
@@ -148,6 +148,16 @@ class PromotionSeeder extends Seeder
             // elección manual de Danilo.
             if ($promotion->wasRecentlyCreated === false && $promotion->effect === 'none' && $data['effect'] !== 'none') {
                 $promotion->update(['effect' => $data['effect']]);
+            }
+
+            // Upgrade puntual: Día de la Madre y Día del Amor y la Amistad
+            // se sembraron primero con 'sparkle' antes de existir el
+            // efecto 'hearts' — si siguen en ese default viejo, se
+            // actualizan; si Danilo ya eligió otra cosa, se respeta.
+            if (in_array($data['slug'], ['dia-de-la-madre', 'dia-del-amor-y-la-amistad'], true)
+                && $promotion->wasRecentlyCreated === false
+                && $promotion->effect === 'sparkle') {
+                $promotion->update(['effect' => 'hearts']);
             }
         }
 

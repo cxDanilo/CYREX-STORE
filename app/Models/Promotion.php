@@ -15,10 +15,11 @@ class Promotion extends Model
      */
     public const EFFECTS = [
         'none' => 'Ninguno',
-        'snow' => 'Nieve (Navidad)',
-        'confetti' => 'Confeti dorado (Año Nuevo)',
-        'sparkle' => 'Brillo sutil (fechas en general)',
-        'spooky' => 'Niebla + murciélagos (Halloween)',
+        'snow' => 'Nieve + trineo de Santa (Navidad)',
+        'confetti' => 'Confeti + fuegos artificiales (Año Nuevo)',
+        'sparkle' => 'Brillo + estrella fugaz (fechas en general)',
+        'spooky' => 'Niebla + murciélagos + arañas (Halloween)',
+        'hearts' => 'Corazones (Día de la Madre / Amor y Amistad)',
     ];
 
     protected $fillable = [
