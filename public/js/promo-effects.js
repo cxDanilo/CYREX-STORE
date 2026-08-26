@@ -106,37 +106,36 @@ window.addEventListener('DOMContentLoaded', function () {
 
   var MOUSE_RADIUS = 70;
 
-  // --- Acumulación: la nieve que "aterriza" en el borde superior de
-  // algunas cards visibles (y del botón "Agregar al carrito", si hay
-  // uno en la página) se suma a un montoncito propio de ese elemento
-  // en vez de seguir cayendo. El del botón se "sacude" y se libera al
-  // pasar el mouse por encima — el resto se derrite solo, despacio.
+  // --- Acumulación: la nieve que "aterriza" en el borde superior del
+  // botón "Agregar al carrito" (si hay uno en la página) se suma a un
+  // montoncito propio en vez de seguir cayendo, y se sacude/libera al
+  // pasar el mouse por encima. Se probó también con las cards del
+  // catálogo pero se veía cargado/desprolijo con varias acumulando a
+  // la vez — se sacó, queda solo en el botón.
   var piles = [];
-  var MAX_PILES = 10;
   var MAX_PILE_SNOW = 9;
   var EXPEL_PAD = 14;
 
   function refreshPiles() {
     if (!config.piles) return;
-    var targets = Array.prototype.slice.call(document.querySelectorAll('.card'));
     var cta = document.querySelector('.btn-cta');
-    if (cta) targets.unshift(cta);
-
-    var next = [];
-    for (var i = 0; i < targets.length && next.length < MAX_PILES; i++) {
-      var el = targets[i];
-      var rect = el.getBoundingClientRect();
-      if (rect.bottom < 0 || rect.top > canvas.height || rect.width < 60) continue;
-      var existing = piles.find(function (p) { return p.el === el; });
-      next.push({
-        el: el,
-        rect: rect,
-        snow: existing ? existing.snow : 0,
-        bumps: existing ? existing.bumps : null,
-        expel: el === cta,
-      });
+    if (!cta) {
+      piles = [];
+      return;
     }
-    piles = next;
+    var rect = cta.getBoundingClientRect();
+    if (rect.bottom < 0 || rect.top > canvas.height || rect.width < 60) {
+      piles = [];
+      return;
+    }
+    var existing = piles[0] && piles[0].el === cta ? piles[0] : null;
+    piles = [{
+      el: cta,
+      rect: rect,
+      snow: existing ? existing.snow : 0,
+      bumps: existing ? existing.bumps : null,
+      expel: true,
+    }];
   }
 
   if (config.piles) {
