@@ -86,7 +86,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
   function drawBat(x, y, t) {
     var flap = Math.sin(t * 6) * 5;
-    ctx.fillStyle = 'rgba(15,10,25,0.55)';
+    // Morado claro, no negro — el fondo del sitio ya es casi negro
+    // (#080808), una silueta oscura se pierde por completo ahí.
+    ctx.fillStyle = 'rgba(165,120,225,0.75)';
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.quadraticCurveTo(x - 9, y - 5 - flap, x - 15, y + 2);
@@ -140,11 +142,13 @@ window.addEventListener('DOMContentLoaded', function () {
 
     ctx.save();
     ctx.translate(x, y);
-    ctx.fillStyle = 'rgba(15,10,20,0.88)';
+    // Igual que el murciélago: morado claro en vez de casi-negro, para
+    // que se note contra el fondo oscuro del sitio.
+    ctx.fillStyle = 'rgba(185,150,220,0.9)';
     ctx.beginPath();
     ctx.ellipse(0, 0, 5, 6, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(15,10,20,0.88)';
+    ctx.strokeStyle = 'rgba(185,150,220,0.9)';
     for (var i = 0; i < 4; i++) {
       var lx = 5 + i * 1.3;
       var ly = -5 + i * 3.2;
@@ -212,21 +216,27 @@ window.addEventListener('DOMContentLoaded', function () {
     ctx.save();
     ctx.translate(x, y);
     if (dir < 0) ctx.scale(-1, 1);
-    ctx.fillStyle = 'rgba(35,22,16,0.8)';
+    // Dorado/rojo, no marrón oscuro — el fondo del sitio ya es casi
+    // negro (#080808), una silueta oscura se pierde por completo ahí.
+    ctx.fillStyle = 'rgba(198,145,80,0.92)';
     ctx.beginPath();
     ctx.ellipse(0, 0, 24, 9, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
     ctx.arc(-2, -13, 8, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = 'rgba(160,20,20,0.8)';
+    ctx.fillStyle = 'rgba(216,48,48,0.95)';
     ctx.beginPath();
     ctx.moveTo(-9, -17);
     ctx.lineTo(-1, -24);
     ctx.lineTo(4, -17);
     ctx.closePath();
     ctx.fill();
-    ctx.fillStyle = 'rgba(35,22,16,0.75)';
+    ctx.beginPath();
+    ctx.arc(-1, -24, 2, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.fill();
+    ctx.fillStyle = 'rgba(172,124,68,0.85)';
     for (var i = 0; i < 3; i++) {
       var rx = 36 + i * 15;
       ctx.beginPath();
