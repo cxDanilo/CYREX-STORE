@@ -93,7 +93,7 @@ window.addEventListener('DOMContentLoaded', function () {
   // (no hay "mouse" real que seguir) y vuelve a su curso normal apenas
   // el cursor se aleja, sin acumular fuerza permanente.
   var mouse = { x: -9999, y: -9999, active: false };
-  if (config.interactive) {
+  if (config.interactive || config.piles) {
     window.addEventListener('mousemove', function (e) {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
@@ -106,23 +106,35 @@ window.addEventListener('DOMContentLoaded', function () {
 
   var MOUSE_RADIUS = 70;
 
-  // --- Acumulación sobre cards: la nieve que "aterriza" en el borde
-  // superior de algunas cards visibles se suma a un montoncito propio
-  // de esa card, en vez de seguir cayendo. Se recalcula qué cards están
-  // a la vista cada tanto (no en cada frame, es de layout y sale caro).
+  // --- Acumulación: la nieve que "aterriza" en el borde superior de
+  // algunas cards visibles (y del botón "Agregar al carrito", si hay
+  // uno en la página) se suma a un montoncito propio de ese elemento
+  // en vez de seguir cayendo. El del botón se "sacude" y se libera al
+  // pasar el mouse por encima — el resto se derrite solo, despacio.
   var piles = [];
   var MAX_PILES = 10;
-  var MAX_PILE_SNOW = 10;
+  var MAX_PILE_SNOW = 9;
+  var EXPEL_PAD = 14;
 
   function refreshPiles() {
     if (!config.piles) return;
-    var cards = document.querySelectorAll('.card');
+    var targets = Array.prototype.slice.call(document.querySelectorAll('.card'));
+    var cta = document.querySelector('.btn-cta');
+    if (cta) targets.unshift(cta);
+
     var next = [];
-    for (var i = 0; i < cards.length && next.length < MAX_PILES; i++) {
-      var rect = cards[i].getBoundingClientRect();
+    for (var i = 0; i < targets.length && next.length < MAX_PILES; i++) {
+      var el = targets[i];
+      var rect = el.getBoundingClientRect();
       if (rect.bottom < 0 || rect.top > canvas.height || rect.width < 60) continue;
-      var existing = piles.find(function (p) { return p.el === cards[i]; });
-      next.push({ el: cards[i], rect: rect, snow: existing ? existing.snow : 0 });
+      var existing = piles.find(function (p) { return p.el === el; });
+      next.push({
+        el: el,
+        rect: rect,
+        snow: existing ? existing.snow : 0,
+        bumps: existing ? existing.bumps : null,
+        expel: el === cta,
+      });
     }
     piles = next;
   }
@@ -132,26 +144,88 @@ window.addEventListener('DOMContentLoaded', function () {
     setInterval(refreshPiles, 500);
     window.addEventListener('scroll', function () {
       // Solo actualiza posiciones ya conocidas — barato, no vuelve a
-      // buscar cards nuevas en cada scroll (eso lo hace el interval).
+      // buscar elementos nuevos en cada scroll (eso lo hace el interval).
       piles.forEach(function (p) { p.rect = p.el.getBoundingClientRect(); });
     });
   }
 
-  function drawPile(pile) {
-    if (pile.snow <= 0.2) return;
-    var r = pile.rect;
-    var h = pile.snow;
-    ctx.globalAlpha = 0.9;
-    ctx.fillStyle = 'rgba(255,255,255,0.92)';
-    ctx.beginPath();
-    ctx.moveTo(r.left + 6, r.top);
-    for (var x = r.left + 6; x <= r.right - 6; x += 14) {
-      var bump = h * (0.6 + 0.4 * Math.sin(x * 0.6 + pile.el.offsetTop));
-      ctx.quadraticCurveTo(x + 7, r.top - bump, x + 14, r.top - h * 0.4);
+  // Puñado de copos que salen disparados al "sacudir" el montoncito del
+  // botón — puramente decorativo, se apagan solos en menos de un segundo.
+  var burstFlakes = [];
+
+  function expelPile(pile) {
+    var released = Math.min(pile.snow, 0.55);
+    pile.snow -= released;
+    if (Math.random() < 0.7) {
+      burstFlakes.push({
+        x: rand(pile.rect.left + 8, pile.rect.right - 8),
+        y: pile.rect.top - rand(0, 5),
+        vx: rand(-1.6, 1.6),
+        vy: rand(-2.2, -0.8),
+        size: rand(1.5, 3),
+        life: 1,
+      });
     }
-    ctx.lineTo(r.right - 6, r.top);
-    ctx.closePath();
-    ctx.fill();
+  }
+
+  // Bumps fijos por montoncito (calculados una vez) para que la forma
+  // no titile de frame a frame — solo cambia de tamaño con pile.snow.
+  function ensureBumps(pile) {
+    if (pile.bumps) return;
+    var width = Math.max(pile.rect.width, 40);
+    var n = Math.max(4, Math.min(9, Math.round(width / 24)));
+    pile.bumps = [];
+    for (var i = 0; i < n; i++) {
+      pile.bumps.push({ xRatio: (i + 0.5) / n, jitter: rand(-3, 3), scale: rand(0.7, 1.15) });
+    }
+  }
+
+  function drawPile(pile) {
+    if (pile.snow <= 0.25) return;
+    ensureBumps(pile);
+    var r = pile.rect;
+    var h = Math.min(pile.snow, MAX_PILE_SNOW);
+
+    pile.bumps.forEach(function (b) {
+      var x = r.left + b.xRatio * r.width + b.jitter;
+      var radius = 2.5 + h * 0.85 * b.scale;
+      var y = r.top - radius * 0.62;
+
+      ctx.fillStyle = 'rgba(235,242,255,0.22)';
+      ctx.beginPath();
+      ctx.arc(x, y, radius * 1.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.beginPath();
+      ctx.arc(x, y - radius * 0.18, radius * 0.55, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  function drawBurstFlakes() {
+    for (var i = burstFlakes.length - 1; i >= 0; i--) {
+      var f = burstFlakes[i];
+      f.x += f.vx;
+      f.y += f.vy;
+      f.vy += 0.08;
+      f.life -= 0.02;
+      if (f.life <= 0) {
+        burstFlakes.splice(i, 1);
+        continue;
+      }
+      ctx.globalAlpha = Math.max(0, f.life);
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
   }
 
   var running = true;
@@ -166,9 +240,17 @@ window.addEventListener('DOMContentLoaded', function () {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // La nieve acumulada se derrite despacio, para que no quede fija
-    // para siempre en la misma card mientras la promo sigue activa.
+    // para siempre en la misma card mientras la promo sigue activa. La
+    // del botón, además, se sacude y libera si el mouse está encima.
     if (config.piles) {
-      piles.forEach(function (p) { p.snow = Math.max(0, p.snow - 0.004); });
+      piles.forEach(function (p) {
+        p.snow = Math.max(0, p.snow - 0.004);
+        if (p.expel && p.snow > 0.3 && mouse.active) {
+          var overButton = mouse.x >= p.rect.left - EXPEL_PAD && mouse.x <= p.rect.right + EXPEL_PAD &&
+            mouse.y >= p.rect.top - EXPEL_PAD && mouse.y <= p.rect.bottom + EXPEL_PAD;
+          if (overButton) expelPile(p);
+        }
+      });
     }
 
     particles.forEach(function (p) {
@@ -227,6 +309,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     if (config.piles) {
       piles.forEach(drawPile);
+      drawBurstFlakes();
     }
 
     bats.forEach(function (bat) {
