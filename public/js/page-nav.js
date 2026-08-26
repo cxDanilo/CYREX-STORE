@@ -68,7 +68,59 @@ window.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // Guardamos el HTML de cada página ya visitada en esta sesión — el
+  // "volver" (popstate) lo restaura DE ESTA CACHÉ, sin esperar red. Esto
+  // no es solo optimización: Safari en iOS, con el gesto de deslizar
+  // desde el borde para volver atrás, espera una respuesta casi
+  // instantánea — si el popstate se queda esperando un fetch (aunque
+  // sea rápido), a veces se rinde y termina recargando la página de
+  // verdad en vez de dejar que este script la restaure. Sirviendo la
+  // versión ya conocida al toque (sin red de por medio) le damos esa
+  // respuesta inmediata. El avance (pushState) SIEMPRE pide una versión
+  // fresca — el precio/stock puede haber cambiado.
+  var pageCache = {};
+
+  // La página con la que arrancó esta pestaña (carga real del servidor,
+  // nunca pasó por loadPage()) también hay que dejarla en la caché —
+  // si no, el PRIMER "volver" de la sesión (al punto de partida) siempre
+  // cae al fetch, justo el caso más común de todos.
+  pageCache[location.href] = { title: document.title, mainHTML: main.innerHTML };
+
+  function applyPage(entry, opts) {
+    document.title = entry.title;
+    main.innerHTML = entry.mainHTML;
+    document.body.classList.remove('page-nav-loading');
+    main.classList.remove('page-nav-enter');
+    void main.offsetWidth;
+    main.classList.add('page-nav-enter');
+    fadeInImages(main);
+
+    // Igual que en shop-ajax.js: el HTML inyectado con innerHTML no lo
+    // detecta Alpine solo.
+    window.Alpine.initTree(main);
+
+    if (opts.pushState) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    } else {
+      var scrollY = (window.history.state && typeof window.history.state.scrollY === 'number') ? window.history.state.scrollY : 0;
+      window.scrollTo(0, scrollY);
+    }
+
+    // Sin esto, Analytics solo cuenta una vista de página por carga
+    // real — cualquier producto al que se llega por navegación suave
+    // quedaría invisible para las métricas del negocio.
+    if (window.gtag) {
+      window.gtag('event', 'page_view', { page_title: document.title, page_location: location.href });
+    }
+  }
+
   function loadPage(url, opts) {
+    var cached = pageCache[url];
+    if (cached && !opts.pushState) {
+      applyPage(cached, opts);
+      return;
+    }
+
     if (currentController) currentController.abort();
     currentController = new AbortController();
     var signal = currentController.signal;
@@ -85,36 +137,15 @@ window.addEventListener('DOMContentLoaded', function () {
         var newMain = doc.querySelector('main');
         if (!newMain) throw new Error('sin <main> en la respuesta');
 
+        var entry = { title: doc.title, mainHTML: newMain.innerHTML };
+        pageCache[url] = entry;
+
         if (opts.pushState) {
           history.replaceState(Object.assign({}, history.state, { scrollY: window.scrollY }), '', location.href);
           history.pushState({ scrollY: 0 }, '', url);
         }
 
-        document.title = doc.title;
-        main.innerHTML = newMain.innerHTML;
-        document.body.classList.remove('page-nav-loading');
-        main.classList.remove('page-nav-enter');
-        void main.offsetWidth;
-        main.classList.add('page-nav-enter');
-        fadeInImages(main);
-
-        // Igual que en shop-ajax.js: el HTML inyectado con innerHTML
-        // no lo detecta Alpine solo.
-        window.Alpine.initTree(main);
-
-        if (opts.pushState) {
-          window.scrollTo({ top: 0, behavior: 'instant' });
-        } else {
-          var scrollY = (window.history.state && typeof window.history.state.scrollY === 'number') ? window.history.state.scrollY : 0;
-          window.scrollTo(0, scrollY);
-        }
-
-        // Sin esto, Analytics solo cuenta una vista de página por carga
-        // real — cualquier producto al que se llega por navegación
-        // suave quedaría invisible para las métricas del negocio.
-        if (window.gtag) {
-          window.gtag('event', 'page_view', { page_title: document.title, page_location: location.href });
-        }
+        applyPage(entry, opts);
       })
       .catch(function (err) {
         if (err.name === 'AbortError') return;
