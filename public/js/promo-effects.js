@@ -169,13 +169,17 @@ window.addEventListener('DOMContentLoaded', function () {
 
   // Bumps fijos por montoncito (calculados una vez) para que la forma
   // no titile de frame a frame — solo cambia de tamaño con pile.snow.
+  // Cada bulto tiene su propia "capacidad" — no crecen todos juntos
+  // desde el primer copo, se van llenando de a uno (como un montoncito
+  // real que arranca en un punto y se va esparciendo), y solo se
+  // dibujan una vez que absorbieron algo de nieve de verdad.
   function ensureBumps(pile) {
     if (pile.bumps) return;
     var width = Math.max(pile.rect.width, 40);
     var n = Math.max(4, Math.min(9, Math.round(width / 24)));
     pile.bumps = [];
     for (var i = 0; i < n; i++) {
-      pile.bumps.push({ xRatio: (i + 0.5) / n, jitter: rand(-3, 3), scale: rand(0.7, 1.15) });
+      pile.bumps.push({ xRatio: (i + 0.5) / n, jitter: rand(-3, 3), scale: rand(0.7, 1.15), capacity: rand(0.9, 1.6) });
     }
   }
 
@@ -183,11 +187,15 @@ window.addEventListener('DOMContentLoaded', function () {
     if (pile.snow <= 0.25) return;
     ensureBumps(pile);
     var r = pile.rect;
-    var h = Math.min(pile.snow, MAX_PILE_SNOW);
+    var remaining = pile.snow;
 
     pile.bumps.forEach(function (b) {
+      var amount = Math.max(0, Math.min(remaining, b.capacity));
+      remaining -= amount;
+      if (amount <= 0.18) return;
+
       var x = r.left + b.xRatio * r.width + b.jitter;
-      var radius = 2.5 + h * 0.85 * b.scale;
+      var radius = 2.5 + amount * 2.4 * b.scale;
       var y = r.top - radius * 0.62;
 
       ctx.fillStyle = 'rgba(235,242,255,0.22)';
