@@ -25,7 +25,7 @@
 <script>document.addEventListener('alpine:init', () => Alpine.store('promoModal', { open: false }));</script>
 @yield('styles')
 </head>
-<body class="{{ ($reducedMotion ?? 'off') === 'on' ? 'motion-reduced' : '' }} {{ auth()->check() ? 'has-admin-bar' : '' }}">
+<body class="{{ ($reducedMotion ?? 'off') === 'on' ? 'motion-reduced' : '' }} {{ auth()->check() ? 'has-admin-bar' : '' }}" @if($promoEffect ?? null) data-promo-effect="{{ $promoEffect }}" @endif>
 
 @include('partials.promo-bar')
 
@@ -115,6 +115,9 @@
 <script src="{{ asset('js/social-rotator.js') }}?v={{ filemtime(public_path('js/social-rotator.js')) }}"></script>
 <script src="{{ asset('js/hero-title-decode.js') }}?v={{ filemtime(public_path('js/hero-title-decode.js')) }}"></script>
 <script src="{{ asset('js/product-image-zoom.js') }}?v={{ filemtime(public_path('js/product-image-zoom.js')) }}"></script>
+@if($promoEffect ?? null)
+  <script src="{{ asset('js/promo-effects.js') }}?v={{ filemtime(public_path('js/promo-effects.js')) }}"></script>
+@endif
 @yield('scripts')
 </body>
 </html>

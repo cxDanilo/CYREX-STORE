@@ -20,7 +20,7 @@ class PromotionController extends Controller
     public function create()
     {
         $categories = Category::orderBy('parent_id')->orderBy('name')->get();
-        $promotion = new Promotion(['active' => true]);
+        $promotion = new Promotion(['active' => true, 'effect' => 'none']);
 
         return view('admin.promotions.form', compact('promotion', 'categories'));
     }
@@ -80,6 +80,7 @@ class PromotionController extends Controller
             'show_as_modal' => ['nullable', 'boolean'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'active' => ['nullable', 'boolean'],
+            'effect' => ['required', Rule::in(array_keys(Promotion::EFFECTS))],
         ]);
 
         $data['is_recurring'] = $request->boolean('is_recurring');

@@ -86,6 +86,7 @@ class AppServiceProvider extends ServiceProvider
                 'promoBarActive' => $activePromotion,
                 'promoBarTeaser' => $activePromotion ? null : Promotion::inTeaser(),
                 'promoModal' => $activePromotion?->show_as_modal ? $activePromotion : null,
+                'promoEffect' => ($activePromotion && $activePromotion->effect !== 'none') ? $activePromotion->effect : null,
             ]);
         });
 

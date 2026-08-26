@@ -33,6 +33,7 @@ class PromotionSeeder extends Seeder
                 'is_recurring' => true,
                 'recurring_month' => 1,
                 'recurring_day' => 6,
+                'effect' => 'sparkle',
             ],
             [
                 'slug' => 'dia-del-padre',
@@ -45,6 +46,7 @@ class PromotionSeeder extends Seeder
                 'is_recurring' => true,
                 'recurring_month' => 3,
                 'recurring_day' => 19,
+                'effect' => 'sparkle',
             ],
             [
                 'slug' => 'dia-de-la-madre',
@@ -57,6 +59,7 @@ class PromotionSeeder extends Seeder
                 'is_recurring' => true,
                 'recurring_month' => 5,
                 'recurring_day' => 27,
+                'effect' => 'sparkle',
             ],
             [
                 'slug' => 'dia-del-amor-y-la-amistad',
@@ -69,6 +72,7 @@ class PromotionSeeder extends Seeder
                 'is_recurring' => true,
                 'recurring_month' => 9,
                 'recurring_day' => 21,
+                'effect' => 'sparkle',
             ],
             [
                 // OJO: no es una fecha fija (es "el último viernes de
@@ -88,6 +92,20 @@ class PromotionSeeder extends Seeder
                 'is_recurring' => false,
                 'recurring_month' => null,
                 'recurring_day' => null,
+                'effect' => 'sparkle',
+            ],
+            [
+                'slug' => 'halloween',
+                'name' => 'Halloween',
+                'banner_text' => 'Ofertas de Halloween',
+                'teaser_text' => 'Algo tenebroso se acerca 🎃',
+                'teaser_starts_at' => '2026-10-17',
+                'starts_at' => '2026-10-24',
+                'ends_at' => '2026-10-31',
+                'is_recurring' => true,
+                'recurring_month' => 10,
+                'recurring_day' => 31,
+                'effect' => 'spooky',
             ],
             [
                 'slug' => 'navidad',
@@ -101,6 +119,7 @@ class PromotionSeeder extends Seeder
                 'recurring_month' => 12,
                 'recurring_day' => 25,
                 'show_as_modal' => true,
+                'effect' => 'snow',
             ],
             [
                 'slug' => 'ano-nuevo',
@@ -113,14 +132,23 @@ class PromotionSeeder extends Seeder
                 'is_recurring' => true,
                 'recurring_month' => 1,
                 'recurring_day' => 1,
+                'effect' => 'confetti',
             ],
         ];
 
         foreach ($promotions as $data) {
-            Promotion::firstOrCreate(
+            $promotion = Promotion::firstOrCreate(
                 ['slug' => $data['slug']],
-                array_merge(['active' => false, 'show_as_modal' => false], $data)
+                array_merge(['active' => false, 'show_as_modal' => false, 'effect' => 'none'], $data)
             );
+
+            // Backfill para promos sembradas antes de que existiera la
+            // columna "effect" — solo si nadie la tocó todavía desde el
+            // admin (sigue en 'none', el default), para no pisar una
+            // elección manual de Danilo.
+            if ($promotion->wasRecentlyCreated === false && $promotion->effect === 'none' && $data['effect'] !== 'none') {
+                $promotion->update(['effect' => $data['effect']]);
+            }
         }
 
         $this->command?->info('Promociones sembradas: '.Promotion::count().' (todas inactivas — activalas desde Admin → Promociones).');

@@ -9,10 +9,22 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Promotion extends Model
 {
+    /**
+     * Opciones válidas de "effect" — efecto ambiente de fondo mientras la
+     * promo está ACTIVA (nunca en fase teaser). Ver public/js/promo-effects.js.
+     */
+    public const EFFECTS = [
+        'none' => 'Ninguno',
+        'snow' => 'Nieve (Navidad)',
+        'confetti' => 'Confeti dorado (Año Nuevo)',
+        'sparkle' => 'Brillo sutil (fechas en general)',
+        'spooky' => 'Niebla + murciélagos (Halloween)',
+    ];
+
     protected $fillable = [
         'name', 'slug', 'banner_text', 'teaser_text', 'teaser_starts_at',
         'starts_at', 'ends_at', 'discount_label', 'is_recurring',
-        'recurring_month', 'recurring_day', 'show_as_modal', 'category_id', 'active',
+        'recurring_month', 'recurring_day', 'show_as_modal', 'category_id', 'active', 'effect',
     ];
 
     protected $casts = [

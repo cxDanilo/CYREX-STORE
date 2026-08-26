@@ -124,6 +124,20 @@
       <div class="form-hint">Reservado para 1-2 fechas grandes al año. Aparece una sola vez por sesión, nunca junto con la barra de anuncio.</div>
     </div>
 
+    <div class="form-section">
+      <h3>Efecto ambiente</h3>
+      <div class="form-group">
+        <label for="effect">Efecto de fondo mientras está activa</label>
+        <select id="effect" name="effect" required>
+          @foreach(\App\Models\Promotion::EFFECTS as $value => $label)
+            <option value="{{ $value }}" {{ old('effect', $promotion->effect) === $value ? 'selected' : '' }}>{{ $label }}</option>
+          @endforeach
+        </select>
+        <div class="form-hint">Sutil, no bloquea clics — solo corre mientras la promo está ACTIVA (no en fase de expectativa), y se apaga solo si el visitante tiene animaciones reducidas.</div>
+        @error('effect') <div class="error">{{ $message }}</div> @enderror
+      </div>
+    </div>
+
     <div class="form-actions">
       <a href="{{ route('admin.promociones.index') }}" class="btn">Cancelar</a>
       <button type="submit" class="btn btn-primary">Guardar</button>

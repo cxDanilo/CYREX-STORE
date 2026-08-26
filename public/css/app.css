@@ -66,6 +66,9 @@ button,input,select{font-family:inherit;}
 .promo-modal-eyebrow{font-family:var(--font-mono);font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;}
 .promo-modal-title{font-family:var(--font-display);font-size:26px;line-height:1.25;margin-bottom:26px;}
 .promo-modal-cta{display:inline-flex;}
+
+/* PROMO EFFECTS — nieve/confeti/brillo/niebla mientras la promo está activa (public/js/promo-effects.js). */
+.promo-effect-canvas{position:fixed;inset:0;z-index:350;pointer-events:none;}
 .motion-reduced .promo-modal-overlay-enter,.motion-reduced .promo-modal-overlay-leave,.motion-reduced .promo-modal-enter{transition:none;}
 .admin-session-bar-actions a,.admin-session-bar-actions button{background:none;border:none;color:#0A0A0B;font-family:inherit;font-size:12px;font-weight:600;text-decoration:underline;cursor:pointer;padding:0;transition:opacity .15s;}
 .admin-session-bar-actions a:hover,.admin-session-bar-actions button:hover{opacity:.65;}
