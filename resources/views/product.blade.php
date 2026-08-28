@@ -78,37 +78,77 @@
         // reemplaza al x-text: la primera vez (montaje del componente,
         // mismo texto que ya vino renderizado del servidor) solo marca
         // el elemento como listo, sin animar nada; de ahí en más, cada
-        // cambio dispara el moldeado (ver morphPrice).
+        // cambio dispara el carrete (ver reelPrice).
         syncPrice(el, target, prefix, suffix) {
           const span = el.querySelector('.price-text');
           const text = prefix + target.toFixed(2) + suffix;
           if (!span.dataset.primed) {
             span.textContent = text;
             span.dataset.primed = '1';
+            span.dataset.current = text;
             return;
           }
-          this.morphPrice(span, text);
+          this.reelPrice(span, text);
         },
-        // Un solo elemento se estira/achica y se curva como si fuera de
-        // plastilina (ver @keyframes price-liquid-morph), con el blur
-        // más fuerte justo en el pico de esa distorsión — el texto se
-        // reemplaza ahí mismo, cuando está más derretido y menos
-        // legible, así el cambio de número queda escondido adentro del
-        // propio moldeado en vez de sentirse como un corte.
-        morphPrice(span, newText) {
-          if (span.textContent === newText) return;
+        // Cada carácter que cambia de valor (no todos, solo los que
+        // difieren entre el precio viejo y el nuevo) se arma con dos
+        // fotogramas apilados adentro de una celda recortada — el viejo
+        // arriba, el nuevo ya esperando debajo — y un translateY los
+        // desliza para revelar el de abajo, como el contador de un
+        // instrumento de precisión. Con demora creciente por posición
+        // (34ms cada uno) para que no se sientan todos pegados, y sin
+        // tocar los caracteres que se repiten entre un valor y el otro.
+        reelPrice(span, newText) {
+          // El valor real actual se guarda aparte en vez de leerlo de
+          // textContent: apenas termina un carrete, la celda se queda
+          // con los DOS fotogramas todavía en el DOM (nada más que el
+          // de abajo se ve, por el recorte) — leer textContent ahí
+          // devolvería una mezcla de ambos, y el próximo cambio
+          // compararía caracteres contra ese texto mezclado.
+          const oldText = span.dataset.current || span.textContent;
+          if (oldText === newText) return;
           const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.body.classList.contains('motion-reduced');
           if (reduced) {
             span.textContent = newText;
+            span.dataset.current = newText;
             return;
           }
 
-          clearTimeout(span._morphSwapTimer);
-          span.classList.remove('is-morphing');
+          const maxLen = Math.max(oldText.length, newText.length);
+          span.innerHTML = '';
+          const cells = [];
+          for (let i = 0; i < maxLen; i++) {
+            const oldCh = oldText[i] || '';
+            const newCh = newText[i] || '';
+            if (oldCh === newCh) {
+              const plain = document.createElement('span');
+              plain.className = 'char-cell';
+              plain.textContent = oldCh;
+              span.appendChild(plain);
+              continue;
+            }
+            const cell = document.createElement('span');
+            cell.className = 'char-cell reel-cell';
+            const track = document.createElement('span');
+            track.className = 'reel-track';
+            const frameOld = document.createElement('span');
+            frameOld.className = 'reel-frame';
+            frameOld.textContent = oldCh;
+            const frameNew = document.createElement('span');
+            frameNew.className = 'reel-frame';
+            frameNew.textContent = newCh;
+            track.append(frameOld, frameNew);
+            cell.appendChild(track);
+            span.appendChild(cell);
+            cells.push(cell);
+          }
           void span.offsetWidth;
-          span.classList.add('is-morphing');
-          span._morphSwapTimer = setTimeout(() => { span.textContent = newText; }, 300);
-          span.addEventListener('animationend', () => span.classList.remove('is-morphing'), { once: true });
+
+          cells.forEach((cell, i) => {
+            setTimeout(() => cell.classList.add('is-reeling'), i * 34);
+          });
+
+          span.dataset.current = newText;
         },
         whatsappHref() {
           const variantObj = this.variants.find(v => v.id === this.variant);

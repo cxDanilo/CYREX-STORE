@@ -502,25 +502,23 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .price-main.price-flash,.price-alt.price-flash{animation:price-flash .25s ease;}
 @keyframes price-flash{0%{opacity:.35;}100%{opacity:1;}}
 
-/* Transformación tipo plastilina al cambiar de moneda o variante (ver
-   morphPrice() en product.blade.php) — el número se estira, se achica
-   y se curva como si fuera blando, con el blur más fuerte justo en el
-   pico de esa distorsión (donde JS aprovecha para pisar el texto: ahí
-   es cuando menos se nota el cambio). Un solo elemento, una sola
-   transformación continua — no es un cruce entre dos capas. */
-.price-text{display:inline-block;transform-origin:50% 60%;}
-.price-text.is-morphing{animation:price-liquid-morph .65s cubic-bezier(.45,0,.55,1);}
-@keyframes price-liquid-morph{
-  0%{transform:scale(1,1) skew(0deg);filter:blur(0);}
-  18%{transform:scale(1.12,0.82) skew(-7deg);filter:blur(2px);}
-  36%{transform:scale(0.82,1.18) skew(6deg);filter:blur(5px);}
-  50%{transform:scale(1.16,0.8) skew(-4deg);filter:blur(7px);}
-  64%{transform:scale(0.86,1.14) skew(5deg);filter:blur(4px);}
-  82%{transform:scale(1.06,0.96) skew(-2deg);filter:blur(1px);}
-  100%{transform:scale(1,1) skew(0deg);filter:blur(0);}
-}
-.motion-reduced .price-text.is-morphing{animation:none;}
-@media (prefers-reduced-motion:reduce){.price-text.is-morphing{animation:none;}}
+/* Carrete al cambiar de moneda o variante (ver reelPrice() en
+   product.blade.php) — solo los caracteres que realmente cambian de
+   valor se arman con dos fotogramas apilados (viejo arriba, nuevo ya
+   esperando debajo) adentro de una celda recortada, y un translateY
+   los desliza para revelar el de abajo. Los que se repiten entre el
+   valor viejo y el nuevo (un punto, un dígito igual) quedan como texto
+   plano, sin animar — así se siente que cada número reacciona por su
+   cuenta y no que todo el precio se mueve junto como una sola imagen. */
+.price-text{display:inline-block;}
+.char-cell{display:inline-block;}
+.reel-cell{overflow:hidden;height:1em;line-height:1;vertical-align:top;}
+.reel-track{display:flex;flex-direction:column;}
+.reel-frame{height:1em;line-height:1;}
+.reel-cell.is-reeling .reel-track{animation:reel-slide .46s cubic-bezier(.5,0,.25,1) forwards;}
+@keyframes reel-slide{from{transform:translateY(0);}to{transform:translateY(-1em);}}
+.motion-reduced .reel-cell.is-reeling .reel-track{animation:none;}
+@media (prefers-reduced-motion:reduce){.reel-cell.is-reeling .reel-track{animation:none;}}
 .btn-cta{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--gold);color:#0A0A0B;font-weight:600;font-size:15px;padding:16px;border-radius:100px;border:1px solid var(--gold);cursor:pointer;width:100%;margin-bottom:24px;text-decoration:none;transition:background .15s,color .15s,border-color .15s;}
 .btn-cta:hover{background:#e6c400;}
 .btn-cta.in-cart{background:var(--bg-elevated-2);color:var(--gold);border-color:var(--border-strong);}
