@@ -27,6 +27,7 @@
       <a href="{{ route('admin.categorias.index') }}" class="{{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">Categorías</a>
       <a href="{{ route('admin.promociones.index') }}" class="{{ request()->routeIs('admin.promociones.*') ? 'active' : '' }}">Promociones</a>
       <a href="{{ route('admin.historial.index') }}" class="{{ request()->routeIs('admin.historial.*') ? 'active' : '' }}">Historial de cambios</a>
+      <a href="{{ route('admin.changelog.index') }}" class="{{ request()->routeIs('admin.changelog.*') ? 'active' : '' }}">Historial de versiones</a>
       @if(auth()->user()->isAdmin())
         <a href="{{ route('admin.woocommerce.create') }}" class="{{ request()->routeIs('admin.woocommerce.*') ? 'active' : '' }}">Importar WooCommerce</a>
       @endif
@@ -44,6 +45,10 @@
       <a href="{{ route('admin.settings.edit') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">Ajustes</a>
     </nav>
     <div class="admin-nav-foot">
+      @php($adminVersion = \App\Http\Controllers\Admin\ChangelogController::currentVersion())
+      @if($adminVersion)
+        <div class="mono" style="padding:10px 12px 0;color:var(--text-muted);font-size:11px;letter-spacing:.03em;">v{{ $adminVersion }}</div>
+      @endif
       <a href="{{ route('home') }}" target="_blank">Ver sitio ↗</a>
       @if(auth()->user()->isAdmin())
         <form method="POST" action="{{ route('admin.cache.purge') }}">

@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\WooCommerceImportController as AdminWooCommerceIm
 use App\Http\Controllers\Admin\CacheController as AdminCacheController;
 use App\Http\Controllers\Admin\PcBuilderOptionController as AdminPcBuilderOptionController;
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
+use App\Http\Controllers\Admin\ChangelogController as AdminChangelogController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductQuickEditController;
 use App\Http\Controllers\SitemapController;
@@ -51,6 +52,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         Route::get('historial', [AdminProductActivityLogController::class, 'index'])->name('historial.index');
+        Route::get('novedades', [AdminChangelogController::class, 'index'])->name('changelog.index');
 
         Route::get('compatibilidad', [AdminPcBuilderOptionController::class, 'index'])->name('pc-builder-options.index');
         Route::post('compatibilidad', [AdminPcBuilderOptionController::class, 'store'])->name('pc-builder-options.store');
