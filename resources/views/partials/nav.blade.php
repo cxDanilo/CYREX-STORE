@@ -137,6 +137,13 @@ document.addEventListener('alpine:init', () => {
 
 </div>
 
-@if($categoryMenuScope === 'all' || request()->routeIs('shop'))
-  @include('partials.category-float')
-@endif
+{{-- Siempre se incluye (aunque el scope sea "shop" y esta página no
+     sea /tienda) — la visibilidad se resuelve en category-float.blade
+     con un inline-style calculado en el request real. Si se dejara
+     afuera del todo cuando no corresponde, page-nav.js jamás podría
+     "hacerlo aparecer" en una navegación suave hacia /tienda: ese
+     script solo reemplaza el <main>, nunca vuelve a pedir/renderizar
+     este <nav> — por eso el botón se quedaba invisible para siempre
+     después de llegar a /tienda navegando (en vez de con una carga
+     real) hasta que se recargaba la página entera. --}}
+@include('partials.category-float')

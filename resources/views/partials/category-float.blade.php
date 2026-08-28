@@ -1,4 +1,6 @@
-<div class="cat-float" x-data="{
+<div class="cat-float" data-category-menu-scope="{{ $categoryMenuScope }}"
+    @if($categoryMenuScope !== 'all' && !request()->routeIs('shop')) style="display:none;" @endif
+    x-data="{
       hoverCat: null,
       expanded: false,
       closeTimer: null,

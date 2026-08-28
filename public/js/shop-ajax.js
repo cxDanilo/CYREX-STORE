@@ -11,6 +11,18 @@ window.addEventListener('DOMContentLoaded', function () {
   // respuesta vieja llegue después de la nueva y la pise.
   var currentController = null;
 
+  // "shop-main-enter" nunca se sacaba después de que la animación de
+  // entrada terminaba — se quedaba pegada para siempre en .shop-main.
+  // Como esa clase tiene animation:...forwards sobre el transform de
+  // cada card (para la entrada en cascada), "forwards" deja ese
+  // transform trabado incluso después de terminar la animación — y
+  // eso pisaba para siempre el transform que pone product-tilt.js al
+  // pasar el mouse (por eso el tilt solo andaba en la carga real de la
+  // página, antes de la primera paginación/orden/filtro). Sacando la
+  // clase apenas termina la animación, el transform vuelve a manos del
+  // hover normal.
+  var enterCleanupTimer = null;
+
   // Solo se intercepta un link si: es del mismo sitio, apunta a esta
   // MISMA página (/tienda), no está marcado data-no-ajax, y está
   // DENTRO de .shop-main — así un link del footer o del mega-menú que
@@ -67,6 +79,11 @@ window.addEventListener('DOMContentLoaded', function () {
         shopMain.classList.remove('shop-main-loading');
         shopMain.classList.add('shop-main-enter');
         fadeInImages(shopMain);
+
+        clearTimeout(enterCleanupTimer);
+        enterCleanupTimer = setTimeout(function () {
+          shopMain.classList.remove('shop-main-enter');
+        }, 1050);
 
         // El HTML recién insertado con innerHTML no lo detecta Alpine
         // solo — sin esto, el desplegable de orden y los botones de

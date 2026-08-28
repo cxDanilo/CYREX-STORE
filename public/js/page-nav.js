@@ -15,6 +15,17 @@ window.addEventListener('DOMContentLoaded', function () {
 
   var currentController = null;
 
+  // "page-nav-enter" queda pegada en <main> entre una navegación y la
+  // siguiente (recién se saca justo antes de agregarla de nuevo, ver
+  // applyPage) — mientras tanto, su animation:...forwards sobre el
+  // transform de cada card de la grilla deja ese transform trabado
+  // para siempre, pisando el que pone product-tilt.js al pasar el
+  // mouse. Por eso el tilt se perdía después de la primera navegación
+  // suave y no volvía ni pasando a otra página. Se saca sola apenas
+  // termina la entrada en cascada, para devolverle el transform al
+  // hover normal.
+  var enterCleanupTimer = null;
+
   // Solo tienda↔producto (nunca home, admin, contacto, etc. — esas
   // páginas no comparten este mismo "molde" y no tiene sentido meterlas
   // acá sin pensarlo por separado). Esto SÍ incluye links a /tienda que
@@ -90,10 +101,26 @@ window.addEventListener('DOMContentLoaded', function () {
     document.title = entry.title;
     main.innerHTML = entry.mainHTML;
     document.body.classList.remove('page-nav-loading');
+    clearTimeout(enterCleanupTimer);
     main.classList.remove('page-nav-enter');
     void main.offsetWidth;
     main.classList.add('page-nav-enter');
+    enterCleanupTimer = setTimeout(function () {
+      main.classList.remove('page-nav-enter');
+    }, 1150);
     fadeInImages(main);
+
+    // El menú flotante de categorías vive en partials/nav.blade.php,
+    // FUERA de <main> — su visibilidad ("solo en /tienda" o "en todo
+    // el sitio") se decide una sola vez, en el request real que
+    // renderizó el <nav>, y ese <nav> nunca se vuelve a pedir acá. Sin
+    // esto, llegar a /tienda navegando (en vez de con una carga real)
+    // lo dejaba invisible para siempre, aunque el destino fuera
+    // /tienda — solo un F5 lo hacía reaparecer.
+    var catFloat = document.querySelector('.cat-float');
+    if (catFloat && catFloat.dataset.categoryMenuScope !== 'all') {
+      catFloat.style.display = (location.pathname === '/tienda') ? '' : 'none';
+    }
 
     // Igual que en shop-ajax.js: el HTML inyectado con innerHTML no lo
     // detecta Alpine solo.
