@@ -73,6 +73,45 @@
             el.classList.add('price-flash');
           });
         },
+        // Antes el toggle USD/BOB (y el cambio de variante) pisaba el
+        // número de golpe (x-text) y a lo sumo tapaba el salto con un
+        // flash de opacidad — se sentía brusco. syncPrice reemplaza al
+        // x-text: la primera vez (montaje del componente, mismo texto
+        // que ya vino renderizado del servidor) solo marca el elemento
+        // como listo, sin animar nada; de ahí en más, cada cambio anima
+        // el VALOR numérico desde el que estaba hasta el nuevo.
+        syncPrice(el, target, prefix, suffix) {
+          if (!el.dataset.primed) {
+            el.textContent = prefix + target.toFixed(2) + suffix;
+            el.dataset.primed = '1';
+            return;
+          }
+          this.animatePrice(el, target, prefix, suffix);
+        },
+        // Cuadro a cuadro, con desaceleración al final (como una gota
+        // asentándose) en vez de un movimiento lineal — se siente más
+        // fluido que un simple conteo parejo. El token evita que dos
+        // animaciones pisándose (toggle rápido dos veces seguidas)
+        // tironeen el número.
+        animatePrice(el, target, prefix, suffix) {
+          const from = parseFloat(el.textContent.replace(/[^0-9.]/g, '')) || target;
+          const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.body.classList.contains('motion-reduced');
+          if (reduced || from === target) {
+            el.textContent = prefix + target.toFixed(2) + suffix;
+            return;
+          }
+          const token = (el._priceAnimToken = (el._priceAnimToken || 0) + 1);
+          const duration = 550;
+          const start = performance.now();
+          const step = (now) => {
+            if (el._priceAnimToken !== token) return;
+            const t = Math.min(1, (now - start) / duration);
+            const eased = 1 - Math.pow(1 - t, 3);
+            el.textContent = prefix + (from + (target - from) * eased).toFixed(2) + suffix;
+            if (t < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        },
         whatsappHref() {
           const variantObj = this.variants.find(v => v.id === this.variant);
           const variantSuffix = variantObj ? ' (' + variantObj.name + ')' : '';
@@ -268,11 +307,11 @@
           <div class="exchange-rate-note">1 USD = Bs {{ number_format($rate, 2) }}</div>
         @endif
       @endif
-      <div class="price-main" x-text="showBob ? 'Bs ' + (basePrice * rate).toFixed(2) : '$' + basePrice.toFixed(2)"
-           x-effect="showBob; if (toggled) { $el.classList.remove('price-flash'); void $el.offsetWidth; $el.classList.add('price-flash'); }">{{ $priceMainInitial }}</div>
+      <div class="price-main"
+           x-effect="syncPrice($el, showBob ? basePrice * rate : basePrice, showBob ? 'Bs ' : '$', '')">{{ $priceMainInitial }}</div>
       @if($currencyMode === 'both')
-        <div class="price-alt" x-text="showBob ? '≈ $' + basePrice.toFixed(2) + ' USD' : '≈ Bs ' + (basePrice * rate).toFixed(2)"
-             x-effect="showBob; if (toggled) { $el.classList.remove('price-flash'); void $el.offsetWidth; $el.classList.add('price-flash'); }">{{ $priceAltInitial }}</div>
+        <div class="price-alt"
+             x-effect="syncPrice($el, showBob ? basePrice : basePrice * rate, showBob ? '≈ $' : '≈ Bs ', showBob ? ' USD' : '')">{{ $priceAltInitial }}</div>
       @endif
     </div>
 
