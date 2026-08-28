@@ -18,6 +18,7 @@ jobs:
           script: |
             set -e
             cd ~/domains/cyrexstore.com/public_html/dev/cyrex-app
+            if [ -f .git/shallow ]; then git fetch --unshallow; fi
             git pull
             rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
             composer install --no-dev --optimize-autoloader --no-interaction
