@@ -74,43 +74,41 @@
           });
         },
         // Antes el toggle USD/BOB (y el cambio de variante) pisaba el
-        // número de golpe (x-text) y a lo sumo tapaba el salto con un
-        // flash de opacidad — se sentía brusco. syncPrice reemplaza al
-        // x-text: la primera vez (montaje del componente, mismo texto
-        // que ya vino renderizado del servidor) solo marca el elemento
-        // como listo, sin animar nada; de ahí en más, cada cambio anima
-        // el VALOR numérico desde el que estaba hasta el nuevo.
+        // número de golpe (x-text) — se sentía brusco. syncPrice
+        // reemplaza al x-text: la primera vez (montaje del componente,
+        // mismo texto que ya vino renderizado del servidor) solo marca
+        // el elemento como listo, sin animar nada; de ahí en más, cada
+        // cambio dispara el moldeado (ver morphPrice).
         syncPrice(el, target, prefix, suffix) {
-          if (!el.dataset.primed) {
-            el.textContent = prefix + target.toFixed(2) + suffix;
-            el.dataset.primed = '1';
+          const span = el.querySelector('.price-text');
+          const text = prefix + target.toFixed(2) + suffix;
+          if (!span.dataset.primed) {
+            span.textContent = text;
+            span.dataset.primed = '1';
             return;
           }
-          this.animatePrice(el, target, prefix, suffix);
+          this.morphPrice(span, text);
         },
-        // Cuadro a cuadro, con desaceleración al final (como una gota
-        // asentándose) en vez de un movimiento lineal — se siente más
-        // fluido que un simple conteo parejo. El token evita que dos
-        // animaciones pisándose (toggle rápido dos veces seguidas)
-        // tironeen el número.
-        animatePrice(el, target, prefix, suffix) {
-          const from = parseFloat(el.textContent.replace(/[^0-9.]/g, '')) || target;
+        // Un solo elemento se estira/achica y se curva como si fuera de
+        // plastilina (ver @keyframes price-liquid-morph), con el blur
+        // más fuerte justo en el pico de esa distorsión — el texto se
+        // reemplaza ahí mismo, cuando está más derretido y menos
+        // legible, así el cambio de número queda escondido adentro del
+        // propio moldeado en vez de sentirse como un corte.
+        morphPrice(span, newText) {
+          if (span.textContent === newText) return;
           const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.body.classList.contains('motion-reduced');
-          if (reduced || from === target) {
-            el.textContent = prefix + target.toFixed(2) + suffix;
+          if (reduced) {
+            span.textContent = newText;
             return;
           }
-          const token = (el._priceAnimToken = (el._priceAnimToken || 0) + 1);
-          const duration = 550;
-          const start = performance.now();
-          const step = (now) => {
-            if (el._priceAnimToken !== token) return;
-            const t = Math.min(1, (now - start) / duration);
-            const eased = 1 - Math.pow(1 - t, 3);
-            el.textContent = prefix + (from + (target - from) * eased).toFixed(2) + suffix;
-            if (t < 1) requestAnimationFrame(step);
-          };
-          requestAnimationFrame(step);
+
+          clearTimeout(span._morphSwapTimer);
+          span.classList.remove('is-morphing');
+          void span.offsetWidth;
+          span.classList.add('is-morphing');
+          span._morphSwapTimer = setTimeout(() => { span.textContent = newText; }, 300);
+          span.addEventListener('animationend', () => span.classList.remove('is-morphing'), { once: true });
         },
         whatsappHref() {
           const variantObj = this.variants.find(v => v.id === this.variant);
@@ -308,10 +306,10 @@
         @endif
       @endif
       <div class="price-main"
-           x-effect="syncPrice($el, showBob ? basePrice * rate : basePrice, showBob ? 'Bs ' : '$', '')">{{ $priceMainInitial }}</div>
+           x-effect="syncPrice($el, showBob ? basePrice * rate : basePrice, showBob ? 'Bs ' : '$', '')"><span class="price-text">{{ $priceMainInitial }}</span></div>
       @if($currencyMode === 'both')
         <div class="price-alt"
-             x-effect="syncPrice($el, showBob ? basePrice : basePrice * rate, showBob ? '≈ $' : '≈ Bs ', showBob ? ' USD' : '')">{{ $priceAltInitial }}</div>
+             x-effect="syncPrice($el, showBob ? basePrice : basePrice * rate, showBob ? '≈ $' : '≈ Bs ', showBob ? ' USD' : '')"><span class="price-text">{{ $priceAltInitial }}</span></div>
       @endif
     </div>
 
