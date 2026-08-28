@@ -19,7 +19,20 @@ jobs:
             set -e
             cd ~/domains/cyrexstore.com/public_html/dev/cyrex-app
             if [ -f .git/shallow ]; then git fetch --unshallow; fi
-            git pull
+
+            n=0
+            until [ $n -ge 3 ]
+            do
+              git pull && break
+              n=$((n+1))
+              echo "git pull falló, reintentando ($n/3)..."
+              sleep 5
+            done
+            if [ $n -ge 3 ]; then
+              echo "git pull falló 3 veces seguidas, abortando deploy"
+              exit 1
+            fi
+
             rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
             composer install --no-dev --optimize-autoloader --no-interaction
             php artisan migrate --force
