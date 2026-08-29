@@ -1,8 +1,40 @@
 @php
   $items = collect($data['items'] ?? [])->filter(fn ($item) => !empty($item['imagen']))->values();
   $paginas = $items->chunk(7)->values();
-  $ciclo = ['big', 'wide', 'tall', 'square', 'square', 'square', 'square'];
   $intervaloMs = max(0, (int) ($data['intervalo'] ?? 6)) * 1000;
+
+  // 3 moldes de mosaico distintos (posición y forma de cada tarjeta,
+  // en una grilla fija de 6 columnas x 2 filas), rotando por tanda
+  // para que no todas se vean armadas con el mismo molde.
+  $patrones = [
+    [
+      ['c' => '1 / 3', 'r' => '1 / 3', 'forma' => 'big'],
+      ['c' => '3 / 5', 'r' => '1 / 2', 'forma' => 'wide'],
+      ['c' => '5 / 6', 'r' => '1 / 3', 'forma' => 'tall'],
+      ['c' => '6 / 7', 'r' => '1 / 2', 'forma' => 'square'],
+      ['c' => '3 / 4', 'r' => '2 / 3', 'forma' => 'square'],
+      ['c' => '4 / 5', 'r' => '2 / 3', 'forma' => 'square'],
+      ['c' => '6 / 7', 'r' => '2 / 3', 'forma' => 'square'],
+    ],
+    [
+      ['c' => '1 / 2', 'r' => '1 / 3', 'forma' => 'tall'],
+      ['c' => '2 / 4', 'r' => '1 / 2', 'forma' => 'wide'],
+      ['c' => '4 / 6', 'r' => '1 / 3', 'forma' => 'big'],
+      ['c' => '6 / 7', 'r' => '1 / 2', 'forma' => 'square'],
+      ['c' => '2 / 3', 'r' => '2 / 3', 'forma' => 'square'],
+      ['c' => '3 / 4', 'r' => '2 / 3', 'forma' => 'square'],
+      ['c' => '6 / 7', 'r' => '2 / 3', 'forma' => 'square'],
+    ],
+    [
+      ['c' => '1 / 2', 'r' => '1 / 2', 'forma' => 'square'],
+      ['c' => '2 / 3', 'r' => '1 / 2', 'forma' => 'square'],
+      ['c' => '1 / 3', 'r' => '2 / 3', 'forma' => 'wide'],
+      ['c' => '3 / 5', 'r' => '1 / 3', 'forma' => 'big'],
+      ['c' => '5 / 6', 'r' => '1 / 3', 'forma' => 'tall'],
+      ['c' => '6 / 7', 'r' => '1 / 2', 'forma' => 'square'],
+      ['c' => '6 / 7', 'r' => '2 / 3', 'forma' => 'square'],
+    ],
+  ];
 @endphp
 <div class="wrap cms-block cms-marcas-mosaico" data-interval="{{ $intervaloMs }}">
   @if(!empty($data['titulo']))
@@ -14,20 +46,14 @@
   <div class="cms-marcas-mosaico-viewport">
     <div class="cms-marcas-mosaico-track">
       @foreach($paginas as $pi => $pagina)
-        @php
-          // Cada tanda arranca en un punto distinto del ciclo de formas,
-          // para que no todas se vean armadas con el mismo molde
-          // (grande siempre arriba a la izquierda, etc).
-          $offset = ($pi * 2) % count($ciclo);
-          $formas = array_merge(array_slice($ciclo, $offset), array_slice($ciclo, 0, $offset));
-        @endphp
+        @php($patron = $patrones[$pi % count($patrones)])
         <div class="cms-marcas-mosaico-page">
           @foreach($pagina as $i => $item)
-            @php($forma = $formas[$i % count($formas)])
+            @php($slot = $patron[$i % count($patron)])
             @if(!empty($item['link']))
-              <a class="cms-marcas-mosaico-tile" data-shape="{{ $forma }}" href="{{ $item['link'] }}">
+              <a class="cms-marcas-mosaico-tile" data-shape="{{ $slot['forma'] }}" style="grid-column:{{ $slot['c'] }};grid-row:{{ $slot['r'] }};" href="{{ $item['link'] }}">
             @else
-              <div class="cms-marcas-mosaico-tile" data-shape="{{ $forma }}">
+              <div class="cms-marcas-mosaico-tile" data-shape="{{ $slot['forma'] }}" style="grid-column:{{ $slot['c'] }};grid-row:{{ $slot['r'] }};">
             @endif
               <img src="{{ $item['imagen'] }}" alt="{{ $item['nombre'] ?? '' }}" loading="lazy">
               @if(!empty($item['nombre']))
