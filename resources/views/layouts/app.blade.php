@@ -18,6 +18,7 @@
 @hasSection('meta_description')
 <meta name="description" content="@yield('meta_description')">
 @endif
+<link rel="stylesheet" href="{{ asset('css/fonts.css') }}?v={{ filemtime(public_path('css/fonts.css')) }}">
 <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
 <style>:root{--logo-height:{{ $logoHeight }}px;--gold:{{ $accentColor ?? '#FFD900' }};}</style>
 @if(($promoBarActive ?? null)?->custom_css)
