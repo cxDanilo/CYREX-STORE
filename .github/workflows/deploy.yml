@@ -38,5 +38,7 @@ jobs:
             php artisan migrate --force
             php artisan config:clear
             php artisan view:clear
+            php artisan config:cache
+            php artisan view:cache
             git log --pretty=format:'%H|%ad|%s' --date=format:'%Y-%m-%d %H:%M' -n 200 > storage/app/changelog.txt
             git rev-list --count HEAD > storage/app/version.txt
