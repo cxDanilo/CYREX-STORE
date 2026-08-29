@@ -18,6 +18,18 @@ jobs:
           script: |
             set -e
             cd ~/domains/cyrexstore.com/public_html/dev/cyrex-app
+
+            # El deploy pisa en el lugar el mismo código que está sirviendo
+            # el sitio en vivo (sin symlink/carpeta nueva de por medio) —
+            # sin esto, cualquier visita real que caiga justo mientras
+            # git pull/composer install están a mitad de camino puede
+            # toparse con clases/vistas a medio actualizar (así se vio el
+            # "Class view does not exist" que reportó el usuario). El
+            # trap asegura que el sitio vuelve a estar arriba pase lo que
+            # pase, incluso si el deploy falla en el medio.
+            trap 'php artisan up || true' EXIT
+            php artisan down --retry=15 || true
+
             if [ -f .git/shallow ]; then git fetch --unshallow; fi
 
             n=0
