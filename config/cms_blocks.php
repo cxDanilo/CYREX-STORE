@@ -322,6 +322,7 @@ return [
             'categoria' => '',
             'limite' => 3,
             'items' => [],
+            'card_opacidad' => 55,
         ],
         'fields' => [
             'imagen_fondo' => ['type' => 'media', 'label' => 'Imagen de fondo'],
@@ -330,6 +331,7 @@ return [
             'subtitulo' => ['type' => 'textarea', 'label' => 'Subtítulo (opcional)'],
             'boton_texto' => ['type' => 'text', 'label' => 'Texto del botón (opcional)'],
             'boton_url' => ['type' => 'text', 'label' => 'Link del botón'],
+            'card_opacidad' => ['type' => 'range', 'label' => 'Opacidad de las tarjetas de producto', 'min' => 0, 'max' => 100, 'step' => 5, 'unit' => '%'],
             'modo' => ['type' => 'select', 'label' => 'Cómo elegir los productos', 'options' => [
                 ['id' => 'categoria', 'name' => 'Automático por categoría'],
                 ['id' => 'manual', 'name' => 'Elegir productos puntuales'],

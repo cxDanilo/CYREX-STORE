@@ -20,6 +20,8 @@
     $limite = (int) ($data['limite'] ?? 3);
     $productos = $query->orderByDesc('created_at')->take($limite)->get();
   }
+
+  $cardAlpha = max(0, min(100, (int) ($data['card_opacidad'] ?? 55))) / 100;
 @endphp
 <section class="cms-banner-productos" style="background-image:url('{{ $data['imagen_fondo'] ?? '' }}')">
   <div class="wrap cms-banner-productos-inner">
@@ -38,7 +40,7 @@
       @endif
     </div>
     @if($productos->isNotEmpty())
-      <div class="cms-banner-productos-grid">
+      <div class="cms-banner-productos-grid" style="--banner-card-alpha:{{ $cardAlpha }};">
         @foreach($productos as $product)
           <a class="card" href="{{ route('product.show', $product->slug) }}">
             <div class="card-media">
