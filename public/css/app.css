@@ -724,15 +724,22 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .cms-banner-overlay{background:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,0));width:100%;padding:32px;}
 .cms-banner-title{font-family:var(--font-display);font-weight:700;font-size:clamp(22px,3vw,32px);margin-bottom:14px;color:#fff;}
 
-.cms-banner-productos{position:relative;border-radius:20px;overflow:hidden;background-size:cover;background-position:center;background-color:var(--bg-elevated-2);padding:48px 40px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;}
+/* De extremo a extremo (sin .wrap ni border-radius en la sección misma,
+   a diferencia de .cms-banner) — el .wrap se lo queda solo el contenido
+   de adentro (cms-banner-productos-inner), igual que hero-video. */
+.cms-banner-productos{position:relative;overflow:hidden;background-size:cover;background-position:center;background-color:var(--bg-elevated-2);margin-block:40px;}
 .cms-banner-productos::before{content:'';position:absolute;inset:0;background:linear-gradient(100deg,rgba(8,8,8,.92) 0%,rgba(8,8,8,.6) 45%,rgba(8,8,8,.15) 75%);}
-.cms-banner-productos-text{position:relative;z-index:1;max-width:480px;}
+.cms-banner-productos-inner{position:relative;z-index:1;padding-block:56px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;}
+.cms-banner-productos-text{max-width:480px;}
 .cms-banner-productos-text .cms-hero-title{margin-bottom:16px;}
 .cms-banner-productos-text .cms-hero-subtitle{margin-bottom:24px;}
-.cms-banner-productos-grid{position:relative;z-index:1;display:flex;gap:16px;flex-wrap:wrap;}
-.cms-banner-productos-grid .card{width:190px;flex-shrink:0;}
+.cms-banner-productos-grid{display:flex;gap:16px;flex-wrap:wrap;}
+/* Tarjetas semi-transparentes con blur, para que se note la foto de
+   fondo por detrás en vez de tapar todo con el fondo sólido normal
+   de .card. */
+.cms-banner-productos-grid .card{width:190px;flex-shrink:0;background:rgba(19,19,19,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-color:rgba(255,255,255,.14);}
 @media (max-width:900px){
-  .cms-banner-productos{flex-direction:column;align-items:flex-start;padding:32px 24px;}
+  .cms-banner-productos-inner{flex-direction:column;align-items:flex-start;padding-block:40px;}
   .cms-banner-productos::before{background:linear-gradient(180deg,rgba(8,8,8,.35) 0%,rgba(8,8,8,.94) 65%);}
   .cms-banner-productos-grid{width:100%;}
   .cms-banner-productos-grid .card{width:calc(50% - 8px);}

@@ -21,8 +21,8 @@
     $productos = $query->orderByDesc('created_at')->take($limite)->get();
   }
 @endphp
-<div class="wrap cms-block">
-  <div class="cms-banner-productos" style="background-image:url('{{ $data['imagen_fondo'] ?? '' }}')">
+<section class="cms-banner-productos" style="background-image:url('{{ $data['imagen_fondo'] ?? '' }}')">
+  <div class="wrap cms-banner-productos-inner">
     <div class="cms-banner-productos-text">
       @if(!empty($data['eyebrow']))
         <div class="cms-hero-eyebrow">{{ $data['eyebrow'] }}</div>
@@ -70,4 +70,4 @@
       </div>
     @endif
   </div>
-</div>
+</section>
