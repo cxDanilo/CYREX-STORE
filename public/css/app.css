@@ -738,6 +738,12 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
    fondo por detrás en vez de tapar todo con el fondo sólido normal
    de .card. */
 .cms-banner-productos-grid .card{width:190px;flex-shrink:0;background:rgba(19,19,19,var(--banner-card-alpha,.55));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-color:rgba(255,255,255,.14);}
+/* Las fotos de producto reales vienen con SU PROPIO fondo (no
+   transparentes) — pegadas al borde de la tarjeta se veían como un
+   bloque sólido feo contra el vidrio difuminado. Con margen y un radio
+   propio, la foto queda "enmarcada" flotando adentro en vez de tapar
+   la tarjeta de punta a punta. */
+.cms-banner-productos-grid .card-media{margin:10px 10px 0;border-radius:10px;width:auto;}
 @media (max-width:900px){
   .cms-banner-productos-inner{flex-direction:column;align-items:flex-start;padding-block:40px;}
   .cms-banner-productos::before{background:linear-gradient(180deg,rgba(8,8,8,.35) 0%,rgba(8,8,8,.94) 65%);}
