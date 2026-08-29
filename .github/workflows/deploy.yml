@@ -13,7 +13,8 @@ jobs:
       # los logs reales) — nunca es un problema del script en sí: relanzar
       # el mismo commit sin tocar nada siempre funciona. En vez de que el
       # usuario tenga que relanzarlo a mano cada vez, se reintenta acá
-      # mismo hasta 3 veces. Cada intento es completamente idempotente
+      # mismo hasta 4 veces (con 20s de espera entre cada uno). Cada intento
+      # es completamente idempotente
       # (git pull/composer install/migrate/config:cache se pueden correr
       # de nuevo sin problema), así que repetir todo el script de cero en
       # el siguiente intento es seguro.
@@ -76,7 +77,7 @@ jobs:
 
       - name: Esperar antes de reintentar (intento 2)
         if: steps.deploy1.outcome == 'failure'
-        run: sleep 10
+        run: sleep 20
 
       - name: Deploy — intento 2
         id: deploy2
@@ -87,12 +88,23 @@ jobs:
 
       - name: Esperar antes de reintentar (intento 3)
         if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
-        run: sleep 10
+        run: sleep 20
+
+      - name: Deploy — intento 3
+        id: deploy3
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.0.3
+        with: *deploy_with
+
+      - name: Esperar antes de reintentar (intento 4)
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure' && steps.deploy3.outcome == 'failure'
+        run: sleep 20
 
       # Último intento — si este también falla, el job queda en rojo de
       # verdad (nada de continue-on-error), para no esconder un problema
-      # real después de 3 intentos seguidos.
-      - name: Deploy — intento 3
-        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+      # real después de 4 intentos seguidos.
+      - name: Deploy — intento 4
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure' && steps.deploy3.outcome == 'failure'
         uses: appleboy/ssh-action@v1.0.3
         with: *deploy_with
