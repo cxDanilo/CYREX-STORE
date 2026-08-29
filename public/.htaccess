@@ -23,3 +23,27 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# CSS/JS/imágenes/fuentes ya llevan cache-busting por versión
+# (?v={{ filemtime(...) }} en cada <link>/<script> del sitio), así que
+# es seguro decirle al navegador que los guarde 1 año — cualquier
+# cambio real cambia la URL sola. Nunca se toca text/html a propósito:
+# las páginas son dinámicas (precios, stock, carrito) y no deben
+# quedar cacheadas en el navegador del visitante.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
