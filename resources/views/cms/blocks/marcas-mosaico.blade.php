@@ -4,11 +4,13 @@
   $ciclo = ['big', 'wide', 'tall', 'square', 'square', 'square', 'square'];
   $intervaloMs = max(0, (int) ($data['intervalo'] ?? 6)) * 1000;
 @endphp
-@if($paginas->isNotEmpty())
 <div class="wrap cms-block cms-marcas-mosaico" data-interval="{{ $intervaloMs }}">
   @if(!empty($data['titulo']))
     <h2 class="cms-titulo cms-titulo-mediano" style="margin-bottom:20px;">{{ $data['titulo'] }}</h2>
   @endif
+  @if($paginas->isEmpty())
+    <p style="color:var(--text-muted);font-size:13px;">Todavía no hay marcas cargadas — agregalas desde el panel de la derecha.</p>
+  @else
   <div class="cms-marcas-mosaico-viewport">
     <div class="cms-marcas-mosaico-track">
       @foreach($paginas as $pi => $pagina)
@@ -52,5 +54,5 @@
       <button type="button" class="cms-marcas-mosaico-arrow cms-marcas-mosaico-arrow-right" aria-label="Más marcas">›</button>
     </div>
   @endif
+  @endif
 </div>
-@endif
