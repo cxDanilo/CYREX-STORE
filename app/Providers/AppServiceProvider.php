@@ -95,7 +95,7 @@ class AppServiceProvider extends ServiceProvider
         // composer de arriba porque partials.shop-results se renderiza
         // solo (fragmento AJAX), sin pasar por layouts.app.
         View::composer(
-            ['partials.shop-results', 'cms.blocks.productos', 'cms.blocks.categoria-rotativa', 'product'],
+            ['partials.shop-results', 'cms.blocks.productos', 'cms.blocks.categoria-rotativa', 'cms.blocks.banner-productos', 'product'],
             fn ($view) => $view->with('cardActivePromotion', Promotion::active())
         );
     }

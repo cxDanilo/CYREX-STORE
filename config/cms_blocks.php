@@ -307,6 +307,41 @@ return [
         ],
     ],
 
+    'banner_productos' => [
+        'label' => 'Banner con productos',
+        'view' => 'cms.blocks.banner-productos',
+        'category' => 'Comercio',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 14h4M7 17h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="14" y="12" width="5" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>',
+        'defaults' => [
+            'imagen_fondo' => '',
+            'eyebrow' => '',
+            'titulo' => '',
+            'subtitulo' => '',
+            'boton_texto' => '', 'boton_url' => '',
+            'modo' => 'categoria',
+            'categoria' => '',
+            'limite' => 3,
+            'items' => [],
+        ],
+        'fields' => [
+            'imagen_fondo' => ['type' => 'media', 'label' => 'Imagen de fondo'],
+            'eyebrow' => ['type' => 'text', 'label' => 'Texto pequeño superior (opcional)'],
+            'titulo' => ['type' => 'textarea', 'label' => 'Título'],
+            'subtitulo' => ['type' => 'textarea', 'label' => 'Subtítulo (opcional)'],
+            'boton_texto' => ['type' => 'text', 'label' => 'Texto del botón (opcional)'],
+            'boton_url' => ['type' => 'text', 'label' => 'Link del botón'],
+            'modo' => ['type' => 'select', 'label' => 'Cómo elegir los productos', 'options' => [
+                ['id' => 'categoria', 'name' => 'Automático por categoría'],
+                ['id' => 'manual', 'name' => 'Elegir productos puntuales'],
+            ]],
+            'categoria' => ['type' => 'select', 'label' => 'Categoría (si el modo es "automático")', 'options' => 'categories'],
+            'limite' => ['type' => 'number', 'label' => 'Cantidad de productos (si el modo es "automático")'],
+            'items' => ['type' => 'repeater', 'label' => 'Productos puntuales (si el modo es "elegir productos")', 'fields' => [
+                'producto' => ['type' => 'select', 'label' => 'Producto', 'options' => 'products'],
+            ]],
+        ],
+    ],
+
     'categoria_rotativa' => [
         'label' => 'Categoría del día',
         'view' => 'cms.blocks.categoria-rotativa',

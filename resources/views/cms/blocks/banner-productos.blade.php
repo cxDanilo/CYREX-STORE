@@ -1,0 +1,73 @@
+@php
+  $modo = $data['modo'] ?? 'categoria';
+
+  if ($modo === 'manual') {
+    $slugs = collect($data['items'] ?? [])->pluck('producto')->filter()->values();
+    $productos = \App\Models\Product::whereIn('slug', $slugs)->where('status', 'active')->with(['category'])->get()
+      ->sortBy(fn ($p) => $slugs->search($p->slug))
+      ->values();
+  } else {
+    $query = \App\Models\Product::where('status', 'active')->with(['category']);
+
+    if (!empty($data['categoria'])) {
+      $cat = \App\Models\Category::where('slug', $data['categoria'])->first();
+      if ($cat) {
+        $ids = $cat->parent_id ? [$cat->id] : $cat->children()->pluck('id')->push($cat->id);
+        $query->whereIn('category_id', $ids);
+      }
+    }
+
+    $limite = (int) ($data['limite'] ?? 3);
+    $productos = $query->orderByDesc('created_at')->take($limite)->get();
+  }
+@endphp
+<div class="wrap cms-block">
+  <div class="cms-banner-productos" style="background-image:url('{{ $data['imagen_fondo'] ?? '' }}')">
+    <div class="cms-banner-productos-text">
+      @if(!empty($data['eyebrow']))
+        <div class="cms-hero-eyebrow">{{ $data['eyebrow'] }}</div>
+      @endif
+      @if(!empty($data['titulo']))
+        <h2 class="cms-hero-title">{!! nl2br(e($data['titulo'])) !!}</h2>
+      @endif
+      @if(!empty($data['subtitulo']))
+        <p class="cms-hero-subtitle">{{ $data['subtitulo'] }}</p>
+      @endif
+      @if(!empty($data['boton_texto']) && !empty($data['boton_url']))
+        <a href="{{ $data['boton_url'] }}" class="btn btn-primary">{{ $data['boton_texto'] }}</a>
+      @endif
+    </div>
+    @if($productos->isNotEmpty())
+      <div class="cms-banner-productos-grid">
+        @foreach($productos as $product)
+          <a class="card" href="{{ route('product.show', $product->slug) }}">
+            <div class="card-media">
+              @if($product->image_url)
+                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy" style="{{ $product->is_sold_out ? 'filter:grayscale(1);' : '' }}">
+              @endif
+              <div class="card-badges">
+                @if($product->is_sold_out)
+                  <span class="card-badge-agotado">Agotado</span>
+                @endif
+                @if($promo = $product->activePromotion($cardActivePromotion ?? null))
+                  <span class="card-badge-promo">{{ $promo->discount_label ?: 'Oferta' }}</span>
+                @endif
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="card-cat">{{ $product->category->name }}</div>
+              <div class="card-name">{{ $product->name }}</div>
+              <div class="card-price">
+                @if($product->currency === 'USD')
+                  ${{ number_format($product->price, 2) }} <small>USD</small>
+                @else
+                  Bs {{ number_format($product->price, 2) }} <small>BOB</small>
+                @endif
+              </div>
+            </div>
+          </a>
+        @endforeach
+      </div>
+    @endif
+  </div>
+</div>

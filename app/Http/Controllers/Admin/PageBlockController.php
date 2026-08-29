@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Page;
+use App\Models\Product;
 use App\Support\PageRenderer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,9 +40,9 @@ class PageBlockController extends Controller
 
     /**
      * Resuelve fuentes de opciones dinámicas declaradas en config/cms_blocks.php
-     * (hoy solo 'categories', el listado real de categorías padre). Mantiene el
-     * config estático/cacheable y evita que un campo 'select' quede hardcodeado
-     * con datos que cambian (ej. si se crea una categoría nueva desde el admin).
+     * ('categories': categorías padre; 'products': productos activos). Mantiene
+     * el config estático/cacheable y evita que un campo 'select' quede
+     * hardcodeado con datos que cambian (ej. un producto o categoría nueva).
      */
     private function resolveFieldOptions(array $fields): array
     {
@@ -50,6 +51,14 @@ class PageBlockController extends Controller
                 $fields[$key]['options'] = Category::parents()
                     ->get(['slug', 'name'])
                     ->map(fn ($cat) => ['id' => $cat->slug, 'name' => $cat->name])
+                    ->values();
+            }
+
+            if (($field['options'] ?? null) === 'products') {
+                $fields[$key]['options'] = Product::where('status', 'active')
+                    ->orderBy('name')
+                    ->get(['slug', 'name'])
+                    ->map(fn ($product) => ['id' => $product->slug, 'name' => $product->name])
                     ->values();
             }
 
