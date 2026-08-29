@@ -47,3 +47,14 @@
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
 </IfModule>
+
+# Headers de seguridad de bajo riesgo — se dejan afuera a propósito CSP,
+# HSTS y COOP: hay <script> inline con lógica real (carrito, login) que
+# necesitarían nonces/hashes para una CSP estricta, y HSTS puede dejar
+# a alguien sin acceso por HTTP si algo de HTTPS falla. Ninguno de los
+# 3 de acá tiene forma de romper algo del sitio.
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
