@@ -8,9 +8,20 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Conectar por SSH y desplegar
+      # La conexión SSH entre GitHub Actions y el servidor corta de forma
+      # transitoria de tanto en tanto ("dial tcp ... i/o timeout", visto en
+      # los logs reales) — nunca es un problema del script en sí: relanzar
+      # el mismo commit sin tocar nada siempre funciona. En vez de que el
+      # usuario tenga que relanzarlo a mano cada vez, se reintenta acá
+      # mismo hasta 3 veces. Cada intento es completamente idempotente
+      # (git pull/composer install/migrate/config:cache se pueden correr
+      # de nuevo sin problema), así que repetir todo el script de cero en
+      # el siguiente intento es seguro.
+      - name: Deploy — intento 1
+        id: deploy1
+        continue-on-error: true
         uses: appleboy/ssh-action@v1.0.3
-        with:
+        with: &deploy_with
           host: ${{ secrets.DEPLOY_HOST }}
           port: ${{ secrets.DEPLOY_PORT }}
           username: ${{ secrets.DEPLOY_USER }}
@@ -29,11 +40,11 @@ jobs:
             # pase, incluso si el deploy falla en el medio — un EXIT solo
             # (sin las señales) NO alcanza: si la conexión SSH entre
             # GitHub y el servidor se corta a mitad de camino (el mismo
-            # tipo de corte de red transitorio que ya justificaba el
-            # reintento de git pull de abajo), el proceso remoto se mata
-            # por señal y un trap solo-EXIT nunca llega a dispararse —
-            # como pasó la primera vez que se probó esto, dejando el
-            # sitio trabado en mantenimiento hasta que se levantó a mano.
+            # tipo de corte de red transitorio de acá arriba), el proceso
+            # remoto se mata por señal y un trap solo-EXIT nunca llega a
+            # dispararse — como pasó la primera vez que se probó esto,
+            # dejando el sitio trabado en mantenimiento hasta que se
+            # levantó a mano.
             trap 'php artisan up || true' EXIT
             trap 'exit 1' HUP INT TERM
             php artisan down --retry=15 || true
@@ -62,3 +73,26 @@ jobs:
             php artisan view:cache
             git log --pretty=format:'%H|%ad|%s' --date=format:'%Y-%m-%d %H:%M' -n 200 > storage/app/changelog.txt
             git rev-list --count HEAD > storage/app/version.txt
+
+      - name: Esperar antes de reintentar (intento 2)
+        if: steps.deploy1.outcome == 'failure'
+        run: sleep 10
+
+      - name: Deploy — intento 2
+        id: deploy2
+        if: steps.deploy1.outcome == 'failure'
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.0.3
+        with: *deploy_with
+
+      - name: Esperar antes de reintentar (intento 3)
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        run: sleep 10
+
+      # Último intento — si este también falla, el job queda en rojo de
+      # verdad (nada de continue-on-error), para no esconder un problema
+      # real después de 3 intentos seguidos.
+      - name: Deploy — intento 3
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        uses: appleboy/ssh-action@v1.0.3
+        with: *deploy_with
