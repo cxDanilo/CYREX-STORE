@@ -26,8 +26,16 @@ jobs:
             # toparse con clases/vistas a medio actualizar (así se vio el
             # "Class view does not exist" que reportó el usuario). El
             # trap asegura que el sitio vuelve a estar arriba pase lo que
-            # pase, incluso si el deploy falla en el medio.
+            # pase, incluso si el deploy falla en el medio — un EXIT solo
+            # (sin las señales) NO alcanza: si la conexión SSH entre
+            # GitHub y el servidor se corta a mitad de camino (el mismo
+            # tipo de corte de red transitorio que ya justificaba el
+            # reintento de git pull de abajo), el proceso remoto se mata
+            # por señal y un trap solo-EXIT nunca llega a dispararse —
+            # como pasó la primera vez que se probó esto, dejando el
+            # sitio trabado en mantenimiento hasta que se levantó a mano.
             trap 'php artisan up || true' EXIT
+            trap 'exit 1' HUP INT TERM
             php artisan down --retry=15 || true
 
             if [ -f .git/shallow ]; then git fetch --unshallow; fi
