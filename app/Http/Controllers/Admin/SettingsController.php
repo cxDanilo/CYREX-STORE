@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ExchangeRate;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -74,6 +75,7 @@ class SettingsController extends Controller
 
         if ($request->filled('rate') && (float) $data['rate'] !== ExchangeRate::current()) {
             ExchangeRate::create(['rate' => $data['rate']]);
+            Cache::forget('exchange_rate.current');
         }
 
         Setting::set('currency_mode', $data['currency_mode']);
