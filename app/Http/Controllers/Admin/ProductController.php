@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductActivityLog;
 use App\Models\ProductImage;
+use App\Support\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -172,9 +173,21 @@ class ProductController extends Controller
     private function storeUploadedImage(\Illuminate\Http\UploadedFile $file): string
     {
         $filename = Str::random(20).'.'.$file->getClientOriginalExtension();
+        $relativePath = 'products/'.$filename;
         $file->storeAs('products', $filename, 'uploads');
 
-        return 'products/'.$filename;
+        // Mismo optimizador que ya usa la Biblioteca de medios
+        // (MediaController) — redimensiona a 2000px máx y recomprime a
+        // calidad 82 sobre el propio archivo recién subido. Antes las
+        // fotos de producto se guardaban tal cual las mandaba el admin,
+        // a veces varios MB sin ninguna compresión.
+        ImageOptimizer::process(
+            Storage::disk('uploads')->path($relativePath),
+            $relativePath,
+            $file->getMimeType()
+        );
+
+        return $relativePath;
     }
 
     private function deleteImage(Product $product): void
