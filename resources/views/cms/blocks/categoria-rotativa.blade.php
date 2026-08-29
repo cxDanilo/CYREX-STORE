@@ -3,28 +3,46 @@
   // asignado — nunca queremos mostrar una sección vacía. El orden se
   // baraja con una semilla del día (no en cada visita) para que la
   // categoría cambie una vez al día, igual para todos los visitantes.
-  $categoryIds = \App\Models\Product::where('status', 'active')
-      ->whereNotNull('category_id')
-      ->distinct()
-      ->pluck('category_id');
-
+  //
+  // Estas queries corrían sin caché en cada carga del home — se
+  // envuelven en Cache::remember con la posición+día+límite como
+  // clave (así cada bloque de la página cachea su propio resultado
+  // por separado) y un TTL de 15 minutos: alcanza para no pegarle a
+  // la base en cada visita, sin dejar un producto nuevo invisible
+  // todo el día — coincide con que esto ya se pensó para cambiar
+  // "una vez al día", no en tiempo real.
   $seed = now()->format('Ymd');
-  $categorias = \App\Models\Category::whereIn('id', $categoryIds)
-      ->get()
-      ->sortBy(fn ($c) => crc32($seed.'-cat-'.$c->id))
-      ->values();
-
   $posicion = max(1, (int) ($data['posicion'] ?? 1));
-  $categoria = $categorias->get($posicion - 1);
+  $limite = (int) ($data['limite'] ?? 4);
 
-  $productos = $categoria
-      ? \App\Models\Product::where('status', 'active')
-          ->where('category_id', $categoria->id)
-          ->with('variants')
-          ->latest()
-          ->take((int) ($data['limite'] ?? 4))
-          ->get()
-      : collect();
+  [$categoria, $productos] = \Illuminate\Support\Facades\Cache::remember(
+      "catrot.{$posicion}.{$limite}.{$seed}",
+      now()->addMinutes(15),
+      function () use ($seed, $posicion, $limite) {
+          $categoryIds = \App\Models\Product::where('status', 'active')
+              ->whereNotNull('category_id')
+              ->distinct()
+              ->pluck('category_id');
+
+          $categorias = \App\Models\Category::whereIn('id', $categoryIds)
+              ->get()
+              ->sortBy(fn ($c) => crc32($seed.'-cat-'.$c->id))
+              ->values();
+
+          $categoria = $categorias->get($posicion - 1);
+
+          $productos = $categoria
+              ? \App\Models\Product::where('status', 'active')
+                  ->where('category_id', $categoria->id)
+                  ->with('variants')
+                  ->latest()
+                  ->take($limite)
+                  ->get()
+              : collect();
+
+          return [$categoria, $productos];
+      }
+  );
 @endphp
 @if($categoria && $productos->isNotEmpty())
 <div class="wrap cms-block">
