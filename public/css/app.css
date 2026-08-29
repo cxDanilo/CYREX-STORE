@@ -652,8 +652,13 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 
 /* Efecto de "decodificación": cada letra arranca como un glifo random
    con un ligero destello RGB (glitch) y va asentándose en su lugar y su
-   carácter real, una tras otra — ver public/js/hero-title-decode.js. */
-.cms-hero-video-title .glyph{display:inline-block;transition:opacity .16s ease,transform .16s ease,text-shadow .16s ease,color .16s ease;}
+   carácter real, una tras otra — ver public/js/hero-title-decode.js.
+   width:1ch fijo (en vez de dejar que cada letra mida lo que mida):
+   sin esto, un glifo random ancho como "W" reemplazando momentáneamente
+   una letra angosta como "i" corría el corte de línea del título
+   mientras dura el efecto — eso era justamente la causa de un salto de
+   layout (CLS) real, medido con PageSpeed. */
+.cms-hero-video-title .glyph{display:inline-block;width:1ch;text-align:center;transition:opacity .16s ease,transform .16s ease,text-shadow .16s ease,color .16s ease;}
 .cms-hero-video-title .glyph.is-scrambled{opacity:.55;transform:translateY(-5px);color:var(--green);text-shadow:-2px 0 var(--red),2px 0 var(--gold);}
 .cms-hero-video-title .glyph.is-settled{opacity:1;transform:translateY(0);color:#fff;text-shadow:none;}
 .cms-hero-video-buttons{display:flex;gap:14px;flex-wrap:wrap;}
