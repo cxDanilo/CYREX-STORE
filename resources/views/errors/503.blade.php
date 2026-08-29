@@ -21,18 +21,10 @@
     text-align:center;padding:24px;
   }
   .wrap{max-width:440px;}
-  .mark{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:56px;height:56px;border-radius:16px;
-    background:var(--gold-dim);border:1px solid var(--border);
-    margin-bottom:28px;
-  }
-  .mark svg{width:26px;height:26px;}
   .logo{
-    font-weight:800;font-size:19px;letter-spacing:-0.01em;
-    margin-bottom:36px;
+    max-width:220px;width:100%;height:auto;
+    margin-bottom:40px;
   }
-  .logo span{color:var(--gold);}
   h1{
     font-weight:700;font-size:clamp(22px,4vw,28px);
     letter-spacing:-0.01em;line-height:1.25;margin:0 0 12px;
@@ -59,12 +51,9 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="mark">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7l8-4 8 4v10l-8 4-8-4V7z" stroke="#ffd900" stroke-width="1.5" stroke-linejoin="round"/><path d="M4 7l8 4 8-4M12 11v10" stroke="#ffd900" stroke-width="1.5" stroke-linejoin="round"/></svg>
-    </div>
-    <div class="logo">CYREX <span>STORE</span></div>
+    <img src="{{ asset('images/logo-horizontal.png') }}" alt="Cyrex Store" class="logo">
     <h1>Volvemos enseguida</h1>
-    <p>Estamos actualizando la tienda. Esto no debería tardar más de un minuto — esta página se refresca sola.</p>
+    <p>Estamos actualizando la tienda — esta página se refresca sola.</p>
     <div class="dots" aria-hidden="true"><span></span><span></span><span></span></div>
   </div>
 </body>
