@@ -3,7 +3,7 @@
   $embedUrl = $videoUrl ? \App\Support\VideoEmbed::backgroundEmbedUrl($videoUrl) : null;
   $isDirectFile = $videoUrl && ! $embedUrl;
 @endphp
-<section class="cms-hero-video @if(!empty($data['poster_url'])) cms-hero-video-has-poster @endif">
+<section class="cms-hero-video @if(!empty($data['poster_url']) || !empty($data['poster_url_mobile'])) cms-hero-video-has-poster @endif">
   <div class="cms-hero-video-media">
     @if($embedUrl)
       <iframe class="cms-hero-video-iframe" src="{{ $embedUrl }}" allow="autoplay; encrypted-media" tabindex="-1" aria-hidden="true"></iframe>
@@ -11,7 +11,13 @@
       <video class="cms-hero-video-native" src="{{ $videoUrl }}" @if(!empty($data['poster_url'])) poster="{{ $data['poster_url'] }}" @endif autoplay muted loop playsinline></video>
     @endif
     @if(!empty($data['poster_url']))
-      <img class="cms-hero-video-poster" src="{{ $data['poster_url'] }}" alt="">
+      <img class="cms-hero-video-poster cms-hero-video-poster-desktop" src="{{ $data['poster_url'] }}" alt="">
+    @endif
+    {{-- Si no se subió una imagen específica para celular, cae en la
+         misma de escritorio — así ningún bloque hero_video ya cargado
+         en otra página se queda sin imagen por este campo nuevo. --}}
+    @if(!empty($data['poster_url_mobile']) || !empty($data['poster_url']))
+      <img class="cms-hero-video-poster cms-hero-video-poster-mobile" src="{{ $data['poster_url_mobile'] ?: $data['poster_url'] }}" alt="">
     @endif
     <div class="cms-hero-video-overlay"></div>
   </div>

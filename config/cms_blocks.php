@@ -63,13 +63,15 @@ return [
         'defaults' => [
             'video_url' => '',
             'poster_url' => '',
+            'poster_url_mobile' => '',
             'titulo' => '',
             'boton1_texto' => '', 'boton1_url' => '',
             'boton2_texto' => '', 'boton2_url' => '',
         ],
         'fields' => [
             'video_url' => ['type' => 'text', 'label' => 'Video: link de YouTube/Vimeo o URL de un archivo .mp4'],
-            'poster_url' => ['type' => 'media', 'label' => 'Imagen de respaldo (se usa en celular y mientras carga el video)'],
+            'poster_url' => ['type' => 'media', 'label' => 'Imagen de respaldo — escritorio (se usa mientras carga el video, y en celular si no hay una específica abajo)'],
+            'poster_url_mobile' => ['type' => 'media', 'label' => 'Imagen de respaldo — celular (opcional, para que sea una foto distinta a la de escritorio)'],
             'titulo' => ['type' => 'textarea', 'label' => 'Título'],
             'boton1_texto' => ['type' => 'text', 'label' => 'Botón 1 — texto'],
             'boton1_url' => ['type' => 'text', 'label' => 'Botón 1 — link'],

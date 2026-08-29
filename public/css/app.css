@@ -665,14 +665,26 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 @media (prefers-reduced-motion: reduce){.cms-hero-scroll-hint svg{animation:none;}}
 .motion-reduced .cms-hero-scroll-hint svg{animation:none;}
 
+/* 100dvh en vez de 60vh: con 60vh el hero se veía chico en celular y
+   las secciones de abajo (marcas, destacados) quedaban visibles casi
+   de entrada — con dvh (a diferencia de vh) tampoco salta cuando
+   aparece/desaparece la barra de direcciones del navegador. */
 @media (max-width:680px){
-  .cms-hero-video{min-height:60vh;}
+  .cms-hero-video{min-height:100dvh;}
   .cms-hero-video-has-poster .cms-hero-video-iframe,.cms-hero-video-has-poster .cms-hero-video-native{display:none;}
-  .cms-hero-video-has-poster .cms-hero-video-poster{display:block;}
+  .cms-hero-video-has-poster .cms-hero-video-poster-desktop{display:none;}
+  .cms-hero-video-has-poster .cms-hero-video-poster-mobile{display:block;}
 }
 
-.motion-reduced .cms-hero-video-has-poster .cms-hero-video-iframe,.motion-reduced .cms-hero-video-has-poster .cms-hero-video-native{display:none;}
-.motion-reduced .cms-hero-video-has-poster .cms-hero-video-poster{display:block;}
+/* Separado del breakpoint móvil de arriba a propósito: acá decide qué
+   imagen mostrar el ANCHO de pantalla, no si el motion está reducido —
+   sin este @media, la regla de abajo (que no sabe de anchos) y la de
+   arriba (que sí) terminaban compitiendo por especificidad en un
+   celular con motion reducido, y se veían las dos imágenes pisadas. */
+@media (min-width:681px){
+  .motion-reduced .cms-hero-video-has-poster .cms-hero-video-iframe,.motion-reduced .cms-hero-video-has-poster .cms-hero-video-native{display:none;}
+  .motion-reduced .cms-hero-video-has-poster .cms-hero-video-poster-desktop{display:block;}
+}
 .cms-rich-text{font-size:15px;line-height:1.7;color:var(--text-secondary);white-space:pre-line;max-width:720px;}
 .cms-stats{display:flex;gap:48px;flex-wrap:wrap;}
 .cms-stat-number{font-family:var(--font-mono);font-size:36px;color:var(--gold);line-height:1;margin-bottom:6px;}
