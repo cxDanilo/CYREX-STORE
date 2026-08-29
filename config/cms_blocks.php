@@ -233,6 +233,23 @@ return [
         ],
     ],
 
+    'marcas_mosaico' => [
+        'label' => 'Marcas (mosaico)',
+        'view' => 'cms.blocks.marcas-mosaico',
+        'category' => 'Medios',
+        'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="15" y="3" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="15" y="11" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="15" width="6" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="15" width="10" height="6" rx="1.5" stroke="currentColor" stroke-width="1.5"/></svg>',
+        'defaults' => ['titulo' => 'Explorá nuestras marcas', 'items' => [], 'intervalo' => 6],
+        'fields' => [
+            'titulo' => ['type' => 'text', 'label' => 'Título de la sección'],
+            'items' => ['type' => 'repeater', 'label' => 'Marcas', 'fields' => [
+                'imagen' => ['type' => 'media', 'label' => 'Imagen'],
+                'nombre' => ['type' => 'text', 'label' => 'Nombre (opcional, se muestra sobre la imagen)'],
+                'link' => ['type' => 'text', 'label' => 'Link al hacer click — ej: buscá la marca en la tienda y pegá esa URL, como /tienda?q=asus'],
+            ]],
+            'intervalo' => ['type' => 'number', 'label' => 'Segundos entre cada cambio automático (0 = desactivado)'],
+        ],
+    ],
+
     'sucursales' => [
         'label' => 'Sucursales',
         'view' => 'cms.blocks.sucursales',
