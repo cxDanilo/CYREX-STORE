@@ -748,10 +748,10 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
   .cms-banner-productos-inner{flex-direction:column;align-items:flex-start;padding-block:40px;}
   .cms-banner-productos::before{background:linear-gradient(180deg,rgba(8,8,8,.35) 0%,rgba(8,8,8,.94) 65%);}
   .cms-banner-productos-grid{width:100%;}
-  .cms-banner-productos-grid .card{width:calc(50% - 8px);}
-}
-@media (max-width:480px){
-  .cms-banner-productos-grid .card{width:100%;}
+  /* Ojo: se mantienen 2 por fila hasta el celular más angosto — a
+     full-width (como quedaba antes de este ajuste) una sola tarjeta ya
+     ocupaba toda la pantalla y se veía enorme. */
+  .cms-banner-productos-grid .card{width:calc(50% - 8px);max-width:170px;}
 }
 
 .cms-faq-item{border-bottom:1px solid var(--border);}
@@ -874,7 +874,11 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
      simplifica a un mosaico de 2 columnas usando solo la FORMA
      (grande/ancha ocupan 2 columnas, el resto 1), ignorando la
      posición exacta de escritorio. */
-  .cms-marcas-mosaico-page{grid-template-columns:repeat(2,1fr);grid-auto-rows:130px;}
+  /* dense: sin esto, el navegador va colocando cada tarjeta en orden
+     sin volver atrás a rellenar un hueco que dejó una más chica más
+     adelante — con formas de tamaños mezclados eso se notaba como
+     agujeros vacíos y tarjetas desacomodadas. */
+  .cms-marcas-mosaico-page{grid-template-columns:repeat(2,1fr);grid-auto-rows:130px;grid-auto-flow:dense;}
   .cms-marcas-mosaico-tile{grid-column:span 1 !important;grid-row:span 1 !important;}
   .cms-marcas-mosaico-tile[data-shape="big"]{grid-column:span 2 !important;grid-row:span 2 !important;}
   .cms-marcas-mosaico-tile[data-shape="wide"]{grid-column:span 2 !important;}
