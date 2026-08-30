@@ -41,10 +41,22 @@ class ChangelogController extends Controller
         ]);
     }
 
+    /**
+     * version.txt trae el total de commits (ej. "182") — se muestra
+     * como "1.8.2" separando esos mismos dígitos en major.minor.patch,
+     * no como un versionado semántico real con bumps a mano. Sigue
+     * funcionando igual arriba de 999 (ej. 1042 -> "10.4.2").
+     */
     public static function currentVersion(): ?string
     {
         $path = storage_path('app/version.txt');
 
-        return File::exists($path) ? trim(File::get($path)) : null;
+        if (! File::exists($path)) {
+            return null;
+        }
+
+        $count = (int) trim(File::get($path));
+
+        return sprintf('%d.%d.%d', intdiv($count, 100), intdiv($count, 10) % 10, $count % 10);
     }
 }
