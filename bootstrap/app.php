@@ -27,6 +27,16 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
+            // ValidationException (ej. "el slug ya existe") tiene su propio
+            // manejo estándar de Laravel: volver al formulario con el error
+            // mostrado abajo del campo. Sin este check, caía en el "else"
+            // de abajo y se mostraba como un 500 genérico en vez del error
+            // de validación de siempre — así se vio el bug real detrás de
+            // "me crasheó al crear un producto con un slug que ya existía".
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return null;
+            }
+
             if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) {
                 $status = $e->getStatusCode();
             } elseif ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException
