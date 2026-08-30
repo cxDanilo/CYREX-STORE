@@ -103,7 +103,7 @@ return [
         ],
 
         'auriculares' => [
-            'tipo_conexion' => ['label' => 'Tipo de conexión', 'type' => 'select', 'options' => ['cableado' => 'Cableado', 'inalambrico' => 'Inalámbrico'], 'shop_filter' => true],
+            'tipo_conexion' => ['label' => 'Tipo de conexión', 'type' => 'select', 'options' => 'dynamic:connection_type', 'shop_filter' => true],
         ],
     ],
 

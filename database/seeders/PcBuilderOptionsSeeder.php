@@ -77,6 +77,13 @@ class PcBuilderOptionsSeeder extends Seeder
                 'mecanico' => 'Mecánico',
                 'membrana' => 'Membrana',
             ],
+            // Mismas claves (cableado/inalambrico) que antes estaban
+            // hardcodeadas en config/pc_builder.php — así los auriculares
+            // ya cargados con ese valor lo siguen mostrando bien.
+            'connection_type' => [
+                'cableado' => 'Cableado',
+                'inalambrico' => 'Inalámbrico',
+            ],
         ];
 
         foreach ($groups as $group => $options) {

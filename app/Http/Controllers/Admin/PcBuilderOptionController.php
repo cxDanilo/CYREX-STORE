@@ -16,7 +16,7 @@ class PcBuilderOptionController extends Controller
      * falta comparar compatibilidad, en el motor de reglas del armador),
      * pero los VALORES dentro de cada grupo sí son 100% libres.
      */
-    private const GROUPS = [
+    public const GROUPS = [
         'socket' => 'Sockets (procesador / placa madre / enfriamiento)',
         'ram_type' => 'Tipos de memoria RAM',
         'form_factor' => 'Form factors (placa madre / gabinete)',
@@ -27,14 +27,17 @@ class PcBuilderOptionController extends Controller
         'gpu_brand' => 'Marca de tarjeta gráfica',
         'cooler_type' => 'Tipo de enfriamiento',
         'switch_type' => 'Tipo de switch (teclados)',
+        'connection_type' => 'Tipo de conexión (auriculares)',
     ];
 
+    /**
+     * Compatibilidad y Atributos personalizados ahora viven en una sola
+     * pantalla (ver AttributeFieldController::index) — esta ruta vieja
+     * queda solo para no romper links guardados.
+     */
     public function index()
     {
-        $options = PcBuilderOption::orderBy('sort_order')->orderBy('id')->get()->groupBy('group');
-        $groups = self::GROUPS;
-
-        return view('admin.pc-builder-options.index', compact('options', 'groups'));
+        return redirect()->route('admin.attribute-fields.index');
     }
 
     public function store(Request $request)
