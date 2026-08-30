@@ -17,18 +17,18 @@
 </head>
 <body>
 
-<div class="admin-body">
-  <aside class="admin-sidebar">
+<div class="admin-body" x-data="{ navOpen: false }" x-on:keydown.escape.window="navOpen = false">
+  <div class="admin-nav-backdrop" x-show="navOpen" x-cloak x-on:click="navOpen = false" x-transition.opacity></div>
+
+  <aside class="admin-sidebar" :class="{ 'is-open': navOpen }">
     <div class="admin-logo"><a href="{{ route('admin.dashboard') }}" style="color:inherit;">CYREX<span>.</span> ADMIN</a></div>
-    <nav class="admin-nav">
+    <nav class="admin-nav" x-on:click="$event.target.closest('a') && (navOpen = false)">
       <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a>
 
       <div class="admin-nav-label">Catálogo</div>
       <a href="{{ route('admin.productos.index') }}" class="{{ request()->routeIs('admin.productos.*') ? 'active' : '' }}">Productos</a>
       <a href="{{ route('admin.categorias.index') }}" class="{{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">Categorías</a>
       <a href="{{ route('admin.promociones.index') }}" class="{{ request()->routeIs('admin.promociones.*') ? 'active' : '' }}">Promociones</a>
-      <a href="{{ route('admin.historial.index') }}" class="{{ request()->routeIs('admin.historial.*') ? 'active' : '' }}">Historial de cambios</a>
-      <a href="{{ route('admin.changelog.index') }}" class="{{ request()->routeIs('admin.changelog.*') ? 'active' : '' }}">Historial de versiones</a>
       @if(auth()->user()->isAdmin())
         <a href="{{ route('admin.woocommerce.create') }}" class="{{ request()->routeIs('admin.woocommerce.*') ? 'active' : '' }}">Importar WooCommerce</a>
       @endif
@@ -40,6 +40,10 @@
       <a href="{{ route('admin.medios.index') }}" class="{{ request()->routeIs('admin.medios.*') ? 'active' : '' }}">Medios</a>
       <a href="{{ route('admin.menus.index') }}" class="{{ request()->routeIs('admin.menus.*') ? 'active' : '' }}">Menús</a>
       <a href="{{ route('admin.redes.index') }}" class="{{ request()->routeIs('admin.redes.*') ? 'active' : '' }}">Redes sociales</a>
+
+      <div class="admin-nav-label">Actividad</div>
+      <a href="{{ route('admin.historial.index') }}" class="{{ request()->routeIs('admin.historial.*') ? 'active' : '' }}">Historial de cambios</a>
+      <a href="{{ route('admin.changelog.index') }}" class="{{ request()->routeIs('admin.changelog.*') ? 'active' : '' }}">Historial de versiones</a>
 
       <div class="admin-nav-label">Cuenta</div>
       <a href="{{ route('admin.usuarios.index') }}" class="{{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">Usuarios</a>
@@ -66,6 +70,9 @@
 
   <div class="admin-main">
     <div class="admin-topbar">
+      <button type="button" class="admin-hamburger" aria-label="Abrir menú" x-on:click="navOpen = true">
+        <span></span><span></span><span></span>
+      </button>
       <h1>@yield('title', 'Panel')</h1>
       @hasSection('topbar-actions')
         <div>@yield('topbar-actions')</div>

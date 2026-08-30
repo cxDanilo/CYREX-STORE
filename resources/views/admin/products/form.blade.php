@@ -75,7 +75,7 @@
             <img :src="preview" x-show="preview" style="width:100%;height:100%;object-fit:cover;" alt="">
             <span x-show="!preview" style="color:var(--text-muted);font-size:11px;">Sin imagen</span>
           </div>
-          <div style="flex:1;">
+          <div style="flex:1;min-width:0;">
             <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp"
                    x-on:change="preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : preview">
             <div class="form-hint">JPG, PNG o WEBP, máx. 4 MB.</div>

@@ -60,7 +60,7 @@
         <div style="width:64px;height:64px;border-radius:12px;background:var(--bg-elevated-2);border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;">
           <img src="{{ $logoPath ? asset('uploads/'.$logoPath) : asset('images/logo-horizontal.png') }}" alt="" style="max-width:100%;max-height:100%;">
         </div>
-        <div style="flex:1;">
+        <div style="flex:1;min-width:0;">
           <input type="file" id="logo" name="logo" accept="image/png,image/jpeg,image/webp">
           <div class="form-hint">PNG con fondo transparente recomendado. Máx. 2 MB.</div>
           @if($logoPath)
