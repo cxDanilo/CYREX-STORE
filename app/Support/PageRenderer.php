@@ -46,6 +46,18 @@ class PageRenderer
 
         $merged = array_merge($definition['defaults'] ?? [], $data);
 
-        return View::make($definition['view'], ['data' => $merged])->render();
+        try {
+            return View::make($definition['view'], ['data' => $merged])->render();
+        } catch (\Throwable $e) {
+            // Un bloque roto (o una vista que falla al compilar en ese
+            // momento puntual) no puede tirar abajo la página entera —
+            // esto se vio en producción: el bloque "marcas" falló y se
+            // llevó puesta cualquier página armada con este motor de
+            // bloques (la home incluida). Mejor mostrar la página sin
+            // ese bloque que un 500 completo.
+            Log::error("PageRenderer: el bloque tipo '{$type}' falló al renderizar".($blockId ? " (bloque #{$blockId})" : '').': '.$e->getMessage());
+
+            return '';
+        }
     }
 }
