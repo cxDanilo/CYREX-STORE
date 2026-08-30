@@ -77,23 +77,48 @@
   {{-- ===================== ATRIBUTOS PERSONALIZADOS ===================== --}}
   <div x-show="tab === 'custom'" x-cloak>
     <p class="form-hint" style="margin:16px 0 20px;">
-      Campos nuevos para categorías, sin tocar código. Sirven para dos casos: agregar un campo a un tipo que ya existe (ej. "panel mallado" a Gabinetes), o crear un tipo totalmente nuevo para una categoría que hoy no tiene ninguno (tarjeta al final de todo). Si un campo ya incorporado dice que sus opciones se editan en la pestaña Compatibilidad, es porque ya existe — no hace falta (ni se puede) crearlo de nuevo acá.
+      Campos nuevos para categorías, sin tocar código. Sirven para dos casos: agregar un campo a un tipo que ya existe (ej. "panel mallado" a Gabinetes), o crear un tipo totalmente nuevo para una categoría que hoy no tiene ninguno (tarjeta al final de todo). Si un campo ya incorporado dice que sus opciones se editan en la pestaña Compatibilidad, es porque ya existe — no hace falta (ni se puede) crearlo de nuevo acá, alcanza con marcarlo como filtro más abajo. Si marcás más de uno para el mismo tipo, la tienda solo usa el primero.
     </p>
 
     @foreach($allTypes as $typeKey => $typeLabel)
       @php
         $builtInFields = config("pc_builder.fields.$typeKey", []);
-        $builtInParts = collect($builtInFields)->map(function ($bf) {
-            $dynamic = is_string($bf['options'] ?? null) && str_starts_with($bf['options'], 'dynamic:');
-            return $bf['label'].($dynamic ? ' (opciones en la pestaña Compatibilidad)' : '');
-        })->implode(', ');
+        $filterableBuiltIns = collect($builtInFields)->filter(fn ($bf) => ($bf['type'] ?? null) === 'select');
+        $otherBuiltInsLabel = collect($builtInFields)
+            ->reject(fn ($bf) => ($bf['type'] ?? null) === 'select')
+            ->map(fn ($bf) => $bf['label'])
+            ->implode(', ');
         $typeFields = $fields->get($typeKey, collect());
       @endphp
       <div class="admin-table-wrap" style="margin-bottom:24px;" x-data="{ editing: null, adding: false }">
         <div style="padding:16px 18px 0;">
           <h3 style="font-size:15px;margin-bottom:2px;">{{ $typeLabel }}</h3>
-          @if($builtInParts)
-            <p class="form-hint" style="margin-top:4px;">Campos ya incorporados: {{ $builtInParts }}</p>
+
+          @if($filterableBuiltIns->isNotEmpty())
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;">
+              @foreach($filterableBuiltIns as $fieldKey => $bf)
+                @php
+                  $dynamic = is_string($bf['options'] ?? null) && str_starts_with($bf['options'], 'dynamic:');
+                  $isFilter = $resolvedFields[$typeKey][$fieldKey]['shop_filter'] ?? false;
+                @endphp
+                <form method="POST" action="{{ route('admin.attribute-fields.toggle-builtin') }}" style="display:flex;align-items:center;gap:8px;">
+                  @csrf @method('PUT')
+                  <input type="hidden" name="type_key" value="{{ $typeKey }}">
+                  <input type="hidden" name="field_key" value="{{ $fieldKey }}">
+                  <input type="hidden" name="enabled" value="0">
+                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary);">
+                    <input type="checkbox" name="enabled" value="1" {{ $isFilter ? 'checked' : '' }} onchange="this.form.requestSubmit()">
+                    {{ $bf['label'] }}
+                    @if($dynamic) <span class="mono" style="color:var(--text-muted);">(opciones en Compatibilidad)</span> @endif
+                    — usar como filtro en la tienda
+                  </label>
+                </form>
+              @endforeach
+            </div>
+          @endif
+
+          @if($otherBuiltInsLabel)
+            <p class="form-hint" style="margin-top:8px;">Otros campos incorporados (no aplican como filtro de tienda): {{ $otherBuiltInsLabel }}</p>
           @endif
         </div>
 

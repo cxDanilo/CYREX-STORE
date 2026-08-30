@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AttributeField;
 use App\Models\PcBuilderOption;
+use App\Models\ShopFilterOverride;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -35,7 +36,40 @@ class AttributeFieldController extends Controller
         $compatGroups = PcBuilderOptionController::GROUPS;
         $compatOptions = PcBuilderOption::orderBy('sort_order')->orderBy('id')->get()->groupBy('group');
 
-        return view('admin.attribute-fields.index', compact('allTypes', 'fields', 'compatGroups', 'compatOptions'));
+        // Ya incluye lo que haya en shop_filter_overrides — así la casilla
+        // de "campos ya incorporados" muestra el estado real, no el fijo
+        // de config/pc_builder.php.
+        $resolvedFields = \App\Support\PcBuilderFields::resolved();
+
+        return view('admin.attribute-fields.index', compact('allTypes', 'fields', 'compatGroups', 'compatOptions', 'resolvedFields'));
+    }
+
+    /**
+     * Prende/apaga el filtro de tienda de un campo YA INCORPORADO (ej.
+     * Almacenamiento -> Tipo) sin tocar config/pc_builder.php. Solo
+     * select — checkboxes guarda un array y number no tiene opciones,
+     * ninguno de los dos sirve como filtro de tienda tal cual está armado
+     * ShopController::resolveShopFilter().
+     */
+    public function toggleBuiltInFilter(Request $request)
+    {
+        $data = $request->validate([
+            'type_key' => ['required', 'string'],
+            'field_key' => ['required', 'string'],
+        ]);
+
+        $field = config("pc_builder.fields.{$data['type_key']}.{$data['field_key']}");
+
+        if (! $field || ($field['type'] ?? null) !== 'select') {
+            abort(404);
+        }
+
+        ShopFilterOverride::updateOrCreate(
+            ['type_key' => $data['type_key'], 'field_key' => $data['field_key']],
+            ['enabled' => $request->boolean('enabled')]
+        );
+
+        return back()->with('status', 'Filtro actualizado.');
     }
 
     public function store(Request $request)

@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\AttributeField;
 use App\Models\PcBuilderOption;
+use App\Models\ShopFilterOverride;
 
 /**
  * Expande config('pc_builder.fields'): cualquier campo con
@@ -17,6 +18,10 @@ use App\Models\PcBuilderOption;
  * (tabla attribute_fields): o suman un campo a un tipo que ya existe acá
  * (ej. "panel_mallado" en "case"), o dan de alta un type_key totalmente
  * nuevo que no está en config/pc_builder.php.
+ *
+ * Y aplica shop_filter_overrides: permite prender/apagar el filtro de
+ * tienda de un campo YA INCORPORADO (ej. Almacenamiento -> Tipo) desde
+ * el admin, sin tocar el shop_filter fijo de config/pc_builder.php.
  */
 class PcBuilderFields
 {
@@ -30,6 +35,12 @@ class PcBuilderFields
                     $group = substr($field['options'], strlen('dynamic:'));
                     $fields[$type][$key]['options'] = PcBuilderOption::optionsFor($group);
                 }
+            }
+        }
+
+        foreach (ShopFilterOverride::all() as $override) {
+            if (isset($fields[$override->type_key][$override->field_key])) {
+                $fields[$override->type_key][$override->field_key]['shop_filter'] = $override->enabled;
             }
         }
 

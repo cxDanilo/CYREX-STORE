@@ -70,6 +70,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('atributos', [AdminAttributeFieldController::class, 'index'])->name('attribute-fields.index');
         Route::post('atributos', [AdminAttributeFieldController::class, 'store'])->name('attribute-fields.store');
+        Route::put('atributos/campo-incorporado', [AdminAttributeFieldController::class, 'toggleBuiltInFilter'])->name('attribute-fields.toggle-builtin');
         Route::put('atributos/{attributeField}', [AdminAttributeFieldController::class, 'update'])->name('attribute-fields.update');
         Route::delete('atributos/{attributeField}', [AdminAttributeFieldController::class, 'destroy'])->name('attribute-fields.destroy');
 
