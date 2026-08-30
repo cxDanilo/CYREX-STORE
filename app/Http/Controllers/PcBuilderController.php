@@ -51,7 +51,7 @@ class PcBuilderController extends Controller
                 ->whereIn('category_id', $categoryIds)
                 ->with('category')
                 ->inRandomOrder()
-                ->take(8)
+                ->take(16)
                 ->get();
         }
 

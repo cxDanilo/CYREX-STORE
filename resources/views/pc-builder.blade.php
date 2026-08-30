@@ -460,26 +460,34 @@
   @if($peripherals->isNotEmpty())
     <div class="pcb-complete-setup" x-show="isReviewStep && wantsAssembly !== null" x-cloak>
       <h3 style="margin-bottom:18px;">Completá tu setup con:</h3>
-      <div class="product-grid">
-        @foreach($peripherals as $product)
-          <a class="card" href="{{ route('product.show', $product->slug) }}">
-            <div class="card-media">
-              @if($product->image_url)
-                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy">
-              @endif
-            </div>
-            <div class="card-body">
-              <div class="card-cat">{{ $product->category->name }}</div>
-              <div class="card-name">{{ $product->name }}</div>
-              <div class="card-price">
-                @if($product->currency === 'USD')
-                  ${{ number_format($product->price, 2) }} <small>USD</small>
-                @else
-                  Bs {{ number_format($product->price, 2) }} <small>BOB</small>
-                @endif
-              </div>
-            </div>
-          </a>
+      {{-- cms-social-rotator/-page: mismo mecanismo genérico que ya usa
+           "Descubrí las mejores marcas" del home (public/js/social-rotator.js)
+           para ir cambiando de tanda solo cada tantos segundos — no hace
+           falta JS nuevo, con estas clases alcanza. --}}
+      <div class="cms-social-rotator" data-interval="6000">
+        @foreach($peripherals->chunk(4) as $i => $page)
+          <div class="cms-social-page @if($i === 0) is-active @endif">
+            @foreach($page as $product)
+              <a class="card" href="{{ route('product.show', $product->slug) }}">
+                <div class="card-media">
+                  @if($product->image_url)
+                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy">
+                  @endif
+                </div>
+                <div class="card-body">
+                  <div class="card-cat">{{ $product->category->name }}</div>
+                  <div class="card-name">{{ $product->name }}</div>
+                  <div class="card-price">
+                    @if($product->currency === 'USD')
+                      ${{ number_format($product->price, 2) }} <small>USD</small>
+                    @else
+                      Bs {{ number_format($product->price, 2) }} <small>BOB</small>
+                    @endif
+                  </div>
+                </div>
+              </a>
+            @endforeach
+          </div>
         @endforeach
       </div>
     </div>

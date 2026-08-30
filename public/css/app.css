@@ -979,7 +979,10 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .pcb-mode-card-title{display:block;font-family:var(--font-display);font-weight:700;font-size:17px;margin-bottom:8px;}
 .pcb-mode-card-sub{display:block;font-size:13px;color:var(--text-muted);line-height:1.5;}
 
-.pcb-complete-setup{margin-top:48px;padding-top:32px;border-top:1px solid var(--border);}
+/* margin negativo: .pcb-layout ya trae padding-bottom:80px (pensado
+   para cuando esto no está) — sin compensarlo, esta sección quedaba
+   con más de 150px de aire respecto al resumen de arriba. */
+.pcb-complete-setup{margin-top:-40px;padding-top:32px;border-top:1px solid var(--border);}
 
 .pcb-step-nav{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:20px;}
 
