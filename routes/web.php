@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\WooCommerceImportController as AdminWooCommerceImportController;
 use App\Http\Controllers\Admin\CacheController as AdminCacheController;
 use App\Http\Controllers\Admin\PcBuilderOptionController as AdminPcBuilderOptionController;
+use App\Http\Controllers\Admin\AttributeFieldController as AdminAttributeFieldController;
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\Admin\ChangelogController as AdminChangelogController;
 use App\Http\Controllers\PageController;
@@ -33,6 +34,14 @@ Route::post('/arma-tu-pc/cotizacion', [App\Http\Controllers\PcBuilderQuoteContro
 Route::get('/tienda', [ShopController::class, 'index'])->name('shop');
 Route::get('/producto/{slug}', [ShopController::class, 'show'])->name('product.show');
 Route::get('/buscar-sugerencias', [ShopController::class, 'suggest'])->name('shop.suggest');
+
+// --- PREVIEW TEMPORAL, sacar junto con resources/views/dev/liquid-preview.blade.php,
+// public/css/liquid-preview.css y public/js/liquid-preview.js cuando ya no haga
+// falta. Ni siquiera se registra fuera de local, así que nunca puede aparecer
+// en el sitio en vivo por accidente.
+if (app()->environment('local')) {
+    Route::get('/dev/liquid-preview', fn () => view('dev.liquid-preview'))->name('dev.liquid-preview');
+}
 
 Route::middleware(['auth', 'admin'])->patch('/producto/{product}/edicion-rapida', [ProductQuickEditController::class, 'update'])->name('product.quick-update');
 
@@ -58,6 +67,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('compatibilidad', [AdminPcBuilderOptionController::class, 'store'])->name('pc-builder-options.store');
         Route::put('compatibilidad/{pcBuilderOption}', [AdminPcBuilderOptionController::class, 'update'])->name('pc-builder-options.update');
         Route::delete('compatibilidad/{pcBuilderOption}', [AdminPcBuilderOptionController::class, 'destroy'])->name('pc-builder-options.destroy');
+
+        Route::get('atributos', [AdminAttributeFieldController::class, 'index'])->name('attribute-fields.index');
+        Route::post('atributos', [AdminAttributeFieldController::class, 'store'])->name('attribute-fields.store');
+        Route::put('atributos/{attributeField}', [AdminAttributeFieldController::class, 'update'])->name('attribute-fields.update');
+        Route::delete('atributos/{attributeField}', [AdminAttributeFieldController::class, 'destroy'])->name('attribute-fields.destroy');
 
         Route::get('productos', [AdminProductController::class, 'index'])->name('productos.index');
         Route::get('productos/nuevo', [AdminProductController::class, 'create'])->name('productos.create');

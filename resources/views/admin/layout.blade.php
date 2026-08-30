@@ -33,6 +33,7 @@
         <a href="{{ route('admin.woocommerce.create') }}" class="{{ request()->routeIs('admin.woocommerce.*') ? 'active' : '' }}">Importar WooCommerce</a>
       @endif
       <a href="{{ route('admin.pc-builder-options.index') }}" class="{{ request()->routeIs('admin.pc-builder-options.*') ? 'active' : '' }}">Compatibilidad (Arma tu PC)</a>
+      <a href="{{ route('admin.attribute-fields.index') }}" class="{{ request()->routeIs('admin.attribute-fields.*') ? 'active' : '' }}">Atributos personalizados</a>
 
       <div class="admin-nav-label">Contenido</div>
       <a href="{{ route('admin.paginas.index') }}" class="{{ request()->routeIs('admin.paginas.*') ? 'active' : '' }}">Páginas</a>
