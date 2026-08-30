@@ -4,11 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AttributeField;
+use App\Models\PcBuilderOption;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class AttributeFieldController extends Controller
 {
+    /**
+     * Una sola pantalla con dos pestañas: "Compatibilidad" (valores de
+     * PcBuilderOption, ej. sockets) y "Atributos personalizados" (campos
+     * enteros nuevos, esta tabla). Antes eran dos pantallas separadas y
+     * generaba confusión no saber cuál usar para cada cosa.
+     */
     public function index()
     {
         $configTypes = collect(config('pc_builder.component_types'))
@@ -25,7 +32,10 @@ class AttributeFieldController extends Controller
 
         $fields = AttributeField::ordered()->get()->groupBy('type_key');
 
-        return view('admin.attribute-fields.index', compact('allTypes', 'fields'));
+        $compatGroups = PcBuilderOptionController::GROUPS;
+        $compatOptions = PcBuilderOption::orderBy('sort_order')->orderBy('id')->get()->groupBy('group');
+
+        return view('admin.attribute-fields.index', compact('allTypes', 'fields', 'compatGroups', 'compatOptions'));
     }
 
     public function store(Request $request)
