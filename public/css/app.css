@@ -983,6 +983,14 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
    para cuando esto no está) — sin compensarlo, esta sección quedaba
    con más de 150px de aire respecto al resumen de arriba. */
 .pcb-complete-setup{margin-top:-40px;padding-top:32px;border-top:1px solid var(--border);}
+/* auto-fill en vez de auto-fit (que sí usa .cms-social-page en el resto
+   del sitio, sin tocar esa regla compartida): con auto-fit, una tanda
+   de 1 o 2 productos estira esas tarjetas para llenar todo el ancho
+   disponible — con pocos periféricos cargados se veía una tarjeta
+   gigante. auto-fill reserva las columnas de todos modos, así cada
+   tarjeta mantiene su tamaño normal aunque la tanda tenga pocas. */
+.pcb-complete-setup .cms-social-page{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));}
+.pcb-complete-setup .card{max-width:240px;}
 
 .pcb-step-nav{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:20px;}
 
