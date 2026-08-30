@@ -26,6 +26,9 @@
   <form method="POST" action="{{ $product->exists ? route('admin.productos.update', $product) : route('admin.productos.store') }}" class="admin-form" enctype="multipart/form-data" style="flex:1;min-width:0;">
     @csrf
     @if($product->exists) @method('PUT') @endif
+    @if($backUrl)
+      <input type="hidden" name="back" value="{{ $backUrl }}">
+    @endif
 
     <div class="form-section">
       <h3>Información general</h3>
@@ -267,7 +270,7 @@
     </div>
 
     <div class="form-actions">
-      <a href="{{ route('admin.productos.index') }}" class="btn">Cancelar</a>
+      <a href="{{ $backUrl ?? route('admin.productos.index') }}" class="btn">Cancelar</a>
       <button type="submit" class="btn btn-primary">Guardar producto</button>
     </div>
   </form>

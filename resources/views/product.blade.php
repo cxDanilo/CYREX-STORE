@@ -295,7 +295,7 @@
   <div class="product-info">
     <div class="admin-toggle-row">
       <template x-if="isAdmin">
-        <a href="{{ route('admin.productos.edit', $product) }}" class="admin-edit-toggle" data-no-ajax>✏️ Editar producto</a>
+        <a href="{{ route('admin.productos.edit', $product) }}?back={{ urlencode(url()->current()) }}" class="admin-edit-toggle" data-no-ajax>✏️ Editar producto</a>
       </template>
       <template x-if="isAdmin">
         <button type="button" class="admin-edit-toggle" :class="editing && 'is-active'" @click="toggleEdit()" x-text="editing ? 'Cancelar edición' : '⚡ Edición rápida'"></button>

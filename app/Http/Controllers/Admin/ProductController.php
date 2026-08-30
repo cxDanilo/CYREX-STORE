@@ -33,8 +33,9 @@ class ProductController extends Controller
         $categories = Category::orderBy('parent_id')->orderBy('name')->get();
         $product = new Product(['status' => 'active', 'currency' => 'USD']);
         $activityLogs = collect();
+        $backUrl = null;
 
-        return view('admin.products.form', compact('categories', 'product', 'activityLogs'));
+        return view('admin.products.form', compact('categories', 'product', 'activityLogs', 'backUrl'));
     }
 
     public function store(Request $request)
@@ -58,13 +59,14 @@ class ProductController extends Controller
         return redirect()->route('admin.productos.index')->with('status', 'Producto creado.');
     }
 
-    public function edit(Product $product)
+    public function edit(Request $request, Product $product)
     {
         $categories = Category::orderBy('parent_id')->orderBy('name')->get();
         $product->load('variants');
         $activityLogs = ProductActivityLog::where('product_id', $product->id)->orderByDesc('created_at')->limit(20)->get();
+        $backUrl = $this->sanitizeBackUrl($request->query('back'));
 
-        return view('admin.products.form', compact('product', 'categories', 'activityLogs'));
+        return view('admin.products.form', compact('product', 'categories', 'activityLogs', 'backUrl'));
     }
 
     public function update(Request $request, Product $product)
@@ -105,7 +107,31 @@ class ProductController extends Controller
         $this->syncVariants($product, $variants);
         $this->syncGalleryImages($product, $request);
 
-        return redirect()->route('admin.productos.index')->with('status', 'Producto actualizado.');
+        $backUrl = $this->sanitizeBackUrl($request->input('back'));
+
+        return redirect($backUrl ?? route('admin.productos.index'))->with('status', 'Producto actualizado.');
+    }
+
+    /**
+     * Solo deja volver a la página pública del producto de este mismo
+     * sitio (nunca a una URL externa) — es lo único para lo que se usa
+     * "back": cuando se entra a editar desde el botón "Editar producto"
+     * de la ficha pública, guardar o cancelar debería volver ahí, no
+     * siempre al listado del admin.
+     */
+    private function sanitizeBackUrl(?string $url): ?string
+    {
+        if (! $url) {
+            return null;
+        }
+
+        $parsed = parse_url($url);
+
+        if (! $parsed || ($parsed['host'] ?? null) !== request()->getHost() || ! str_starts_with($parsed['path'] ?? '', '/producto/')) {
+            return null;
+        }
+
+        return $url;
     }
 
     public function destroy(Product $product)
