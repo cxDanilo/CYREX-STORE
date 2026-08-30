@@ -77,6 +77,10 @@ class AttributeFieldController extends Controller
             return back()->withInput()->with('error', "Ya existe un campo \"{$data['field_key']}\" en este tipo.");
         }
 
+        if ($this->labelExists($data['type_key'], $data['label'])) {
+            return back()->withInput()->with('error', "Ya existe un campo llamado \"{$data['label']}\" en este tipo — no hace falta crear otro, ya está ahí arriba.");
+        }
+
         $options = $this->optionsFromRequest($request);
 
         if (in_array($data['field_type'], ['select', 'checkboxes']) && empty($options)) {
@@ -109,6 +113,10 @@ class AttributeFieldController extends Controller
             'label' => ['required', 'string', 'max:255'],
         ]);
 
+        if ($this->labelExists($attributeField->type_key, $data['label'], $attributeField->id)) {
+            return back()->withInput()->with('error', "Ya existe un campo llamado \"{$data['label']}\" en este tipo.");
+        }
+
         $options = $this->optionsFromRequest($request);
 
         $attributeField->update([
@@ -125,6 +133,29 @@ class AttributeFieldController extends Controller
         $attributeField->delete();
 
         return back()->with('status', 'Campo eliminado. Los productos que ya tenían este dato cargado lo conservan, pero no se va a mostrar ni poder editar más.');
+    }
+
+    /**
+     * El chequeo de arriba (field_key) solo evita repetir la misma clave
+     * interna. Esto evita el caso más real: alguien crea un campo con
+     * otra clave pero el mismo nombre (ej. "Plataforma" de nuevo con
+     * field_key distinto) — sin esto quedaría duplicado y confuso en el
+     * formulario de productos, aunque técnicamente no choque nada.
+     */
+    private function labelExists(string $typeKey, string $label, ?int $excludeId = null): bool
+    {
+        $normalized = mb_strtolower(trim($label));
+
+        foreach (config("pc_builder.fields.$typeKey", []) as $field) {
+            if (mb_strtolower(trim($field['label'])) === $normalized) {
+                return true;
+            }
+        }
+
+        return AttributeField::where('type_key', $typeKey)
+            ->when($excludeId, fn ($q) => $q->where('id', '!=', $excludeId))
+            ->get()
+            ->contains(fn ($f) => mb_strtolower(trim($f->label)) === $normalized);
     }
 
     private function optionsFromRequest(Request $request): array
