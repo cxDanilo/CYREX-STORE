@@ -142,6 +142,7 @@ class CategoryController extends Controller
             'component_type' => ['nullable', 'in:'.implode(',', [
                 ...array_keys(config('pc_builder.component_types')),
                 ...array_keys(config('pc_builder.extra_attribute_types', [])),
+                ...\App\Models\AttributeField::whereNotNull('type_label')->pluck('type_key')->unique()->all(),
             ])],
         ]);
 

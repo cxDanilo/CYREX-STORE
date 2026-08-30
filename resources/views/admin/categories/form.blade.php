@@ -86,6 +86,14 @@
               <option value="{{ $key }}" {{ old('component_type', $category->component_type) === $key ? 'selected' : '' }}>{{ $label }}</option>
             @endforeach
           </optgroup>
+          @php $customTypes = \App\Models\AttributeField::whereNotNull('type_label')->pluck('type_label', 'type_key')->unique(); @endphp
+          @if($customTypes->isNotEmpty())
+            <optgroup label="Atributos personalizados (creados en Admin → Atributos)">
+              @foreach($customTypes as $key => $label)
+                <option value="{{ $key }}" {{ old('component_type', $category->component_type) === $key ? 'selected' : '' }}>{{ $label }}</option>
+              @endforeach
+            </optgroup>
+          @endif
         </select>
         <div class="form-hint">Marcá esto solo en la categoría real donde vas a cargar esos productos. Las piezas de PC hacen que el producto pida sus datos de compatibilidad y aparezca en el asistente "Arma tu PC" — las demás opciones solo agregan un campo extra que se puede usar como filtro en la tienda.</div>
         @error('component_type') <div class="error">{{ $message }}</div> @enderror

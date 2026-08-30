@@ -262,7 +262,7 @@ class ProductController extends Controller
     private function compatFromRequest(Request $request, ?Category $category): ?array
     {
         $type = $category?->component_type;
-        $fields = $type ? config("pc_builder.fields.$type") : null;
+        $fields = $type ? (\App\Support\PcBuilderFields::resolved()[$type] ?? null) : null;
 
         if (! $fields) {
             return null;

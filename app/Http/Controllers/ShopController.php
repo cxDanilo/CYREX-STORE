@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\ExchangeRate;
-use App\Models\PcBuilderOption;
 use App\Models\Product;
 use App\Models\Setting;
 use Illuminate\Database\Eloquent\Builder;
@@ -64,10 +63,12 @@ class ShopController extends Controller
 
     /**
      * Busca, en los campos de compat del tipo de componente/atributo de
-     * la categoría, el (único) campo marcado 'shop_filter' => true en
-     * config/pc_builder.php — ese es el que se ofrece como filtro acá.
-     * Funciona igual para piezas de PC (ej. Procesador → Plataforma) que
-     * para categorías "solo atributo" (ej. Teclado → Tipo de switch).
+     * la categoría, el (único) campo marcado 'shop_filter' => true — ya
+     * sea definido en config/pc_builder.php o agregado desde Admin →
+     * Atributos personalizados (ver PcBuilderFields::resolved(), que
+     * combina ambas fuentes). Funciona igual para piezas de PC (ej.
+     * Procesador → Plataforma) que para categorías "solo atributo" (ej.
+     * Teclado → Tipo de switch).
      *
      * @return array{0: ?string, 1: ?string, 2: array<string,string>}
      */
@@ -77,17 +78,12 @@ class ShopController extends Controller
             return [null, null, []];
         }
 
-        foreach (config("pc_builder.fields.$componentType", []) as $key => $field) {
+        foreach (\App\Support\PcBuilderFields::resolved()[$componentType] ?? [] as $key => $field) {
             if (empty($field['shop_filter'])) {
                 continue;
             }
 
-            $options = $field['options'] ?? [];
-            if (is_string($options) && str_starts_with($options, 'dynamic:')) {
-                $options = PcBuilderOption::optionsFor(substr($options, strlen('dynamic:')));
-            }
-
-            return [$key, $field['label'] ?? $key, $options];
+            return [$key, $field['label'] ?? $key, $field['options'] ?? []];
         }
 
         return [null, null, []];
