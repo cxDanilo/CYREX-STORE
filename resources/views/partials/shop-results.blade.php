@@ -3,7 +3,6 @@
     'predeterminado' => 'Orden predeterminado',
     'precio_asc' => 'Precio: menor a mayor',
     'precio_desc' => 'Precio: mayor a menor',
-    'recientes' => 'Más recientes',
     'nombre_az' => 'Nombre A-Z',
   ];
   $currentSort = request('orden', 'predeterminado');
