@@ -463,9 +463,13 @@
       {{-- cms-social-rotator/-page: mismo mecanismo genérico que ya usa
            "Descubrí las mejores marcas" del home (public/js/social-rotator.js)
            para ir cambiando de tanda solo cada tantos segundos — no hace
-           falta JS nuevo, con estas clases alcanza. --}}
+           falta JS nuevo, con estas clases alcanza. Tandas de a 3 (no 4):
+           el propio script no rota si solo hay 1 tanda — con exactamente
+           4 periféricos cargados (como ahora mismo), tandas de a 4 metían
+           todo en una sola tanda y nunca se veía rotar nada. Con 3, ya
+           con 4 productos hay 2 tandas (3 y 1) y rota de una. --}}
       <div class="cms-social-rotator" data-interval="6000">
-        @foreach($peripherals->chunk(4) as $i => $page)
+        @foreach($peripherals->chunk(3) as $i => $page)
           <div class="cms-social-page @if($i === 0) is-active @endif">
             @foreach($page as $product)
               <a class="card" href="{{ route('product.show', $product->slug) }}">
