@@ -38,7 +38,7 @@ class PcBuilderController extends Controller
             return [$type => $products];
         });
 
-        // "Completá tu setup con..." al final del armador — monitores,
+        // "Completa tu setup con..." al final del armador — monitores,
         // teclados, mouse, etc. viven todos bajo la categoría padre
         // Periféricos, así que alcanza con traer productos de ese árbol
         // sin filtrar por component_type (a diferencia del catálogo de

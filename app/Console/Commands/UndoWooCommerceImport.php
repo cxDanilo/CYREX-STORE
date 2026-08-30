@@ -37,7 +37,7 @@ class UndoWooCommerceImport extends Command
 
         if (! $this->option('force')) {
             $this->newLine();
-            $this->comment('Esto fue un dry-run, no se borró nada. Volvé a correr el comando con --force para borrarlos de verdad.');
+            $this->comment('Esto fue un dry-run, no se borró nada. Vuelve a correr el comando con --force para borrarlos de verdad.');
 
             return self::SUCCESS;
         }
@@ -53,7 +53,7 @@ class UndoWooCommerceImport extends Command
         }
 
         $this->info("Listo, se borraron {$products->count()} productos.");
-        $this->comment('Nota: las categorías que el importador haya creado de paso no se tocan — si quedaron vacías, borralas a mano desde el admin si querés.');
+        $this->comment('Nota: las categorías que el importador haya creado de paso no se tocan — si quedaron vacías, bórralas a mano desde el admin si quieres.');
 
         return self::SUCCESS;
     }

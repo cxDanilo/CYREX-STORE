@@ -19,7 +19,7 @@
     <div class="admin-login-sub">Acceso administradores</div>
 
     @if($lockoutSeconds)
-      <div class="form-group"><div class="error" id="lockout-msg">Demasiados intentos. Probá de nuevo en <span id="lockout-seconds">{{ $lockoutSeconds }}</span> segundos.</div></div>
+      <div class="form-group"><div class="error" id="lockout-msg">Demasiados intentos. Prueba de nuevo en <span id="lockout-seconds">{{ $lockoutSeconds }}</span> segundos.</div></div>
     @elseif($errors->any())
       <div class="form-group"><div class="error">{{ $errors->first() }}</div></div>
     @endif
@@ -48,7 +48,7 @@
       remaining -= 1;
       if (remaining <= 0) {
         clearInterval(timer);
-        document.getElementById('lockout-msg').textContent = 'Ya podés volver a intentar.';
+        document.getElementById('lockout-msg').textContent = 'Ya puedes volver a intentar.';
         document.getElementById('email').disabled = false;
         document.getElementById('password').disabled = false;
         document.getElementById('login-submit').disabled = false;

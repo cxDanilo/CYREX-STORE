@@ -35,7 +35,7 @@ class NotFoundPageSeeder extends Seeder
             'data' => [
                 'eyebrow' => 'Error 404',
                 'titulo' => 'Esta página se quedó sin señal',
-                'subtitulo' => 'El link que seguiste no existe o se movió de lugar. Probá volver al inicio o directo a la tienda.',
+                'subtitulo' => 'El link que seguiste no existe o se movió de lugar. Prueba volver al inicio o directo a la tienda.',
                 'cta_label' => 'Volver al inicio',
                 'cta_url' => '/',
                 'cta2_label' => 'Ver tienda',

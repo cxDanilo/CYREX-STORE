@@ -54,7 +54,7 @@ class AuthController extends Controller
             $seconds = RateLimiter::availableIn($throttleKey);
 
             return back()->withErrors([
-                'email' => "Demasiados intentos. Probá de nuevo en {$seconds} segundos.",
+                'email' => "Demasiados intentos. Prueba de nuevo en {$seconds} segundos.",
             ])->onlyInput('email');
         }
 

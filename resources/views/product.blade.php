@@ -263,7 +263,7 @@
             if (this.$refs.quickEditImage) this.$refs.quickEditImage.value = '';
             this.editing = false;
           } catch (e) {
-            alert('No se pudo guardar el cambio. Probá de nuevo.');
+            alert('No se pudo guardar el cambio. Prueba de nuevo.');
           } finally {
             this.saving = false;
           }

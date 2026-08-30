@@ -51,7 +51,7 @@
       <div class="form-group">
         <label for="category_id">Categoría</label>
         <select id="category_id" name="category_id" x-model="categoryId" required>
-          <option value="">Seleccioná una categoría</option>
+          <option value="">Selecciona una categoría</option>
           @foreach($categories as $cat)
             <option value="{{ $cat->id }}">
               {{ $cat->parent_id ? '— ' : '' }}{{ $cat->name }}
@@ -65,7 +65,7 @@
         <label for="description">Descripción</label>
         <textarea id="description" name="description" rows="3" maxlength="500" x-model="description"></textarea>
         <div class="form-hint" style="text-align:right;" x-text="description.length + '/500'"></div>
-        <div class="form-hint">Para specs técnicas (socket, RAM, watts, etc.) usá los campos de Compatibilidad más abajo, no esta descripción — se muestran juntos en la página del producto.</div>
+        <div class="form-hint">Para specs técnicas (socket, RAM, watts, etc.) usa los campos de Compatibilidad más abajo, no esta descripción — se muestran juntos en la página del producto.</div>
       </div>
 
       <div class="form-group">
@@ -192,7 +192,7 @@
     <div class="form-section" x-show="componentType" x-cloak>
       <h3 x-text="isPcPiece ? 'Compatibilidad (Arma tu PC)' : 'Atributos de filtro'"></h3>
       <template x-if="isPcPiece">
-        <p class="form-hint" style="margin-bottom:14px;">Esta categoría está marcada como pieza de PC — completá estos datos para que el armador sepa con qué otras piezas es compatible este producto.</p>
+        <p class="form-hint" style="margin-bottom:14px;">Esta categoría está marcada como pieza de PC — completa estos datos para que el armador sepa con qué otras piezas es compatible este producto.</p>
       </template>
       <template x-if="!isPcPiece">
         <p class="form-hint" style="margin-bottom:14px;">Estos datos se usan como filtro en la tienda para esta categoría.</p>
@@ -204,7 +204,7 @@
 
           <template x-if="field.type === 'select'">
             <select :name="'compat[' + key + ']'" x-model="compat[key]">
-              <option value="">Seleccioná...</option>
+              <option value="">Selecciona...</option>
               <!-- Si el valor guardado ya no está en la lista de opciones actual
                    (se renombró/borró en Compatibilidad, o viene de datos viejos
                    con otro formato) el <select> lo mostraba en blanco — y al
@@ -246,7 +246,7 @@
 
     <div class="form-section">
       <h3>Variantes</h3>
-      <p class="form-hint" style="margin-bottom:14px;">Si el producto viene en más de una opción (ej. color), agregalas acá — no crees un producto nuevo por cada variante.</p>
+      <p class="form-hint" style="margin-bottom:14px;">Si el producto viene en más de una opción (ej. color), agrégalas aquí — no crees un producto nuevo por cada variante.</p>
       <template x-for="(variant, i) in variants" :key="i">
         <div class="repeater-row" style="grid-template-columns:auto 1fr 1fr 1fr 1fr auto;">
           <div class="variant-thumb" @click="$event.target.closest('.variant-thumb').querySelector('input[type=file]').click()" title="Foto de esta variante (opcional)">

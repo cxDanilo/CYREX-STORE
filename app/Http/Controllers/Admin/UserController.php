@@ -57,7 +57,7 @@ class UserController extends Controller
         // Un admin no puede sacarse el rol de admin a sí mismo por
         // accidente — evita quedar todos afuera si es el único admin.
         if ($user->id === $request->user()->id && $data['role'] !== 'admin') {
-            return back()->withErrors(['role' => 'No podés quitarte tu propio rol de administrador.'])->withInput();
+            return back()->withErrors(['role' => 'No puedes quitarte tu propio rol de administrador.'])->withInput();
         }
 
         if (! empty($data['password'])) {
@@ -74,7 +74,7 @@ class UserController extends Controller
     public function destroy(Request $request, User $user)
     {
         if ($user->id === $request->user()->id) {
-            return back()->withErrors(['delete' => 'No podés eliminar tu propia cuenta.']);
+            return back()->withErrors(['delete' => 'No puedes eliminar tu propia cuenta.']);
         }
 
         $user->delete();

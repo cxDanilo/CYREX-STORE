@@ -14,7 +14,7 @@
   {{-- ===================== COMPATIBILIDAD ===================== --}}
   <div x-show="tab === 'compat'" x-cloak>
     <p class="form-hint" style="margin:16px 0 20px;">
-      Listas de valores para los campos que ya existen (Procesador, Placa madre, Auriculares, etc.). Agregá acá un socket, tipo de RAM o valor nuevo apenas salga al mercado — no hace falta tocar código ni crear un campo nuevo.
+      Listas de valores para los campos que ya existen (Procesador, Placa madre, Auriculares, etc.). Agrega aquí un socket, tipo de RAM o valor nuevo apenas salga al mercado — no hace falta tocar código ni crear un campo nuevo.
     </p>
 
     @foreach($compatGroups as $groupKey => $groupLabel)
@@ -77,7 +77,7 @@
   {{-- ===================== ATRIBUTOS PERSONALIZADOS ===================== --}}
   <div x-show="tab === 'custom'" x-cloak>
     <p class="form-hint" style="margin:16px 0 20px;">
-      Campos nuevos para categorías, sin tocar código. Sirven para dos casos: agregar un campo a un tipo que ya existe (ej. "panel mallado" a Gabinetes), o crear un tipo totalmente nuevo para una categoría que hoy no tiene ninguno (tarjeta al final de todo). Si un campo ya incorporado dice que sus opciones se editan en la pestaña Compatibilidad, es porque ya existe — no hace falta (ni se puede) crearlo de nuevo acá, alcanza con marcarlo como filtro más abajo. Si marcás más de uno para el mismo tipo, la tienda solo usa el primero.
+      Campos nuevos para categorías, sin tocar código. Sirven para dos casos: agregar un campo a un tipo que ya existe (ej. "panel mallado" a Gabinetes), o crear un tipo totalmente nuevo para una categoría que hoy no tiene ninguno (tarjeta al final de todo). Si un campo ya incorporado dice que sus opciones se editan en la pestaña Compatibilidad, es porque ya existe — no hace falta (ni se puede) crearlo de nuevo aquí, alcanza con marcarlo como filtro más abajo. Si marcas más de uno para el mismo tipo, la tienda solo usa el primero.
     </p>
 
     @foreach($allTypes as $typeKey => $typeLabel)
@@ -227,7 +227,7 @@
     <div class="admin-table-wrap" style="margin-bottom:24px;" x-data="{ newFieldType: 'select', options: [{key: '', label: ''}] }">
       <div style="padding:16px 18px;">
         <h3 style="font-size:15px;margin-bottom:2px;">Crear un tipo de atributo nuevo</h3>
-        <p class="form-hint" style="margin-top:4px;">Usá esto solo si tenés una categoría que hoy no tiene ningún "Tipo de componente / atributos" para elegir (ej. Mallas para pecera). Si el tipo ya existe en alguna tarjeta de arriba, usá el botón "+ Agregar campo" de esa tarjeta en vez de esto.</p>
+        <p class="form-hint" style="margin-top:4px;">Usa esto solo si tienes una categoría que hoy no tiene ningún "Tipo de componente / atributos" para elegir (ej. Mallas para pecera). Si el tipo ya existe en alguna tarjeta de arriba, usa el botón "+ Agregar campo" de esa tarjeta en vez de esto.</p>
       </div>
       <form method="POST" action="{{ route('admin.attribute-fields.store') }}" style="padding:14px 18px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:16px;max-width:480px;">
         @csrf

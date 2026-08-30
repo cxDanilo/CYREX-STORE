@@ -39,7 +39,7 @@
           @if($category->exists && $category->children()->exists())
             Esta categoría tiene subcategorías propias, por eso no puede convertirse en hija de otra.
           @else
-            Dejalo en "Ninguna" para que aparezca como categoría principal en la tienda y el menú flotante.
+            Déjalo en "Ninguna" para que aparezca como categoría principal en la tienda y el menú flotante.
           @endif
         </div>
         @error('parent_id') <div class="error">{{ $message }}</div> @enderror
@@ -53,7 +53,7 @@
             <option value="{{ $icon }}" {{ old('icon', $category->icon) === $icon ? 'selected' : '' }}>{{ $icon }}</option>
           @endforeach
         </select>
-        <div class="form-hint">Se usa solo si no subís una imagen propia abajo.</div>
+        <div class="form-hint">Se usa solo si no subes una imagen propia abajo.</div>
         @error('icon') <div class="error">{{ $message }}</div> @enderror
       </div>
 
@@ -95,7 +95,7 @@
             </optgroup>
           @endif
         </select>
-        <div class="form-hint">Marcá esto solo en la categoría real donde vas a cargar esos productos. Las piezas de PC hacen que el producto pida sus datos de compatibilidad y aparezca en el asistente "Arma tu PC" — las demás opciones solo agregan un campo extra que se puede usar como filtro en la tienda.</div>
+        <div class="form-hint">Marca esto solo en la categoría real donde vas a cargar esos productos. Las piezas de PC hacen que el producto pida sus datos de compatibilidad y aparezca en el asistente "Arma tu PC" — las demás opciones solo agregan un campo extra que se puede usar como filtro en la tienda.</div>
         @error('component_type') <div class="error">{{ $message }}</div> @enderror
       </div>
 

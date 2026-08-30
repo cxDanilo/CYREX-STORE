@@ -10,9 +10,9 @@
 
 <div class="page-head wrap {{ $heroImageUrl ? 'has-banner' : '' }}" @if($heroImageUrl) style="--shop-banner-image:url('{{ $heroImageUrl }}');" @endif>
   <div class="cat-eyebrow">Arma tu pc</div>
-  <h1>Armá tu equipo pieza por pieza</h1>
+  <h1>Arma tu equipo pieza por pieza</h1>
   <p style="color:var(--text-secondary);font-size:14.5px;max-width:640px;margin-top:10px;line-height:1.6;">
-    Te vamos guiando paso a paso — elegí una pieza a la vez y te mostramos solo lo que es compatible con lo que ya elegiste.
+    Te vamos guiando paso a paso — elige una pieza a la vez y te mostramos solo lo que es compatible con lo que ya elegiste.
   </p>
 </div>
 
@@ -23,11 +23,11 @@
         catalog: @js($catalog),
         gpuTiers: @js(\App\Models\PcBuilderOption::optionsFor('gpu_tier')),
         stepHints: @js([
-          'platform' => '¿Con qué plataforma querés armar? Esto define qué procesadores y placas madre te vamos a mostrar después.',
+          'platform' => '¿Con qué plataforma quieres armar? Esto define qué procesadores y placas madre te vamos a mostrar después.',
           'cpu' => 'El procesador es el cerebro de tu PC — te mostramos los de la plataforma que elegiste.',
           'motherboard' => 'La placa madre conecta todo. Ya filtramos las que no sirven con el procesador elegido.',
-          'ram' => 'La memoria RAM define cuántas cosas podés tener abiertas a la vez sin que se ponga lento.',
-          'storage' => 'Acá se guardan tu sistema operativo, tus juegos y tus archivos — un SSD NVMe carga todo mucho más rápido que un disco tradicional.',
+          'ram' => 'La memoria RAM define cuántas cosas puedes tener abiertas a la vez sin que se ponga lento.',
+          'storage' => 'Aquí se guardan tu sistema operativo, tus juegos y tus archivos — un SSD NVMe carga todo mucho más rápido que un disco tradicional.',
           'gpu' => 'La tarjeta gráfica es la que más impacta en juegos y edición de video.',
           'psu' => 'La fuente de poder alimenta todo el equipo — te avisamos si la elegida se queda corta.',
           'case' => 'El gabinete tiene que tener espacio para tu placa madre, tu tarjeta gráfica y tu enfriamiento.',
@@ -86,10 +86,10 @@
         // elegido ya trae gráficos integrados justo en el paso de GPU.
         get extraHint() {
           if (this.currentType === 'gpu' && this.selected.cpu?.compat?.graficos_integrados === 'si') {
-            return 'Tu procesador ya tiene gráficos integrados — si no vas a jugar a alto nivel ni editar video pesado, podés saltar este paso.';
+            return 'Tu procesador ya tiene gráficos integrados — si no vas a jugar a alto nivel ni editar video pesado, puedes saltar este paso.';
           }
           if (this.currentType === 'cooler' && this.selected.cpu?.compat?.incluye_cooler === 'si') {
-            return 'Tu procesador ya incluye un cooler de stock — podés saltar este paso si te alcanza con eso.';
+            return 'Tu procesador ya incluye un cooler de stock — puedes saltar este paso si te alcanza con eso.';
           }
           return null;
         },
@@ -336,7 +336,7 @@
                 <span x-text="extraHint"></span>
               </div>
             </template>
-            <h3 style="margin-bottom:14px;">Elegí: <span x-text="types[type]"></span></h3>
+            <h3 style="margin-bottom:14px;">Elige: <span x-text="types[type]"></span></h3>
             <template x-if="type === 'ram' && item('ram')">
               <div class="pcb-ram-qty">
                 <span>Cantidad:</span>
@@ -383,8 +383,8 @@
         <div class="pcb-review" x-transition:enter="pcb-step-enter" x-transition:enter-start="pcb-step-enter-start" x-transition:enter-end="pcb-step-enter-end">
           <template x-if="wantsAssembly === null">
             <div>
-              <h3>¿Querés que te lo armemos?</h3>
-              <p class="form-hint">Elegí cómo te llevás tu PC.</p>
+              <h3>¿Quieres que te lo armemos?</h3>
+              <p class="form-hint">Elige cómo te llevas tu PC.</p>
               <div class="pcb-mode-grid">
                 <button type="button" class="pcb-mode-card" @click="wantsAssembly = true">
                   <span class="pcb-mode-card-title">Que lo armen en Cyrex</span>
@@ -392,7 +392,7 @@
                 </button>
                 <button type="button" class="pcb-mode-card" @click="wantsAssembly = false">
                   <span class="pcb-mode-card-title">Me llevo las piezas</span>
-                  <span class="pcb-mode-card-sub">Lo armás vos o donde prefieras — sin cargo extra.</span>
+                  <span class="pcb-mode-card-sub">Lo armas tú o donde prefieras — sin cargo extra.</span>
                 </button>
               </div>
             </div>
@@ -401,7 +401,7 @@
             <div>
               <div class="pcb-review-check">✓</div>
               <h3>¡Listo! Terminaste tu armado</h3>
-              <p class="form-hint" x-text="wantsAssembly ? 'Te lo armamos e instalamos en Cyrex.' : 'Te llevás las piezas sueltas.'"></p>
+              <p class="form-hint" x-text="wantsAssembly ? 'Te lo armamos e instalamos en Cyrex.' : 'Te llevas las piezas sueltas.'"></p>
               <button type="button" class="pcb-reset-btn" @click="wantsAssembly = null">Cambiar elección</button>
               <template x-if="gpuTierLabel">
                 <div class="pcb-tier-badge">🎮 Rendimiento estimado: <strong x-text="gpuTierLabel"></strong></div>
@@ -459,7 +459,7 @@
 
   @if($peripherals->isNotEmpty())
     <div class="pcb-complete-setup" x-show="isReviewStep && wantsAssembly !== null" x-cloak>
-      <h3 style="margin-bottom:18px;">Completá tu setup con:</h3>
+      <h3 style="margin-bottom:18px;">Completa tu setup con:</h3>
       {{-- cms-social-rotator/-page: mismo mecanismo genérico que ya usa
            "Descubrí las mejores marcas" del home (public/js/social-rotator.js)
            para ir cambiando de tanda solo cada tantos segundos — no hace

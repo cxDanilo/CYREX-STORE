@@ -51,14 +51,14 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             $messages = [
-                401 => 'Necesitás iniciar sesión para ver esto.',
-                403 => 'No tenés permiso para acceder a esto.',
+                401 => 'Necesitas iniciar sesión para ver esto.',
+                403 => 'No tienes permiso para acceder a esto.',
                 404 => 'Esta página no existe.',
-                405 => 'Esa acción no está permitida desde acá.',
-                419 => 'La página expiró — volvé a intentar.',
-                429 => 'Demasiados intentos — esperá un momento.',
+                405 => 'Esa acción no está permitida desde aquí.',
+                419 => 'La página expiró — vuelve a intentar.',
+                429 => 'Demasiados intentos — espera un momento.',
                 500 => 'Algo salió mal de nuestro lado.',
-                503 => 'El sitio está en mantenimiento — volvé en un rato.',
+                503 => 'El sitio está en mantenimiento — vuelve en un rato.',
             ];
 
             if (! isset($messages[$status])) {

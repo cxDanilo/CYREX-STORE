@@ -91,7 +91,7 @@ class AttributeFieldController extends Controller
                 ->exists();
 
             if (! $alreadyNamed && empty($data['type_label'])) {
-                return back()->withInput()->with('error', 'Es un tipo nuevo — completá el nombre que va a aparecer en Categorías.');
+                return back()->withInput()->with('error', 'Es un tipo nuevo — completa el nombre que va a aparecer en Categorías.');
             }
         } else {
             // El tipo ya tiene su propio nombre en config — no hace falta
@@ -100,7 +100,7 @@ class AttributeFieldController extends Controller
         }
 
         if (array_key_exists($data['field_key'], config("pc_builder.fields.{$data['type_key']}", []))) {
-            return back()->withInput()->with('error', "\"{$data['field_key']}\" ya es un campo incorporado de este tipo — elegí otra clave.");
+            return back()->withInput()->with('error', "\"{$data['field_key']}\" ya es un campo incorporado de este tipo — elige otra clave.");
         }
 
         $exists = AttributeField::where('type_key', $data['type_key'])
@@ -118,7 +118,7 @@ class AttributeFieldController extends Controller
         $options = $this->optionsFromRequest($request);
 
         if (in_array($data['field_type'], ['select', 'checkboxes']) && empty($options)) {
-            return back()->withInput()->with('error', 'Agregá al menos una opción para este campo.');
+            return back()->withInput()->with('error', 'Agrega al menos una opción para este campo.');
         }
 
         AttributeField::create([

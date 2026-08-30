@@ -16,7 +16,7 @@
         <label for="name">Nombre interno</label>
         <input type="text" id="name" name="name" value="{{ old('name', $promotion->name) }}" required
                x-on:input="if(!$refs.slug.dataset.touched) $refs.slug.value = window.autoSlugify($event.target.value)">
-        <div class="form-hint">Solo para identificarla acá en el admin — ej. "Día de la Madre 2027".</div>
+        <div class="form-hint">Solo para identificarla aquí en el admin — ej. "Día de la Madre 2027".</div>
         @error('name') <div class="error">{{ $message }}</div> @enderror
       </div>
 
@@ -37,7 +37,7 @@
             </option>
           @endforeach
         </select>
-        <div class="form-hint">Si la elegís, todos los productos de esa categoría entran en la promo automáticamente.</div>
+        <div class="form-hint">Si la eliges, todos los productos de esa categoría entran en la promo automáticamente.</div>
       </div>
 
       <label style="display:flex;align-items:center;gap:8px;">
@@ -60,7 +60,7 @@
       <div class="form-group">
         <label for="teaser_text">Texto de expectativa (antes de arrancar)</label>
         <input type="text" id="teaser_text" name="teaser_text" value="{{ old('teaser_text', $promotion->teaser_text) }}">
-        <div class="form-hint">Dejalo vacío para no mostrar aviso previo — la barra recién aparece cuando arranca la promo.</div>
+        <div class="form-hint">Déjalo vacío para no mostrar aviso previo — la barra recién aparece cuando arranca la promo.</div>
         @error('teaser_text') <div class="error">{{ $message }}</div> @enderror
       </div>
 
@@ -98,7 +98,7 @@
         <input type="checkbox" name="is_recurring" value="1" x-model="isRecurring">
         Se repite todos los años (Navidad, Día de la Madre, etc.)
       </label>
-      <div class="form-hint">Si la marcás, las fechas de arriba solo definen cuántos días dura — el día del evento de abajo se reproyecta cada año solo.</div>
+      <div class="form-hint">Si la marcas, las fechas de arriba solo definen cuántos días dura — el día del evento de abajo se reproyecta cada año solo.</div>
 
       <div x-show="isRecurring" x-cloak class="form-row" style="margin-top:14px;">
         <div class="form-group">
@@ -140,7 +140,7 @@
       <div class="form-group">
         <label for="custom_css">CSS personalizado (opcional)</label>
         <textarea id="custom_css" name="custom_css" rows="6" style="font-family:var(--font-mono);font-size:12.5px;" placeholder=".hero h1 { color: #C0392B; }">{{ old('custom_css', $promotion->custom_css) }}</textarea>
-        <div class="form-hint">Se inyecta tal cual en la página SOLO mientras esta promo está activa — se va sola cuando termina. Si algo se ve raro en el sitio, revisá primero acá. No hace falta &lt;style&gt;, solo las reglas.</div>
+        <div class="form-hint">Se inyecta tal cual en la página SOLO mientras esta promo está activa — se va sola cuando termina. Si algo se ve raro en el sitio, revisa primero aquí. No hace falta &lt;style&gt;, solo las reglas.</div>
         @error('custom_css') <div class="error">{{ $message }}</div> @enderror
       </div>
     </div>

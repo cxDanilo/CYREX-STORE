@@ -45,7 +45,7 @@ class PageController extends Controller
 
         return redirect()
             ->route('admin.paginas.content', $page)
-            ->with('status', 'Página creada'.($page->template_id ? ' con la estructura de la plantilla.' : '.').' Completá el contenido acá.');
+            ->with('status', 'Página creada'.($page->template_id ? ' con la estructura de la plantilla.' : '.').' Completa el contenido aquí.');
     }
 
     public function edit(Page $page)

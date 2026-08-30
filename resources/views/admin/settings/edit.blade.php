@@ -13,7 +13,7 @@
     <p class="form-hint" style="margin-bottom:14px;">Tasa actual: <span class="mono" style="color:var(--gold);">{{ number_format($currentRate, 2) }}</span> BOB por USD.</p>
 
     <div class="form-group">
-      <label for="rate">Nueva tasa (dejalo vacío para no cambiarla)</label>
+      <label for="rate">Nueva tasa (déjalo vacío para no cambiarla)</label>
       <input type="number" step="0.01" min="0.01" id="rate" name="rate" placeholder="{{ number_format($currentRate, 2) }}">
       @error('rate') <div class="error">{{ $message }}</div> @enderror
     </div>
@@ -156,7 +156,7 @@
 
   <div class="form-section">
     <h3>Banner de Tienda</h3>
-    <p class="form-hint" style="margin-bottom:14px;">De fondo, detrás del título "Tienda" — se elige una al azar en cada visita. Subí varias para que varíe. Recomendado: horizontal, 1600x500px aprox.</p>
+    <p class="form-hint" style="margin-bottom:14px;">De fondo, detrás del título "Tienda" — se elige una al azar en cada visita. Sube varias para que varíe. Recomendado: horizontal, 1600x500px aprox.</p>
 
     @if(count($shopBannerImages))
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:16px;">
@@ -175,14 +175,14 @@
     <div class="form-group">
       <label for="new_banner_images">Agregar imágenes</label>
       <input type="file" id="new_banner_images" name="new_banner_images[]" accept="image/png,image/jpeg,image/webp" multiple>
-      <div class="form-hint">Podés seleccionar varias a la vez.</div>
+      <div class="form-hint">Puedes seleccionar varias a la vez.</div>
       @error('new_banner_images.*') <div class="error">{{ $message }}</div> @enderror
     </div>
   </div>
 
   <div class="form-section">
     <h3>Banner de Arma tu PC</h3>
-    <p class="form-hint" style="margin-bottom:14px;">De fondo, detrás del título "Armá tu equipo pieza por pieza". Recomendado: horizontal, 1600x500px aprox.</p>
+    <p class="form-hint" style="margin-bottom:14px;">De fondo, detrás del título "Arma tu equipo pieza por pieza". Recomendado: horizontal, 1600x500px aprox.</p>
 
     <div class="form-group">
       @if($pcbuilderHeroImage)
@@ -219,7 +219,7 @@
     <div class="form-group">
       <label for="ga4_measurement_id">ID de medición de Google Analytics 4</label>
       <input type="text" id="ga4_measurement_id" name="ga4_measurement_id" value="{{ old('ga4_measurement_id', $ga4MeasurementId) }}" placeholder="G-XXXXXXXXXX">
-      <div class="form-hint">Lo sacás de tu cuenta de Google Analytics (analytics.google.com) → Administrar → Flujos de datos → tu sitio. Dejalo vacío para no cargar Analytics en el sitio.</div>
+      <div class="form-hint">Lo sacas de tu cuenta de Google Analytics (analytics.google.com) → Administrar → Flujos de datos → tu sitio. Déjalo vacío para no cargar Analytics en el sitio.</div>
       @error('ga4_measurement_id') <div class="error">{{ $message }}</div> @enderror
     </div>
   </div>
@@ -237,7 +237,7 @@
     <div class="form-group">
       <label for="whatsapp_community_url">Link de la comunidad de WhatsApp</label>
       <input type="url" id="whatsapp_community_url" name="whatsapp_community_url" value="{{ old('whatsapp_community_url', $whatsappCommunityUrl) }}" placeholder="https://chat.whatsapp.com/...">
-      <div class="form-hint">Agrega un botón en el footer del sitio. Dejalo vacío para no mostrar el botón.</div>
+      <div class="form-hint">Agrega un botón en el footer del sitio. Déjalo vacío para no mostrar el botón.</div>
       @error('whatsapp_community_url') <div class="error">{{ $message }}</div> @enderror
     </div>
 

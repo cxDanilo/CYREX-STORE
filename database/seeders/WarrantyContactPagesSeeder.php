@@ -33,7 +33,7 @@ class WarrantyContactPagesSeeder extends Seeder
         $page->update([
             'title' => 'Condiciones de Garantía',
             'meta_title' => '',
-            'meta_description' => 'Conocé el alcance, los plazos, los requisitos y las exclusiones de la garantía de los productos que comprás en Cyrex Store.',
+            'meta_description' => 'Conoce el alcance, los plazos, los requisitos y las exclusiones de la garantía de los productos que compras en Cyrex Store.',
             'status' => 'published',
             'published_at' => $page->published_at ?? now(),
         ]);
@@ -45,7 +45,7 @@ class WarrantyContactPagesSeeder extends Seeder
                 'eyebrow' => '',
                 'titulo' => 'Condiciones de Garantía',
                 'titulo_destacado' => '',
-                'subtitulo' => 'Consultá el alcance, los plazos, los requisitos y las exclusiones de garantía para los productos comprados en Cyrex Store.',
+                'subtitulo' => 'Consulta el alcance, los plazos, los requisitos y las exclusiones de garantía para los productos comprados en Cyrex Store.',
                 'cta_label' => '',
                 'cta_url' => '',
                 'tamano' => 'estandar',
@@ -122,10 +122,10 @@ class WarrantyContactPagesSeeder extends Seeder
                 ],
             ]],
             ['type' => 'texto_libre', 'data' => [
-                'texto' => '¿Todavía tenés dudas sobre tu garantía? Escribinos por WhatsApp, por mail a storecyrex@gmail.com, o hablá directo con nuestro asesor especializado al +591 72768984.',
+                'texto' => '¿Todavía tienes dudas sobre tu garantía? Escríbenos por WhatsApp, por mail a storecyrex@gmail.com, o habla directo con nuestro asesor especializado al +591 72768984.',
             ]],
             ['type' => 'cta_whatsapp', 'data' => [
-                'texto' => 'Consultanos por WhatsApp sobre tu garantía',
+                'texto' => 'Consúltanos por WhatsApp sobre tu garantía',
             ]],
         ];
 
@@ -150,7 +150,7 @@ class WarrantyContactPagesSeeder extends Seeder
         $page->update([
             'title' => 'Contacto',
             'meta_title' => '',
-            'meta_description' => 'Escribinos por WhatsApp o dejanos tu consulta — te respondemos rápido sobre productos, pedidos o garantías.',
+            'meta_description' => 'Escríbenos por WhatsApp o déjanos tu consulta — te respondemos rápido sobre productos, pedidos o garantías.',
             'status' => 'published',
             'published_at' => $page->published_at ?? now(),
         ]);
@@ -162,7 +162,7 @@ class WarrantyContactPagesSeeder extends Seeder
                 'eyebrow' => 'Atención Cyrex Store',
                 'titulo' => 'Contáctanos fácil y rápido',
                 'titulo_destacado' => '',
-                'subtitulo' => 'Elegí tu sucursal, hablá con un asesor y encontrá nuestra ubicación sin perder tiempo.',
+                'subtitulo' => 'Elige tu sucursal, habla con un asesor y encuentra nuestra ubicación sin perder tiempo.',
                 'cta_label' => 'Ver sucursales',
                 'cta_url' => '#sucursales',
                 'cta2_label' => 'storecyrex@gmail.com',
@@ -196,13 +196,13 @@ class WarrantyContactPagesSeeder extends Seeder
                     ],
                     [
                         'nombre' => 'La Paz', 'ciudad' => '', 'direccion' => '', 'proximamente' => 'si',
-                        'mensaje_proximamente' => 'Una nueva sucursal está en camino. Si viste esto, ya sabés algo antes que todos.',
+                        'mensaje_proximamente' => 'Una nueva sucursal está en camino. Si viste esto, ya sabes algo antes que todos.',
                         'asesores' => [],
                     ],
                 ],
             ]],
             ['type' => 'formulario', 'data' => [
-                'titulo' => 'Escribinos directo',
+                'titulo' => 'Escríbenos directo',
                 'boton_texto' => 'Enviar por WhatsApp',
             ]],
         ];

@@ -125,7 +125,7 @@ class PromotionSeeder extends Seeder
                 'slug' => 'ano-nuevo',
                 'name' => 'Año Nuevo',
                 'banner_text' => 'Ofertas de Año Nuevo',
-                'teaser_text' => 'Cerrá el año con Cyrex',
+                'teaser_text' => 'Cierra el año con Cyrex',
                 'teaser_starts_at' => '2026-12-25',
                 'starts_at' => '2026-12-29',
                 'ends_at' => '2027-01-01',

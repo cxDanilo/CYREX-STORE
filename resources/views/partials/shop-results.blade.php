@@ -89,7 +89,7 @@
 
         @if($product->has_variants)
           <div class="card-variant-picker" x-show="showVariants" x-cloak x-transition.opacity.duration.150ms @click.stop.prevent="true">
-            <div class="card-variant-picker-title">Elegí una opción</div>
+            <div class="card-variant-picker-title">Elige una opción</div>
             <div class="card-variant-picker-options">
               <template x-for="v in variants" :key="v.id">
                 <button type="button" class="card-variant-chip" @click.stop.prevent="$store.cart.add({{ $product->id }}, v.id); showVariants = false" x-text="v.name"></button>

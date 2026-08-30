@@ -27,7 +27,7 @@
       <div class="form-group">
         <label for="password">Contraseña</label>
         <input type="password" id="password" name="password" {{ $user->exists ? '' : 'required' }}>
-        <div class="form-hint">{{ $user->exists ? 'Dejalo vacío para no cambiarla.' : 'Mínimo 8 caracteres.' }}</div>
+        <div class="form-hint">{{ $user->exists ? 'Déjalo vacío para no cambiarla.' : 'Mínimo 8 caracteres.' }}</div>
         @error('password') <div class="error">{{ $message }}</div> @enderror
       </div>
 

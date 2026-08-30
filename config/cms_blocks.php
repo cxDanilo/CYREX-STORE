@@ -244,7 +244,7 @@ return [
             'items' => ['type' => 'repeater', 'label' => 'Marcas', 'fields' => [
                 'imagen' => ['type' => 'media', 'label' => 'Imagen'],
                 'nombre' => ['type' => 'text', 'label' => 'Nombre (opcional, se muestra sobre la imagen)'],
-                'link' => ['type' => 'text', 'label' => 'Link al hacer click — ej: buscá la marca en la tienda y pegá esa URL, como /tienda?q=asus'],
+                'link' => ['type' => 'text', 'label' => 'Link al hacer click — ej: busca la marca en la tienda y pega esa URL, como /tienda?q=asus'],
             ]],
             'intervalo' => ['type' => 'number', 'label' => 'Segundos entre cada cambio automático (0 = desactivado)'],
         ],
@@ -261,7 +261,7 @@ return [
                 'nombre' => ['type' => 'text', 'label' => 'Nombre (ej. "Sucursal Central")'],
                 'ciudad' => ['type' => 'text', 'label' => 'Ciudad'],
                 'direccion' => ['type' => 'text', 'label' => 'Dirección o texto de búsqueda (para el link "Abrir en Maps" — opcional)'],
-                'mapa_embed' => ['type' => 'textarea', 'label' => 'Mapa: pegá acá el código "Insertar un mapa" de Google Maps (Compartir → Insertar un mapa → Copiar HTML) — opcional, si no lo ponés se usa la Dirección de arriba'],
+                'mapa_embed' => ['type' => 'textarea', 'label' => 'Mapa: pega aquí el código "Insertar un mapa" de Google Maps (Compartir → Insertar un mapa → Copiar HTML) — opcional, si no lo pones se usa la Dirección de arriba'],
                 'proximamente' => ['type' => 'select', 'label' => '¿Todavía no está abierta?', 'options' => [
                     ['id' => '', 'name' => 'No — ya está operando'],
                     ['id' => 'si', 'name' => 'Sí — mostrar como "próximamente"'],
@@ -270,7 +270,7 @@ return [
                 'asesores' => ['type' => 'repeater', 'label' => 'Asesores de esta sucursal', 'fields' => [
                     'nombre' => ['type' => 'text', 'label' => 'Nombre'],
                     'cargo' => ['type' => 'text', 'label' => 'Cargo / etiqueta (ej. "Asesor Antezana")'],
-                    'whatsapp' => ['type' => 'text', 'label' => 'WhatsApp (con código de país, ej. 59177947379 — si lo dejás vacío usa el WhatsApp general de la tienda)'],
+                    'whatsapp' => ['type' => 'text', 'label' => 'WhatsApp (con código de país, ej. 59177947379 — si lo dejas vacío usa el WhatsApp general de la tienda)'],
                 ]],
             ]],
         ],
@@ -352,7 +352,7 @@ return [
         'defaults' => ['etiqueta' => 'Novedades', 'posicion' => 1, 'limite' => 4],
         'fields' => [
             'etiqueta' => ['type' => 'text', 'label' => 'Insignia (ej. "Novedades")'],
-            'posicion' => ['type' => 'number', 'label' => 'Posición en la rotación diaria (1, 2, 3... — usá un número distinto en cada bloque de este tipo en la misma página para que no se repita la categoría)'],
+            'posicion' => ['type' => 'number', 'label' => 'Posición en la rotación diaria (1, 2, 3... — usa un número distinto en cada bloque de este tipo en la misma página para que no se repita la categoría)'],
             'limite' => ['type' => 'number', 'label' => 'Cantidad de productos'],
         ],
     ],

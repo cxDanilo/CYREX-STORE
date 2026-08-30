@@ -30,7 +30,7 @@
 
     <div class="form-section">
       <h3>Ítems</h3>
-      <p class="form-hint" style="margin-bottom:14px;">Cada ítem apunta a una página del sitio (seleccionala) o a un link externo/manual (escribí la URL). Si elegís una página, se usa esa por sobre la URL manual.</p>
+      <p class="form-hint" style="margin-bottom:14px;">Cada ítem apunta a una página del sitio (selecciónala) o a un link externo/manual (escribe la URL). Si eliges una página, se usa esa por sobre la URL manual.</p>
 
       <template x-for="(item, i) in items" :key="i">
         <div class="repeater-row" style="grid-template-columns:1fr 1fr 1fr auto;">
