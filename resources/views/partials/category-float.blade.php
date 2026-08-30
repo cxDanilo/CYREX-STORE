@@ -33,6 +33,21 @@
           this.expand();
           this.openCat(id);
         }
+      },
+      // En touch no hay mouseleave que colapse el menú solo al alejar
+      // el cursor (como pasa en desktop) — sin esto, tocar una
+      // categoría y navegar dejaba el menú expandido pegado arriba de
+      // la página nueva, porque el menú vive fuera de <main> y nada lo
+      // tocaba durante la navegación suave. Se engancha en el div de
+      // afuera (no en cada link) para cubrir TODOS los links de acá
+      // (categoría, 'Ver todo en X', cada hijo) con un solo handler.
+      // event.defaultPrevented distingue el primer toque (que sólo
+      // abre el submenú, sin navegar) de un toque que sí navega de
+      // verdad.
+      handleAnyLinkClick(event) {
+        if (!event.target.closest('a') || event.defaultPrevented) return;
+        this.expanded = false;
+        this.hoverCat = null;
       }
     }"
     x-init="
@@ -41,7 +56,8 @@
     "
     x-on:mouseenter="hoverEnabled && expand()"
     x-on:mouseleave="hoverEnabled && scheduleCollapse()"
-    x-on:click.outside="expanded = false; hoverCat = null;">
+    x-on:click.outside="expanded = false; hoverCat = null;"
+    x-on:click="handleAnyLinkClick($event)">
   <div class="cat-float-hint" x-show="showHint" x-transition.opacity.duration.400ms x-cloak>
     <span class="cat-float-hint-arrow">&larr;</span>
     <span>Escoge tus categorías desde acá</span>

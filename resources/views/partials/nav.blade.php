@@ -100,7 +100,16 @@ document.addEventListener('alpine:init', () => {
 
 <div class="mobile-drawer-overlay" x-show="mobileOpen" x-transition.opacity.duration.200ms x-on:click="mobileOpen = false" x-cloak></div>
 
-<aside class="mobile-drawer" :class="mobileOpen && 'open'" x-data="{ openGroup: null }">
+{{-- Nadie cerraba el drawer al tocar un link de adentro (categoría,
+     "Arma tu PC", una sugerencia del buscador) — la navegación (real o
+     suave vía page-nav.js) pasaba bien, pero el panel se quedaba
+     abierto tapando la página nueva, porque vive fuera de <main> y
+     nada lo tocaba durante ese cambio de página. El handler va en todo
+     el <aside> (no solo en el acordeón de categorías) para cubrir
+     cualquier link de acá adentro de una sola vez — el acordeón en sí
+     abre/cierra con su propio botón, no con estos links, así que un
+     click en un <a> siempre significa navegación real. --}}
+<aside class="mobile-drawer" :class="mobileOpen && 'open'" x-data="{ openGroup: null }" x-on:click="$event.target.closest('a') && (mobileOpen = false)">
   <div class="mobile-drawer-head">
     <img src="{{ $logoUrl }}" alt="Cyrex Store" class="logo-full">
     <button type="button" class="mobile-drawer-close" x-on:click="mobileOpen = false" aria-label="Cerrar menú">×</button>
