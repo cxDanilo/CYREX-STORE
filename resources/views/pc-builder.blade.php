@@ -8,7 +8,7 @@
   <a href="{{ route('home') }}">Inicio</a> / Arma tu PC
 </div>
 
-<div class="wrap page-head">
+<div class="page-head wrap {{ $heroImageUrl ? 'has-banner' : '' }}" @if($heroImageUrl) style="--shop-banner-image:url('{{ $heroImageUrl }}');" @endif>
   <div class="cat-eyebrow">Arma tu pc</div>
   <h1>Armá tu equipo pieza por pieza</h1>
   <p style="color:var(--text-secondary);font-size:14.5px;max-width:640px;margin-top:10px;line-height:1.6;">
@@ -34,6 +34,9 @@
           'cooler' => 'El enfriamiento evita que el procesador se recaliente bajo uso exigente.',
         ]),
 
+        // null = todavía no eligió si quiere armar paso a paso o comprar
+        // piezas sueltas (ver pantalla de elección más abajo).
+        mode: null,
         platform: null,
         selected: {},
         step: 0,
@@ -276,6 +279,18 @@
         }
      }">
 
+  <div class="pcb-mode-grid" x-show="mode === null" x-cloak>
+    <button type="button" class="pcb-mode-card" @click="mode = 'wizard'">
+      <span class="pcb-mode-card-title">Armar paso a paso</span>
+      <span class="pcb-mode-card-sub">Te guiamos pieza por pieza y revisamos que todo sea compatible entre sí.</span>
+    </button>
+    <a href="{{ route('shop', ['category' => 'componentes']) }}" class="pcb-mode-card">
+      <span class="pcb-mode-card-title">Comprar piezas sueltas</span>
+      <span class="pcb-mode-card-sub">Ya sé lo que busco — quiero ver el catálogo de componentes directo.</span>
+    </a>
+  </div>
+
+  <div x-show="mode === 'wizard'" x-cloak>
   <div class="pcb-stepper">
     <template x-for="(s, i) in stepList" :key="s.key">
       <button type="button" class="pcb-step-dot" :class="{done: i < furthestStep, active: i === step, upcoming: i > furthestStep}" :disabled="i > furthestStep" @click="goToStep(i)">
@@ -420,6 +435,36 @@
         Consultar por WhatsApp
       </a>
     </div>
+  </div>
+
+  @if($peripherals->isNotEmpty())
+    <div class="pcb-complete-setup" x-show="isReviewStep" x-cloak>
+      <h3 style="margin-bottom:18px;">Completá tu setup con:</h3>
+      <div class="product-grid">
+        @foreach($peripherals as $product)
+          <a class="card" href="{{ route('product.show', $product->slug) }}">
+            <div class="card-media">
+              @if($product->image_url)
+                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy">
+              @endif
+            </div>
+            <div class="card-body">
+              <div class="card-cat">{{ $product->category->name }}</div>
+              <div class="card-name">{{ $product->name }}</div>
+              <div class="card-price">
+                @if($product->currency === 'USD')
+                  ${{ number_format($product->price, 2) }} <small>USD</small>
+                @else
+                  Bs {{ number_format($product->price, 2) }} <small>BOB</small>
+                @endif
+              </div>
+            </div>
+          </a>
+        @endforeach
+      </div>
+    </div>
+  @endif
+
   </div>
 
 </div>

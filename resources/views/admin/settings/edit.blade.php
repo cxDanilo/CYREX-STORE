@@ -181,6 +181,26 @@
   </div>
 
   <div class="form-section">
+    <h3>Banner de Arma tu PC</h3>
+    <p class="form-hint" style="margin-bottom:14px;">De fondo, detrás del título "Armá tu equipo pieza por pieza". Recomendado: horizontal, 1600x500px aprox.</p>
+
+    <div class="form-group">
+      @if($pcbuilderHeroImage)
+        <img src="{{ asset('uploads/'.$pcbuilderHeroImage) }}" style="width:100%;max-width:320px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;border:1px solid var(--border);margin-bottom:10px;">
+      @endif
+      <label for="pcbuilder_hero">{{ $pcbuilderHeroImage ? 'Reemplazar imagen' : 'Subir imagen' }}</label>
+      <input type="file" id="pcbuilder_hero" name="pcbuilder_hero" accept="image/png,image/jpeg,image/webp">
+      @if($pcbuilderHeroImage)
+        <label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:13px;color:var(--text-secondary);">
+          <input type="checkbox" name="remove_pcbuilder_hero" value="1">
+          Quitar imagen
+        </label>
+      @endif
+      @error('pcbuilder_hero') <div class="error">{{ $message }}</div> @enderror
+    </div>
+  </div>
+
+  <div class="form-section">
     <h3>Navegación</h3>
 
     <div class="form-group">

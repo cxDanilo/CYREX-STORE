@@ -29,6 +29,7 @@ class SettingsController extends Controller
         $reducedMotion = Setting::get('reduced_motion', 'off');
         $ga4MeasurementId = Setting::get('ga4_measurement_id', '');
         $shopBannerImages = json_decode(Setting::get('shop_banner_images', '[]'), true) ?: [];
+        $pcbuilderHeroImage = Setting::get('pcbuilder_hero_image');
         $quoteBannerText = Setting::get('quote_banner_text', 'COTIZACIÓN');
         $quoteBannerColor = Setting::get('quote_banner_color', '#FFD900');
         $showExchangeRateBadge = Setting::get('show_exchange_rate_badge', 'on');
@@ -40,7 +41,7 @@ class SettingsController extends Controller
             'logoHeight', 'logoPath', 'whatsappBtnText', 'shopCtaText', 'footerWhatsappBtnText',
             'footerTagline', 'accentColor', 'reducedMotion', 'ga4MeasurementId', 'shopBannerImages',
             'quoteBannerText', 'quoteBannerColor', 'showExchangeRateBadge', 'whatsappCommunityUrl',
-            'whatsappCommunityBtnText'
+            'whatsappCommunityBtnText', 'pcbuilderHeroImage'
         ));
     }
 
@@ -71,6 +72,8 @@ class SettingsController extends Controller
             'show_exchange_rate_badge' => ['required', 'in:on,off'],
             'whatsapp_community_url' => ['nullable', 'url', 'max:255'],
             'whatsapp_community_btn_text' => ['required', 'string', 'max:60'],
+            'pcbuilder_hero' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'remove_pcbuilder_hero' => ['nullable', 'boolean'],
         ]);
 
         if ($request->filled('rate') && (float) $data['rate'] !== ExchangeRate::current()) {
@@ -108,6 +111,17 @@ class SettingsController extends Controller
             Setting::set('logo_path', null);
         }
 
+        if ($request->hasFile('pcbuilder_hero')) {
+            $this->deletePcbuilderHero();
+            $file = $request->file('pcbuilder_hero');
+            $filename = 'branding/'.Str::random(20).'.'.$file->getClientOriginalExtension();
+            $file->storeAs('', $filename, 'uploads');
+            Setting::set('pcbuilder_hero_image', $filename);
+        } elseif ($request->boolean('remove_pcbuilder_hero')) {
+            $this->deletePcbuilderHero();
+            Setting::set('pcbuilder_hero_image', null);
+        }
+
         return back()->with('status', 'Ajustes guardados.');
     }
 
@@ -141,6 +155,15 @@ class SettingsController extends Controller
     private function deleteLogo(): void
     {
         $current = Setting::get('logo_path');
+
+        if ($current) {
+            Storage::disk('uploads')->delete($current);
+        }
+    }
+
+    private function deletePcbuilderHero(): void
+    {
+        $current = Setting::get('pcbuilder_hero_image');
 
         if ($current) {
             Storage::disk('uploads')->delete($current);
