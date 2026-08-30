@@ -37,6 +37,7 @@ return [
     // Pensado para filtros de la tienda (ej. Teclados → mecánico/membrana).
     'extra_attribute_types' => [
         'teclado' => 'Teclado',
+        'auriculares' => 'Auriculares',
     ],
 
     'fields' => [
@@ -99,6 +100,10 @@ return [
 
         'teclado' => [
             'tipo_switch' => ['label' => 'Tipo', 'type' => 'select', 'options' => 'dynamic:switch_type', 'shop_filter' => true],
+        ],
+
+        'auriculares' => [
+            'tipo_conexion' => ['label' => 'Tipo de conexión', 'type' => 'select', 'options' => ['cableado' => 'Cableado', 'inalambrico' => 'Inalámbrico'], 'shop_filter' => true],
         ],
     ],
 
