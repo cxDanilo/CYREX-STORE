@@ -106,7 +106,7 @@
   <div class="footer-box">
     <p><span class="check">✓</span> Garantía Cyrex: 1 año en PCs completas y 3 meses en piezas sueltas.</p>
     <p><span class="check">✓</span> Métodos de pago: efectivo, QR y transferencia.</p>
-    <p><span class="check">✓</span> Precios y stock sujetos a cambio. Cotización válida por 24hs.</p>
+    <p><span class="check">✓</span> Precios sujetos a cambio. Cotización válida por 24hs.</p>
   </div>
 
   <p class="thanks">¡GRACIAS POR PREFERIRNOS!</p>

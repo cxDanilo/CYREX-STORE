@@ -28,29 +28,15 @@
 </div>
 
 <div class="admin-dashboard-grid">
-  <div class="cms-editor-panel">
-    <h4>Sin stock</h4>
-    @if($sinStock->isEmpty())
-      <p class="form-hint">Ningún producto activo está agotado ahora mismo.</p>
+  <div class="cms-editor-panel" style="grid-column:1/-1;">
+    <h4>Productos agotados</h4>
+    @if($agotados->isEmpty())
+      <p class="form-hint">Ningún producto activo está marcado como agotado ahora mismo.</p>
     @else
-      @foreach($sinStock as $product)
+      @foreach($agotados as $product)
         <div class="admin-dashboard-row">
           <a href="{{ route('admin.productos.edit', $product) }}">{{ $product->name }}</a>
-          <span class="mono" style="color:var(--red);">0</span>
-        </div>
-      @endforeach
-    @endif
-  </div>
-
-  <div class="cms-editor-panel">
-    <h4>Stock bajo (5 o menos)</h4>
-    @if($stockBajo->isEmpty())
-      <p class="form-hint">Nada por debajo de 5 unidades ahora mismo.</p>
-    @else
-      @foreach($stockBajo as $product)
-        <div class="admin-dashboard-row">
-          <a href="{{ route('admin.productos.edit', $product) }}">{{ $product->name }}</a>
-          <span class="mono" style="color:var(--gold);">{{ $product->stock }}</span>
+          <span class="mono" style="color:var(--red);">Agotado</span>
         </div>
       @endforeach
     @endif

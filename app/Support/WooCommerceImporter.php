@@ -43,8 +43,6 @@ class WooCommerceImporter
         'precio normal' => 'price',
         'sale price' => 'sale_price',
         'precio rebajado' => 'sale_price',
-        'stock' => 'stock',
-        'inventario' => 'stock',
         'categories' => 'categories',
         'categorias' => 'categories',
         'images' => 'images',
@@ -181,7 +179,6 @@ class WooCommerceImporter
         $product->description = $this->cleanHtml($this->value($columns, $row, 'description') ?? $this->value($columns, $row, 'short_description'));
         $product->price = (float) ($priceValue ?? 0);
         $product->currency = $product->currency ?: 'USD';
-        $product->stock = (int) ($this->value($columns, $row, 'stock') ?? 0);
         $product->status = ($this->value($columns, $row, 'published') === '0') ? 'inactive' : 'active';
         $product->category_id = $this->resolveCategory($this->value($columns, $row, 'categories'));
         $product->has_variants = $product->has_variants ?? false;

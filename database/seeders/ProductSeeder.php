@@ -25,7 +25,6 @@ class ProductSeeder extends Seeder
             'price' => 47.00,
             'currency' => 'USD',
             'sku' => 'AJZ-179PRO',
-            'stock' => 10,
             'has_variants' => true,
             'status' => 'active',
             'specs' => json_encode([
@@ -41,7 +40,6 @@ class ProductSeeder extends Seeder
             'variant_type' => 'Color',
             'variant_value' => 'Blanco',
             'sku' => 'AJZ-179PRO-WHT',
-            'stock' => 2,
         ]);
 
         ProductVariant::create([
@@ -49,7 +47,6 @@ class ProductSeeder extends Seeder
             'variant_type' => 'Color',
             'variant_value' => 'Negro',
             'sku' => 'AJZ-179PRO-BLK',
-            'stock' => 8,
         ]);
 
         // Productos sin variantes
@@ -61,7 +58,6 @@ class ProductSeeder extends Seeder
             'price' => 189.00,
             'currency' => 'USD',
             'sku' => 'AMD-R7-5700',
-            'stock' => 3,
             'status' => 'active',
         ]);
 
@@ -73,7 +69,6 @@ class ProductSeeder extends Seeder
             'price' => 2380.00,
             'currency' => 'BOB',
             'sku' => 'AOC-AGON27',
-            'stock' => 1,
             'status' => 'active',
         ]);
 
@@ -85,7 +80,6 @@ class ProductSeeder extends Seeder
             'price' => 980.00,
             'currency' => 'BOB',
             'sku' => 'EPO-AK820PRO',
-            'stock' => 6,
             'status' => 'active',
         ]);
     }

@@ -7,7 +7,7 @@
 <div style="display:flex;gap:32px;align-items:flex-start;"
      x-data="{
         specs: {{ collect($product->specs ?? [])->map(fn($v, $k) => ['key' => $k, 'value' => $v])->values()->toJson() }},
-        variants: {{ $product->relationLoaded('variants') ? $product->variants->map(fn($v) => ['id' => $v->id, 'variant_type' => $v->variant_type, 'variant_value' => $v->variant_value, 'sku' => $v->sku, 'stock' => $v->stock, 'price_override' => $v->price_override, 'image' => $v->image_url, 'imagePreview' => null, 'removeImage' => false])->toJson() : '[]' }},
+        variants: {{ $product->relationLoaded('variants') ? $product->variants->map(fn($v) => ['id' => $v->id, 'variant_type' => $v->variant_type, 'variant_value' => $v->variant_value, 'sku' => $v->sku, 'price_override' => $v->price_override, 'image' => $v->image_url, 'imagePreview' => null, 'removeImage' => false])->toJson() : '[]' }},
         preview: @js($product->image_url),
         name: @js(old('name', $product->name) ?? ''),
         description: @js(old('description', $product->description) ?? ''),
@@ -126,7 +126,7 @@
     </div>
 
     <div class="form-section">
-      <h3>Precio e inventario</h3>
+      <h3>Precio y estado</h3>
 
       <div class="form-row">
         <div class="form-group">
@@ -143,16 +143,9 @@
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="sku">SKU</label>
-          <input type="text" id="sku" name="sku" value="{{ old('sku', $product->sku) }}">
-        </div>
-        <div class="form-group">
-          <label for="stock">Stock</label>
-          <input type="number" min="0" id="stock" name="stock" value="{{ old('stock', $product->stock ?? 0) }}" required>
-          @error('stock') <div class="error">{{ $message }}</div> @enderror
-        </div>
+      <div class="form-group">
+        <label for="sku">SKU</label>
+        <input type="text" id="sku" name="sku" value="{{ old('sku', $product->sku) }}">
       </div>
 
       <div class="form-group">
@@ -169,7 +162,7 @@
           Marcar como agotado
         </label>
         <div class="form-hint">
-          Independiente del número de Stock — el producto se ve "Agotado" en el sitio (imagen en blanco y negro, no se puede agregar al carrito) y a los 7 días de marcarlo se pone en Privado solo.
+          El producto se ve "Agotado" en el sitio (imagen en blanco y negro, no se puede agregar al carrito) y a los 7 días de marcarlo se pone en Privado solo.
           @if($product->exists && $product->is_sold_out && $product->sold_out_at)
             <br>Agotado desde el {{ $product->sold_out_at->format('d/m/Y') }} — pasa a Privado el {{ $product->sold_out_at->copy()->addDays(7)->format('d/m/Y') }} si sigue así.
           @endif
@@ -248,7 +241,7 @@
       <h3>Variantes</h3>
       <p class="form-hint" style="margin-bottom:14px;">Si el producto viene en más de una opción (ej. color), agrégalas aquí — no crees un producto nuevo por cada variante.</p>
       <template x-for="(variant, i) in variants" :key="i">
-        <div class="repeater-row" style="grid-template-columns:auto 1fr 1fr 1fr 1fr auto;">
+        <div class="repeater-row" style="grid-template-columns:auto 1fr 1fr 1fr auto;">
           <div class="variant-thumb" @click="$event.target.closest('.variant-thumb').querySelector('input[type=file]').click()" title="Foto de esta variante (opcional)">
             <img :src="variant.imagePreview || variant.image" x-show="variant.imagePreview || variant.image" alt="">
             <span x-show="!variant.imagePreview && !variant.image" class="variant-thumb-empty">+</span>
@@ -260,13 +253,12 @@
           <input type="hidden" :name="'variants[' + i + '][id]'" x-model="variant.id">
           <input type="text" x-model="variant.variant_type" :name="'variants[' + i + '][variant_type]'" placeholder="Tipo (ej: Color)">
           <input type="text" x-model="variant.variant_value" :name="'variants[' + i + '][variant_value]'" placeholder="Valor (ej: Blanco)">
-          <input type="number" min="0" x-model="variant.stock" :name="'variants[' + i + '][stock]'" placeholder="Stock">
           <input type="number" step="0.01" min="0" x-model="variant.price_override" :name="'variants[' + i + '][price_override]'" placeholder="Precio (opcional)">
           <input type="hidden" :name="'variants[' + i + '][remove_image]'" :value="variant.removeImage ? '1' : '0'">
           <button type="button" class="repeater-remove" x-on:click="variants.splice(i, 1)">×</button>
         </div>
       </template>
-      <button type="button" class="btn btn-sm" x-on:click="variants.push({id: '', variant_type: 'Color', variant_value: '', sku: '', stock: 0, price_override: '', image: null, imagePreview: null, removeImage: false})">+ Agregar variante</button>
+      <button type="button" class="btn btn-sm" x-on:click="variants.push({id: '', variant_type: 'Color', variant_value: '', sku: '', price_override: '', image: null, imagePreview: null, removeImage: false})">+ Agregar variante</button>
     </div>
 
     <div class="form-actions">

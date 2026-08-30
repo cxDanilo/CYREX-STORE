@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 /**
  * Edición rápida desde la página pública del producto (visible solo para
  * admins logueados) — a propósito solo expone nombre, precio, descripción
- * e imagen. Todo lo demás (categoría, stock, variantes, SKU) sigue
+ * e imagen. Todo lo demás (categoría, variantes, SKU) sigue
  * viviendo únicamente en /admin/productos.
  */
 class ProductQuickEditController extends Controller

@@ -21,10 +21,9 @@ class DashboardController extends Controller
             'paginas_publicadas' => Page::where('status', 'published')->count(),
         ];
 
-        $sinStock = Product::where('status', 'active')->where('stock', 0)->orderBy('name')->limit(8)->get();
-        $stockBajo = Product::where('status', 'active')->where('stock', '>', 0)->where('stock', '<=', 5)->orderBy('stock')->limit(8)->get();
+        $agotados = Product::where('status', 'active')->where('is_sold_out', true)->orderBy('name')->limit(8)->get();
         $actividadReciente = ProductActivityLog::orderByDesc('created_at')->limit(10)->get();
 
-        return view('admin.dashboard', compact('stats', 'sinStock', 'stockBajo', 'actividadReciente'));
+        return view('admin.dashboard', compact('stats', 'agotados', 'actividadReciente'));
     }
 }
