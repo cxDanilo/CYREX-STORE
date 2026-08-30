@@ -107,7 +107,7 @@ class ShopController extends Controller
             'precio_desc' => $query->orderByRaw("(CASE WHEN currency = 'BOB' THEN price / ? ELSE price END) DESC", [$rate]),
             'recientes' => $query->orderByDesc('created_at'),
             'nombre_az' => $query->orderBy('name'),
-            default => $query->orderBy('id'),
+            default => $query->orderByDesc('created_at'),
         };
     }
 
