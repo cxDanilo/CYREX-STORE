@@ -67,7 +67,7 @@ return [
         ],
 
         'storage' => [
-            'tipo' => ['label' => 'Tipo', 'type' => 'select', 'options' => 'dynamic:storage_type'],
+            'tipo' => ['label' => 'Tipo', 'type' => 'select', 'options' => 'dynamic:storage_type', 'shop_filter' => true],
             'capacity_gb' => ['label' => 'Capacidad (GB)', 'type' => 'number'],
         ],
 
