@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 
 class PcBuilderQuoteController extends Controller
 {
+    private const ASSEMBLY_FEE = 10.0;
+
     public function download(Request $request)
     {
         $data = $request->validate([
@@ -17,6 +19,7 @@ class PcBuilderQuoteController extends Controller
             'items.*.type' => ['required', 'string'],
             'items.*.id' => ['required', 'integer'],
             'ram_qty' => ['nullable', 'integer', 'in:1,2'],
+            'wants_assembly' => ['nullable', 'boolean'],
         ]);
 
         $rate = ExchangeRate::current();
@@ -45,6 +48,20 @@ class PcBuilderQuoteController extends Controller
 
         if ($lines->isEmpty()) {
             abort(422, 'No hay productos válidos en la cotización.');
+        }
+
+        // El armado no es un producto del catálogo (no tiene stock ni
+        // ficha propia) — se agrega como una línea más "a mano", igual
+        // de simple que las de arriba, en vez de necesitar un producto
+        // falso solo para que exista una fila que sumar.
+        if ($request->boolean('wants_assembly')) {
+            $lines->push([
+                'description' => 'Servicio',
+                'name' => 'Armado e instalación',
+                'qty' => 1,
+                'unit_price' => self::ASSEMBLY_FEE,
+                'total' => self::ASSEMBLY_FEE,
+            ]);
         }
 
         $subtotal = round($lines->sum('total'), 2);

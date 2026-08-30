@@ -34,15 +34,17 @@
           'cooler' => 'El enfriamiento evita que el procesador se recaliente bajo uso exigente.',
         ]),
 
-        // null = todavía no eligió si quiere armar paso a paso o comprar
-        // piezas sueltas (ver pantalla de elección más abajo).
-        mode: null,
         platform: null,
         selected: {},
         step: 0,
         furthestStep: 0,
         ramQty: 1,
         totalFlashReady: false,
+        // Se pregunta recién al terminar el armado — null = todavía no
+        // eligió, true = que se lo armen en Cyrex (se suma el cargo de
+        // abajo), false = se lleva las piezas sueltas.
+        wantsAssembly: null,
+        assemblyFee: 10,
         // Estos dos pasos se pueden saltar sin elegir nada — no todos los
         // armados necesitan una tarjeta dedicada (CPU con gráficos
         // integrados) ni un cooler aparte (CPU que ya incluye uno de stock).
@@ -67,11 +69,12 @@
         item(type) { return this.selected[type] || null; },
 
         totalUsd() {
-          return Object.entries(this.selected).reduce((sum, [type, p]) => {
+          const partsTotal = Object.entries(this.selected).reduce((sum, [type, p]) => {
             if (!p) return sum;
             const qty = type === 'ram' ? this.ramQty : 1;
             return sum + p.price_usd * qty;
           }, 0);
+          return partsTotal + (this.wantsAssembly ? this.assemblyFee : 0);
         },
 
         get gpuTierLabel() {
@@ -110,6 +113,7 @@
           this.ramQty = 1;
           this.step = 0;
           this.furthestStep = 0;
+          this.wantsAssembly = null;
         },
 
         get canProceed() {
@@ -272,6 +276,9 @@
             form.appendChild(Object.assign(document.createElement('input'), { name: `items[${i}][id]`, value: item.id }));
           });
           form.appendChild(Object.assign(document.createElement('input'), { name: 'ram_qty', value: this.ramQty }));
+          if (this.wantsAssembly) {
+            form.appendChild(Object.assign(document.createElement('input'), { name: 'wants_assembly', value: '1' }));
+          }
 
           document.body.appendChild(form);
           form.submit();
@@ -279,18 +286,6 @@
         }
      }">
 
-  <div class="pcb-mode-grid" x-show="mode === null" x-cloak>
-    <button type="button" class="pcb-mode-card" @click="mode = 'wizard'">
-      <span class="pcb-mode-card-title">Armar paso a paso</span>
-      <span class="pcb-mode-card-sub">Te guiamos pieza por pieza y revisamos que todo sea compatible entre sí.</span>
-    </button>
-    <a href="{{ route('shop', ['category' => 'componentes']) }}" class="pcb-mode-card">
-      <span class="pcb-mode-card-title">Comprar piezas sueltas</span>
-      <span class="pcb-mode-card-sub">Ya sé lo que busco — quiero ver el catálogo de componentes directo.</span>
-    </a>
-  </div>
-
-  <div x-show="mode === 'wizard'" x-cloak>
   <div class="pcb-stepper">
     <template x-for="(s, i) in stepList" :key="s.key">
       <button type="button" class="pcb-step-dot" :class="{done: i < furthestStep, active: i === step, upcoming: i > furthestStep}" :disabled="i > furthestStep" @click="goToStep(i)">
@@ -386,11 +381,32 @@
 
       <template x-if="isReviewStep">
         <div class="pcb-review" x-transition:enter="pcb-step-enter" x-transition:enter-start="pcb-step-enter-start" x-transition:enter-end="pcb-step-enter-end">
-          <div class="pcb-review-check">✓</div>
-          <h3>¡Listo! Este es tu build</h3>
-          <p class="form-hint">Revisá el resumen acá al lado — podés volver a cualquier paso de arriba para cambiar una pieza.</p>
-          <template x-if="gpuTierLabel">
-            <div class="pcb-tier-badge">🎮 Rendimiento estimado: <strong x-text="gpuTierLabel"></strong></div>
+          <template x-if="wantsAssembly === null">
+            <div>
+              <h3>¿Querés que te lo armemos?</h3>
+              <p class="form-hint">Elegí cómo te llevás tu PC.</p>
+              <div class="pcb-mode-grid">
+                <button type="button" class="pcb-mode-card" @click="wantsAssembly = true">
+                  <span class="pcb-mode-card-title">Que lo armen en Cyrex</span>
+                  <span class="pcb-mode-card-sub" x-text="'Armado e instalación completa — se suma $' + assemblyFee.toFixed(2) + ' a la cotización.'"></span>
+                </button>
+                <button type="button" class="pcb-mode-card" @click="wantsAssembly = false">
+                  <span class="pcb-mode-card-title">Me llevo las piezas</span>
+                  <span class="pcb-mode-card-sub">Lo armás vos o donde prefieras — sin cargo extra.</span>
+                </button>
+              </div>
+            </div>
+          </template>
+          <template x-if="wantsAssembly !== null">
+            <div>
+              <div class="pcb-review-check">✓</div>
+              <h3>¡Listo! Terminaste tu armado</h3>
+              <p class="form-hint" x-text="wantsAssembly ? 'Te lo armamos e instalamos en Cyrex.' : 'Te llevás las piezas sueltas.'"></p>
+              <button type="button" class="pcb-reset-btn" @click="wantsAssembly = null">Cambiar elección</button>
+              <template x-if="gpuTierLabel">
+                <div class="pcb-tier-badge">🎮 Rendimiento estimado: <strong x-text="gpuTierLabel"></strong></div>
+              </template>
+            </div>
           </template>
         </div>
       </template>
@@ -418,6 +434,10 @@
           @endif
         </div>
       @endforeach
+      <div class="pcb-summary-row" x-show="wantsAssembly">
+        <span class="k">Armado e instalación</span>
+        <span class="v" x-text="'$' + assemblyFee.toFixed(2)"></span>
+      </div>
       <div class="pcb-summary-total"><span>Total</span><span class="v" x-text="'$' + totalUsd().toFixed(2)"
            x-effect="totalUsd(); if (!totalFlashReady) { totalFlashReady = true; } else { $el.classList.remove('pcb-total-flash'); void $el.offsetWidth; $el.classList.add('pcb-total-flash'); }"></span></div>
       @if($currencyMode === 'both')
@@ -430,7 +450,7 @@
       <button type="button" class="btn-cta-whatsapp" style="width:100%;margin-top:10px;" :disabled="!Object.keys(selected).length" x-show="Object.keys(selected).length" @click="downloadQuotePdf()">
         Descargar PDF
       </button>
-      <a :href="'https://wa.me/{{ \App\Models\Setting::get('whatsapp_number', '59177947379') }}?text=' + encodeURIComponent('Hola! Quiero armar esta PC:\n' + Object.entries(selected).map(([type, p]) => '- ' + (type === 'ram' && ramQty > 1 ? ramQty + 'x ' : '') + p.name).join('\n') + '\nTotal aprox: $' + totalUsd().toFixed(2))"
+      <a :href="'https://wa.me/{{ \App\Models\Setting::get('whatsapp_number', '59177947379') }}?text=' + encodeURIComponent('Hola! Quiero armar esta PC:\n' + Object.entries(selected).map(([type, p]) => '- ' + (type === 'ram' && ramQty > 1 ? ramQty + 'x ' : '') + p.name).join('\n') + (wantsAssembly ? '\n- Armado e instalación: $' + assemblyFee.toFixed(2) : '') + '\nTotal aprox: $' + totalUsd().toFixed(2))"
          target="_blank" rel="noopener" class="btn-cta-whatsapp" style="width:100%;margin-top:10px;text-decoration:none;" x-show="Object.keys(selected).length">
         Consultar por WhatsApp
       </a>
@@ -438,7 +458,7 @@
   </div>
 
   @if($peripherals->isNotEmpty())
-    <div class="pcb-complete-setup" x-show="isReviewStep" x-cloak>
+    <div class="pcb-complete-setup" x-show="isReviewStep && wantsAssembly !== null" x-cloak>
       <h3 style="margin-bottom:18px;">Completá tu setup con:</h3>
       <div class="product-grid">
         @foreach($peripherals as $product)
