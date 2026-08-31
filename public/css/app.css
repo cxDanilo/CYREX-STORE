@@ -941,6 +941,12 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 
 .pcb-layout{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;padding-bottom:80px;}
 @media (max-width:860px){.pcb-layout{grid-template-columns:1fr;}}
+/* "Completa tu setup" vive DENTRO de esta columna (no como bloque
+   aparte debajo de las dos) — así su posición depende solo de la
+   altura del panel del wizard, no de "Tu build" (que con muchas
+   piezas elegidas es bastante más alto y antes dejaba un hueco vacío
+   debajo del panel corto de review). */
+.pcb-left-column{display:flex;flex-direction:column;gap:24px;min-width:0;}
 
 .pcb-stepper{display:flex;gap:4px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;}
 .pcb-step-dot{display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;color:var(--text-muted);cursor:pointer;flex-shrink:0;padding:4px 10px;font-family:inherit;transition:opacity .15s;}
@@ -983,10 +989,7 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .pcb-mode-card-title{display:block;font-family:var(--font-display);font-weight:700;font-size:17px;margin-bottom:8px;}
 .pcb-mode-card-sub{display:block;font-size:13px;color:var(--text-muted);line-height:1.5;}
 
-/* margin negativo: .pcb-layout ya trae padding-bottom:80px (pensado
-   para cuando esto no está) — sin compensarlo, esta sección quedaba
-   con más de 150px de aire respecto al resumen de arriba. */
-.pcb-complete-setup{margin-top:-40px;padding-top:32px;border-top:1px solid var(--border);}
+.pcb-complete-setup{padding-top:20px;border-top:1px solid var(--border);}
 /* auto-fill en vez de auto-fit (que sí usa .cms-social-page en el resto
    del sitio, sin tocar esa regla compartida): con auto-fit, una tanda
    de 1 o 2 productos estira esas tarjetas para llenar todo el ancho
