@@ -357,6 +357,9 @@
             <svg class="pcb-step-hint-arrow" width="14" height="18" viewBox="0 0 14 18" fill="none"><path d="M7 1v14M1 9l6 7 6-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span x-text="stepHints.platform"></span>
           </div>
+          {{-- Solo celular/tablet angosta (ver .pcb-platform-grid en el
+               media query de abajo) — en escritorio se oculta a favor
+               del zócalo para arrastrar de acá abajo. --}}
           <div class="pcb-platform-grid">
             <button type="button" class="pcb-platform-card pcb-platform-amd" @click="choosePlatform('AMD')">
               <span class="pcb-platform-name">AMD</span>
@@ -366,6 +369,85 @@
               <span class="pcb-platform-name">Intel</span>
               <span class="pcb-platform-sub">Core y compatibles</span>
             </button>
+          </div>
+
+          {{-- Solo escritorio (oculto en mobile por CSS, ver
+               @media(max-width:860px) más abajo) — arrastrar el
+               procesador hasta el zócalo también elige la plataforma;
+               un click sin arrastrar hace lo mismo, para quien no
+               quiera arrastrar. Alpine anidado a propósito: el estado
+               de arrastre (dragPlatform/moved/etc.) es puramente
+               transitorio y visual, no tiene sentido mezclarlo con el
+               estado real del armador (this.platform, en el x-data de
+               arriba) — choosePlatform() de ahí afuera sigue siendo la
+               única fuente de verdad. --}}
+          <div class="pcb-platform-drag"
+               x-data="{
+                  dragPlatform: null,
+                  moved: false,
+                  overSocket: false,
+                  curX: 0, curY: 0, startX: 0, startY: 0,
+                  start(e, p) {
+                    this.dragPlatform = p;
+                    this.moved = false;
+                    this.curX = 0; this.curY = 0;
+                    this.startX = e.clientX; this.startY = e.clientY;
+                    e.currentTarget.setPointerCapture(e.pointerId);
+                  },
+                  move(e) {
+                    if (!this.dragPlatform) return;
+                    this.curX = e.clientX - this.startX;
+                    this.curY = e.clientY - this.startY;
+                    if (Math.abs(this.curX) > 4 || Math.abs(this.curY) > 4) this.moved = true;
+                    const s = this.$refs.socket.getBoundingClientRect();
+                    this.overSocket = e.clientX > s.left && e.clientX < s.right && e.clientY > s.top && e.clientY < s.bottom;
+                  },
+                  end(e) {
+                    if (!this.dragPlatform) return;
+                    const s = this.$refs.socket.getBoundingClientRect();
+                    const over = e.clientX > s.left && e.clientX < s.right && e.clientY > s.top && e.clientY < s.bottom;
+                    const p = this.dragPlatform;
+                    this.dragPlatform = null; this.overSocket = false; this.curX = 0; this.curY = 0;
+                    if (over) choosePlatform(p);
+                  },
+                  // Un click SIN arrastre (moved sigue false) también
+                  // elige — mismo motivo que el resto del sitio: no
+                  // todos quieren arrastrar.
+                  pick(p) { if (!this.moved) choosePlatform(p); }
+               }">
+            <div class="pcb-drag-stage">
+              <div class="pcb-chip-tray">
+                <button type="button" class="pcb-chip pcb-chip-amd"
+                        :class="dragPlatform === 'AMD' && 'is-dragging'"
+                        :style="dragPlatform === 'AMD' ? ('transform:translate(' + curX + 'px,' + curY + 'px);') : ''"
+                        @pointerdown="start($event, 'AMD')" @pointermove="move($event)" @pointerup="end($event)" @pointercancel="end($event)"
+                        @click="pick('AMD')">
+                  <span class="pcb-chip-swatch">AMD</span>
+                  <span class="pcb-chip-text">
+                    <span class="pcb-chip-name">AMD</span>
+                    <span class="pcb-chip-sub">Ryzen y compatibles</span>
+                  </span>
+                </button>
+                <button type="button" class="pcb-chip pcb-chip-intel"
+                        :class="dragPlatform === 'Intel' && 'is-dragging'"
+                        :style="dragPlatform === 'Intel' ? ('transform:translate(' + curX + 'px,' + curY + 'px);') : ''"
+                        @pointerdown="start($event, 'Intel')" @pointermove="move($event)" @pointerup="end($event)" @pointercancel="end($event)"
+                        @click="pick('Intel')">
+                  <span class="pcb-chip-swatch">INT</span>
+                  <span class="pcb-chip-text">
+                    <span class="pcb-chip-name">Intel</span>
+                    <span class="pcb-chip-sub">Core y compatibles</span>
+                  </span>
+                </button>
+              </div>
+              <div class="pcb-socket-zone">
+                <div class="pcb-socket" x-ref="socket"
+                     :class="{ 'hover-target': overSocket, 'is-amd': dragPlatform === 'AMD', 'is-intel': dragPlatform === 'Intel' }">
+                  <span class="pcb-socket-label">Zócalo</span>
+                </div>
+              </div>
+            </div>
+            <p class="pcb-drag-hint">Arrastrá tu procesador hasta el zócalo — o hacé click directo si preferís.</p>
           </div>
         </div>
       </template>

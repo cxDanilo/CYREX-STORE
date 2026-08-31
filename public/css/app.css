@@ -8,6 +8,11 @@
   --text-primary:#F5F5F3;--text-secondary:#8E8E93;--text-muted:#5C5C60;
   --border:rgba(255,255,255,0.08);--border-strong:rgba(255,255,255,0.16);
   --green:#3DDC84;--red:#E24B4A;
+  /* Mismos tonos que .pcb-platform-amd/.pcb-platform-intel más abajo
+     (ya elegidos para esas tarjetas) — se reutilizan acá como
+     variables para no repetir el hex a mano en cada regla nueva. */
+  --amd:#ff8c00;--amd-dim:rgba(255,140,0,.14);
+  --intel:#0082dc;--intel-dim:rgba(0,130,220,.14);
   --font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;
 }
 *{margin:0;padding:0;box-sizing:border-box;scrollbar-width:thin;scrollbar-color:var(--border-strong) transparent;}
@@ -994,6 +999,37 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .pcb-platform-intel .pcb-platform-name{color:#0082dc;}
 .pcb-platform-name{font-family:var(--font-display);font-weight:700;font-size:22px;}
 .pcb-platform-sub{font-size:12px;color:var(--text-muted);}
+
+/* Arrastrar el procesador al zócalo — solo escritorio (ver el
+   @media(max-width:860px) más abajo, que hace el swap con
+   .pcb-platform-grid). Pedido por el usuario tras probar un
+   prototipo aparte; mismos tonos AMD/Intel que las tarjetas de arriba. */
+.pcb-platform-drag{display:none;}
+.pcb-drag-stage{display:grid;grid-template-columns:1fr 170px;gap:32px;align-items:center;max-width:620px;}
+.pcb-chip-tray{display:flex;flex-direction:column;gap:14px;}
+.pcb-chip{--c:var(--gold);--cd:var(--gold-dim);display:flex;align-items:center;gap:12px;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:14px;padding:14px 18px;cursor:grab;touch-action:none;user-select:none;font-family:inherit;color:var(--text-primary);text-align:left;transition:border-color .15s,box-shadow .2s;position:relative;}
+.pcb-chip:hover{border-color:var(--c);}
+.pcb-chip.is-dragging{cursor:grabbing;z-index:5;box-shadow:0 20px 40px -12px rgba(0,0,0,.6);transition:none;}
+.pcb-chip-swatch{width:38px;height:38px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--cd);color:var(--c);font-family:var(--font-mono);font-size:11px;font-weight:700;}
+.pcb-chip-text{display:flex;flex-direction:column;gap:2px;}
+.pcb-chip-name{font-family:var(--font-display);font-weight:700;font-size:14px;}
+.pcb-chip-sub{font-size:11.5px;color:var(--text-muted);}
+.pcb-chip-amd{--c:var(--amd);--cd:var(--amd-dim);}
+.pcb-chip-intel{--c:var(--intel);--cd:var(--intel-dim);}
+
+.pcb-socket-zone{display:flex;justify-content:center;}
+.pcb-socket{width:150px;height:150px;border-radius:22px;border:2px dashed var(--border-strong);display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px;background:var(--bg-elevated-2);transition:border-color .2s,background .2s,box-shadow .2s;}
+.pcb-socket.hover-target{border-color:var(--gold);background:var(--gold-dim);}
+.pcb-socket.is-amd{border-color:var(--amd);background:var(--amd-dim);box-shadow:0 0 0 6px var(--amd-dim);}
+.pcb-socket.is-intel{border-color:var(--intel);background:var(--intel-dim);box-shadow:0 0 0 6px var(--intel-dim);}
+.pcb-socket-label{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);}
+.pcb-drag-hint{margin-top:18px;font-size:12.5px;color:var(--text-muted);}
+.motion-reduced .pcb-chip{transition:none;}
+
+@media (min-width:861px){
+  .pcb-platform-grid{display:none;}
+  .pcb-platform-drag{display:block;}
+}
 
 .pcb-mode-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;max-width:640px;margin:8px 0 20px;}
 .pcb-mode-card{display:block;text-align:left;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:16px;padding:24px;cursor:pointer;transition:border-color .15s,transform .15s;color:var(--text-primary);font-family:inherit;text-decoration:none;}
