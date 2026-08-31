@@ -329,6 +329,8 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .card-name{font-size:13.5px;font-weight:500;margin-bottom:8px;line-height:1.4;min-height:38px;}
 .card-price{font-family:var(--font-mono);font-size:15px;color:var(--gold);}
 .card-price small{font-size:10px;color:var(--text-muted);}
+.card-price-original{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);text-decoration:line-through;margin-bottom:1px;}
+.card-offer-countdown{font-family:var(--font-mono);font-size:10.5px;color:var(--text-muted);margin-top:3px;letter-spacing:.02em;}
 
 .pagination-links{margin-top:32px;}
 .pagination-current{background:var(--gold);border-color:var(--gold);color:#0A0A0B;cursor:default;}
@@ -498,6 +500,7 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .currency-toggle button.active{color:#0A0A0B;}
 .currency-toggle button:not(.active):hover{color:var(--text-secondary);}
 .price-main{font-family:var(--font-mono);font-size:38px;font-weight:500;color:var(--gold);line-height:1;}
+.price-original{font-family:var(--font-mono);font-size:17px;color:var(--text-muted);text-decoration:line-through;}
 .exchange-rate-note{font-family:var(--font-mono);font-size:11.5px;color:var(--text-muted);margin-top:8px;}
 .price-alt{font-family:var(--font-mono);font-size:13px;color:var(--text-muted);margin-top:8px;}
 .price-main.price-flash,.price-alt.price-flash{animation:price-flash .25s ease;}

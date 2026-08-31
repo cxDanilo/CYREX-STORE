@@ -60,6 +60,12 @@ class AppServiceProvider extends ServiceProvider
                 'whatsappBtnText' => Setting::get('whatsapp_btn_text', 'Escríbenos'),
                 'shopCtaText' => Setting::get('shop_cta_text', 'Ver tienda'),
                 'headerMenuItems' => $this->resolveHeaderMenuItems(),
+                // Alimenta el Alpine.store('offer') registrado en
+                // partials/nav.blade.php — un solo reloj compartido por
+                // todas las tarjetas en oferta de la página, en vez de un
+                // setInterval por tarjeta contando la misma fecha.
+                'offerActive' => Setting::get('offer_active', '0') === '1',
+                'offerEndsAtIso' => Setting::get('offer_ends_at'),
             ]);
         });
 

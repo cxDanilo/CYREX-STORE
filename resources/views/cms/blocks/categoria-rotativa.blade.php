@@ -70,18 +70,33 @@
             @if($promo = $product->activePromotion($cardActivePromotion ?? null))
               <span class="card-badge-promo">{{ $promo->discount_label ?: 'Oferta' }}</span>
             @endif
+            @if($product->hasActiveOffer())
+              <span class="card-badge-promo">-{{ $product->offerDiscountPercent() }}%</span>
+            @endif
           </div>
         </div>
         <div class="card-body">
           <div class="card-cat">{{ $product->category->name }}</div>
           <div class="card-name">{{ $product->name }}</div>
+          @if($product->hasActiveOffer())
+            <div class="card-price-original">
+              @if($product->currency === 'USD')
+                ${{ number_format($product->price, 2) }}
+              @else
+                Bs {{ number_format($product->price, 2) }}
+              @endif
+            </div>
+          @endif
           <div class="card-price">
             @if($product->currency === 'USD')
-              ${{ number_format($product->price, 2) }} <small>USD</small>
+              ${{ number_format($product->effectivePrice(), 2) }} <small>USD</small>
             @else
-              Bs {{ number_format($product->price, 2) }} <small>BOB</small>
+              Bs {{ number_format($product->effectivePrice(), 2) }} <small>BOB</small>
             @endif
           </div>
+          @if($product->hasActiveOffer())
+            <div class="card-offer-countdown" x-text="$store.offer.remaining"></div>
+          @endif
         </div>
       </a>
     @endforeach

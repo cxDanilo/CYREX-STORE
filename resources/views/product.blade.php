@@ -9,13 +9,18 @@
 
 @php
   $showBobInitial = $currencyMode === 'bob_only' || ($currencyMode === 'both' && $defaultCurrency === 'BOB');
-  $basePriceUsd = $product->currency === 'USD' ? (float) $product->price : (float) $product->price / $rate;
+  $hasOffer = $product->hasActiveOffer();
+  $realPriceUsd = $product->currency === 'USD' ? (float) $product->price : (float) $product->price / $rate;
+  $basePriceUsd = $product->currency === 'USD' ? $product->effectivePrice() : $product->effectivePrice() / $rate;
   $priceMainInitial = $showBobInitial
       ? 'Bs '.number_format($basePriceUsd * $rate, 2)
       : '$'.number_format($basePriceUsd, 2);
   $priceAltInitial = $showBobInitial
       ? '≈ $'.number_format($basePriceUsd, 2).' USD'
       : '≈ Bs '.number_format($basePriceUsd * $rate, 2);
+  $originalPriceMainInitial = $showBobInitial
+      ? 'Bs '.number_format($realPriceUsd * $rate, 2)
+      : '$'.number_format($realPriceUsd, 2);
   $whatsappNumber = \App\Models\Setting::get('whatsapp_number', '59177947379');
   $productUrl = route('product.show', $product->slug);
 
@@ -64,8 +69,24 @@
         // carrito — acá solo faltaba reflejarlo en la pantalla).
         get basePrice() {
           const v = this.variants.find(v => v.id === this.variant);
-          const raw = (v && v.price_override !== null && v.price_override !== undefined) ? v.price_override : this.originalPrice;
+          // effectivePrice (no originalPrice) es a propósito: originalPrice
+          // queda reservado para la edición rápida del precio REAL — acá
+          // se muestra el precio de oferta si hay una activa, salvo que la
+          // variante elegida tenga su propio price_override, que sigue
+          // ganando por encima de la oferta igual que ya ganaba antes.
+          const raw = (v && v.price_override !== null && v.price_override !== undefined) ? v.price_override : this.effectivePrice;
           return this.editCurrency === 'USD' ? raw : raw / this.rate;
+        },
+        hasOffer: {{ $hasOffer ? 'true' : 'false' }},
+        effectivePrice: {{ $product->effectivePrice() }},
+        realPriceUsd: {{ $realPriceUsd }},
+        // La variante override sigue ganando por encima de la oferta (ver
+        // basePrice) — mostrar el tachado + badge + contador ahí sería
+        // confuso, porque esa variante puntual ya no cobra el precio de
+        // oferta en absoluto.
+        get variantHasOverride() {
+          const v = this.variants.find(v => v.id === this.variant);
+          return !!(v && v.price_override !== null && v.price_override !== undefined);
         },
         variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'name' => $v->variant_value, 'price_override' => $v->price_override !== null ? (float) $v->price_override : null, 'image' => $v->image_url])->toJson() }},
         inStock: {{ $product->is_sold_out ? 'false' : 'true' }},
@@ -260,6 +281,11 @@
             const data = await res.json();
             this.editName = this.originalName = data.name;
             this.editPrice = this.originalPrice = data.price;
+            // Si hay una oferta activa, lo que se muestra sigue siendo el
+            // precio de oferta (lo maneja Admin → Ofertas, no la edición
+            // rápida) — solo se refleja el precio nuevo acá cuando no hay
+            // ninguna oferta pisándolo.
+            if (!this.hasOffer) { this.effectivePrice = data.price; }
             this.editDescription = this.originalDescription = data.description ?? '';
             this.editImageUrl = data.image_url;
             this.editImagePreview = null;
@@ -348,12 +374,18 @@
           <div class="exchange-rate-note">1 USD = Bs {{ number_format($rate, 2) }}</div>
         @endif
       @endif
+      <div x-show="hasOffer && !variantHasOverride" style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <span class="card-badge-promo">-{{ $product->offerDiscountPercent() }}% OFERTA</span>
+      </div>
+      <div class="price-original" x-show="hasOffer && !variantHasOverride"
+           x-effect="syncPrice($el, showBob ? realPriceUsd * rate : realPriceUsd, showBob ? 'Bs ' : '$', '')"><span class="price-text">{{ $originalPriceMainInitial }}</span></div>
       <div class="price-main"
            x-effect="syncPrice($el, showBob ? basePrice * rate : basePrice, showBob ? 'Bs ' : '$', '')"><span class="price-text">{{ $priceMainInitial }}</span></div>
       @if($currencyMode === 'both')
         <div class="price-alt"
              x-effect="syncPrice($el, showBob ? basePrice : basePrice * rate, showBob ? '≈ $' : '≈ Bs ', showBob ? ' USD' : '')"><span class="price-text">{{ $priceAltInitial }}</span></div>
       @endif
+      <div class="card-offer-countdown" x-show="hasOffer && !variantHasOverride" x-text="$store.offer.remaining" style="margin-top:6px;"></div>
     </div>
 
     <div class="stock-pill out-of-stock" x-show="!editing && !inStock">✕ Agotado</div>
@@ -428,18 +460,33 @@
             @if($promo = $r->activePromotion($cardActivePromotion ?? null))
               <span class="card-badge-promo">{{ $promo->discount_label ?: 'Oferta' }}</span>
             @endif
+            @if($r->hasActiveOffer())
+              <span class="card-badge-promo">-{{ $r->offerDiscountPercent() }}%</span>
+            @endif
           </div>
         </div>
         <div class="card-body">
           <div class="card-cat">{{ $r->category->name }}</div>
           <div class="card-name">{{ $r->name }}</div>
+          @if($r->hasActiveOffer())
+            <div class="card-price-original">
+              @if($r->currency === 'USD')
+                ${{ number_format($r->price, 2) }}
+              @else
+                Bs {{ number_format($r->price, 2) }}
+              @endif
+            </div>
+          @endif
           <div class="card-price">
             @if($r->currency === 'USD')
-              ${{ number_format($r->price, 2) }}
+              ${{ number_format($r->effectivePrice(), 2) }}
             @else
-              Bs {{ number_format($r->price, 2) }}
+              Bs {{ number_format($r->effectivePrice(), 2) }}
             @endif
           </div>
+          @if($r->hasActiveOffer())
+            <div class="card-offer-countdown" x-text="$store.offer.remaining"></div>
+          @endif
         </div>
       </a>
     @endforeach

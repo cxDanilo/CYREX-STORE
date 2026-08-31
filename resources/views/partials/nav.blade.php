@@ -79,6 +79,31 @@ document.addEventListener('alpine:init', () => {
       }
     },
   });
+
+  // Reloj único compartido por todas las tarjetas en oferta de la
+  // página — mismo patrón de cuenta regresiva que partials/promo-bar.php,
+  // pero con un solo setInterval en vez de uno por tarjeta (podría haber
+  // varias docenas de productos en oferta contando la misma fecha a la
+  // vez). Alpine llama a init() solo, apenas se registra el store.
+  Alpine.store('offer', {
+    active: {{ $offerActive ? 'true' : 'false' }},
+    endsAt: @js($offerEndsAtIso),
+    remaining: '',
+    init() {
+      if (this.active && this.endsAt) {
+        this.tick();
+        setInterval(() => this.tick(), 1000);
+      }
+    },
+    tick() {
+      const diff = Math.max(0, new Date(this.endsAt) - new Date());
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      this.remaining = (d > 0 ? d + 'd ' : '') + String(h).padStart(2, '0') + 'h ' + String(m).padStart(2, '0') + 'm ' + String(s).padStart(2, '0') + 's';
+    },
+  });
 });
 </script>
 
