@@ -21,49 +21,54 @@
   <div class="admin-nav-backdrop" x-show="navOpen" x-cloak x-on:click="navOpen = false" x-transition.opacity></div>
 
   <aside class="admin-sidebar" :class="{ 'is-open': navOpen }">
-    <div class="admin-logo"><a href="{{ route('admin.dashboard') }}" style="color:inherit;">CYREX<span>.</span> ADMIN</a></div>
+    <div class="admin-logo-row">
+      <div class="admin-logo"><a href="{{ route('admin.dashboard') }}" style="color:inherit;">CYREX<span>.</span> ADMIN</a></div>
+      <button type="button" class="admin-nav-close" aria-label="Cerrar menú" x-on:click="navOpen = false">
+        @include('partials.admin-icon', ['name' => 'cerrar'])
+      </button>
+    </div>
     <nav class="admin-nav" x-on:click="$event.target.closest('a') && (navOpen = false)">
-      <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a>
+      <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'dashboard']) Dashboard</a>
 
       <div class="admin-nav-label">Catálogo</div>
-      <a href="{{ route('admin.productos.index') }}" class="{{ request()->routeIs('admin.productos.*') ? 'active' : '' }}">Productos</a>
-      <a href="{{ route('admin.categorias.index') }}" class="{{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">Categorías</a>
-      <a href="{{ route('admin.promociones.index') }}" class="{{ request()->routeIs('admin.promociones.*') ? 'active' : '' }}">Promociones</a>
+      <a href="{{ route('admin.productos.index') }}" class="{{ request()->routeIs('admin.productos.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'productos']) Productos</a>
+      <a href="{{ route('admin.categorias.index') }}" class="{{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'categorias']) Categorías</a>
+      <a href="{{ route('admin.promociones.index') }}" class="{{ request()->routeIs('admin.promociones.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'promociones']) Promociones</a>
       @if(auth()->user()->isAdmin())
-        <a href="{{ route('admin.woocommerce.create') }}" class="{{ request()->routeIs('admin.woocommerce.*') ? 'active' : '' }}">Importar WooCommerce</a>
+        <a href="{{ route('admin.woocommerce.create') }}" class="{{ request()->routeIs('admin.woocommerce.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'importar']) Importar WooCommerce</a>
       @endif
-      <a href="{{ route('admin.attribute-fields.index') }}" class="{{ request()->routeIs('admin.attribute-fields.*') || request()->routeIs('admin.pc-builder-options.*') ? 'active' : '' }}">Compatibilidad y atributos</a>
+      <a href="{{ route('admin.attribute-fields.index') }}" class="{{ request()->routeIs('admin.attribute-fields.*') || request()->routeIs('admin.pc-builder-options.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'atributos']) Compatibilidad y atributos</a>
 
       <div class="admin-nav-label">Contenido</div>
-      <a href="{{ route('admin.paginas.index') }}" class="{{ request()->routeIs('admin.paginas.*') ? 'active' : '' }}">Páginas</a>
-      <a href="{{ route('admin.plantillas.index') }}" class="{{ request()->routeIs('admin.plantillas.*') ? 'active' : '' }}">Plantillas</a>
-      <a href="{{ route('admin.medios.index') }}" class="{{ request()->routeIs('admin.medios.*') ? 'active' : '' }}">Medios</a>
-      <a href="{{ route('admin.menus.index') }}" class="{{ request()->routeIs('admin.menus.*') ? 'active' : '' }}">Menús</a>
-      <a href="{{ route('admin.redes.index') }}" class="{{ request()->routeIs('admin.redes.*') ? 'active' : '' }}">Redes sociales</a>
+      <a href="{{ route('admin.paginas.index') }}" class="{{ request()->routeIs('admin.paginas.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'paginas']) Páginas</a>
+      <a href="{{ route('admin.plantillas.index') }}" class="{{ request()->routeIs('admin.plantillas.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'plantillas']) Plantillas</a>
+      <a href="{{ route('admin.medios.index') }}" class="{{ request()->routeIs('admin.medios.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'medios']) Medios</a>
+      <a href="{{ route('admin.menus.index') }}" class="{{ request()->routeIs('admin.menus.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'menus']) Menús</a>
+      <a href="{{ route('admin.redes.index') }}" class="{{ request()->routeIs('admin.redes.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'redes']) Redes sociales</a>
 
       <div class="admin-nav-label">Actividad</div>
-      <a href="{{ route('admin.historial.index') }}" class="{{ request()->routeIs('admin.historial.*') ? 'active' : '' }}">Historial de cambios</a>
-      <a href="{{ route('admin.changelog.index') }}" class="{{ request()->routeIs('admin.changelog.*') ? 'active' : '' }}">Historial de versiones</a>
+      <a href="{{ route('admin.historial.index') }}" class="{{ request()->routeIs('admin.historial.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'historial']) Historial de cambios</a>
+      <a href="{{ route('admin.changelog.index') }}" class="{{ request()->routeIs('admin.changelog.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'versiones']) Historial de versiones</a>
 
       <div class="admin-nav-label">Cuenta</div>
-      <a href="{{ route('admin.usuarios.index') }}" class="{{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">Usuarios</a>
-      <a href="{{ route('admin.settings.edit') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">Ajustes</a>
+      <a href="{{ route('admin.usuarios.index') }}" class="{{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'usuarios']) Usuarios</a>
+      <a href="{{ route('admin.settings.edit') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'ajustes']) Ajustes</a>
     </nav>
     <div class="admin-nav-foot">
       @php($adminVersion = \App\Http\Controllers\Admin\ChangelogController::currentVersion())
       @if($adminVersion)
-        <div class="mono" style="padding:10px 12px 0;color:var(--text-muted);font-size:11px;letter-spacing:.03em;">v{{ $adminVersion }}</div>
+        <div class="mono" style="padding:2px 12px 10px;color:var(--text-muted);font-size:11px;letter-spacing:.03em;">v{{ $adminVersion }}</div>
       @endif
-      <a href="{{ route('home') }}" target="_blank">Ver sitio ↗</a>
+      <a href="{{ route('home') }}" target="_blank">@include('partials.admin-icon', ['name' => 'ver-sitio']) Ver sitio ↗</a>
       @if(auth()->user()->isAdmin())
         <form method="POST" action="{{ route('admin.cache.purge') }}">
           @csrf
-          <button type="submit" style="background:none;border:none;padding:10px 12px;color:var(--text-muted);font-size:13px;cursor:pointer;width:100%;text-align:left;">Purgar caché</button>
+          <button type="submit" class="admin-nav-foot-btn">@include('partials.admin-icon', ['name' => 'purgar']) Purgar caché</button>
         </form>
       @endif
       <form method="POST" action="{{ route('admin.logout') }}">
         @csrf
-        <button type="submit" style="background:none;border:none;padding:10px 12px;color:var(--text-muted);font-size:13px;cursor:pointer;width:100%;text-align:left;">Cerrar sesión</button>
+        <button type="submit" class="admin-nav-foot-btn admin-nav-logout">@include('partials.admin-icon', ['name' => 'salir']) Cerrar sesión</button>
       </form>
     </div>
   </aside>
