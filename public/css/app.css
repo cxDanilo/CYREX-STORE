@@ -270,23 +270,28 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .card.is-tilting{transition:border-color .2s,transform .05s linear;}
 .card-media{aspect-ratio:1/1;background:var(--bg-elevated-2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
 .card-media img{width:100%;height:100%;object-fit:cover;}
-/* Cuando la card viene de un reemplazo AJAX (tienda/producto), la
-   animación de entrada de la card ya terminó bastante antes de que la
-   imagen en sí termine de bajar de la red — sin esto, la card
-   "aparece" con el hueco vacío del fondo y la foto se mete de golpe
-   después, se ve roto. Con este fade la imagen entra suave apenas
-   termina de cargar, sea cual sea el momento — el hueco de atrás
-   (.card-media ya tiene su propio color de fondo) hace de placeholder
-   mientras tanto, así nunca se ve un espacio en blanco. */
-.shop-main-enter .card-media img,
-.page-nav-enter .card-media img{opacity:0;transition:opacity .25s ease;}
-.shop-main-enter .card-media img.is-loaded,
-.page-nav-enter .card-media img.is-loaded{opacity:1;}
-.motion-reduced .shop-main-enter .card-media img,
-.motion-reduced .page-nav-enter .card-media img{opacity:1;transition:none;}
+/* Antes esto solo pasaba cuando la card venía de un reemplazo AJAX
+   (tienda/producto) — en una carga normal de página la foto igual
+   podía "aparecer de golpe" en vez de ir bajando junto con el resto.
+   Ahora es incondicional: shimmer de fondo mientras la foto no
+   terminó de cargar (gancho onload/onerror inline en cada <img>, ver
+   shop-results.blade.php y demás), fade-in suave apenas está lista.
+   Shimmer apagado por default (solo :has() lo prende cuando hay un
+   <img> sin cargar todavía) — un producto SIN foto nunca tiene <img>
+   real, así que sin este gate quedaría con el shimmer animando para
+   siempre en vez de mostrar el fondo liso de toda la vida. Sin
+   soporte de :has(), el shimmer simplemente nunca se prende (degrada
+   bien: la foto igual hace fade-in por su cuenta). */
+.card-media::before{content:'';position:absolute;inset:0;opacity:0;background:linear-gradient(90deg,var(--bg-elevated-2) 25%,var(--bg-elevated) 50%,var(--bg-elevated-2) 75%);background-size:200% 100%;}
+.card-media:has(img):not(:has(img.is-loaded))::before{opacity:1;animation:card-img-shimmer 1.4s ease-in-out infinite;}
+.card-media img{position:relative;opacity:0;transition:opacity .35s ease;}
+.card-media img.is-loaded{opacity:1;}
+@keyframes card-img-shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+.motion-reduced .card-media::before{animation:none;}
+.motion-reduced .card-media img{opacity:1;transition:none;}
 @media (prefers-reduced-motion:reduce){
-  .shop-main-enter .card-media img,
-  .page-nav-enter .card-media img{opacity:1;transition:none;}
+  .card-media::before{animation:none;}
+  .card-media img{opacity:1;transition:none;}
 }
 .badge{position:absolute;top:12px;left:12px;font-family:var(--font-mono);font-size:10px;padding:4px 10px;border-radius:100px;background:var(--gold);color:#0A0A0B;font-weight:600;}
 .card-quick-add{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(8,8,8,.75);backdrop-filter:blur(4px);border:1px solid var(--border);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .15s,opacity .2s;z-index:3;}
@@ -1046,24 +1051,24 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 /* Shimmer detrás de la foto mientras carga (loading="lazy" hace que
    cada tarjeta pida su imagen recién al entrar en pantalla, así que
    antes aparecían de golpe apenas terminaba de bajar) — la imagen
-   entra con fade in vía la clase is-loaded (mismo patrón que
-   shop-ajax.js/page-nav.js para el resto del sitio, ver fadeInImages()
-   ahí), y con :has() el shimmer deja de animar una vez que ya se ve la
-   foto encima (si el navegador no soporta :has(), el shimmer sigue
-   corriendo pero queda tapado por la foto igual, sin verse). */
-.pcb-picker-card-media::before,
-.pcb-complete-setup .card-media::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--bg-elevated) 25%,var(--bg-elevated-2) 50%,var(--bg-elevated) 75%);background-size:200% 100%;animation:pcb-img-shimmer 1.4s ease-in-out infinite;}
-.pcb-picker-card-media:has(img.is-loaded)::before,
-.pcb-complete-setup .card-media:has(img.is-loaded)::before{animation:none;opacity:0;}
-.pcb-picker-card-media img,
-.pcb-complete-setup .card-media img{position:relative;opacity:0;transition:opacity .35s ease;}
-.pcb-picker-card-media img.is-loaded,
-.pcb-complete-setup .card-media img.is-loaded{opacity:1;}
+   entra con fade in vía la clase is-loaded, y con :has() el shimmer
+   deja de animar una vez que ya se ve la foto encima (si el navegador
+   no soporta :has(), el shimmer simplemente nunca se prende — degrada
+   bien, la foto igual hace fade-in por su cuenta). ".pcb-complete-setup
+   .card-media" no necesita reglas propias: comparte la clase genérica
+   .card-media (ver más arriba), que ya cubre exactamente lo mismo.
+   Acá el <img> SIEMPRE existe en el DOM (Alpine x-show, no @if de
+   Blade) aunque el producto no tenga foto — por eso el gate es
+   [src], no solo la presencia del tag: sin foto, Alpine saca el
+   atributo src entero (:src con null), así que :has(img[src]) da
+   falso y el shimmer ni se prende. */
+.pcb-picker-card-media::before{content:'';position:absolute;inset:0;opacity:0;background:linear-gradient(90deg,var(--bg-elevated) 25%,var(--bg-elevated-2) 50%,var(--bg-elevated) 75%);background-size:200% 100%;}
+.pcb-picker-card-media:has(img[src]):not(:has(img.is-loaded))::before{opacity:1;animation:pcb-img-shimmer 1.4s ease-in-out infinite;}
+.pcb-picker-card-media img{position:relative;opacity:0;transition:opacity .35s ease;}
+.pcb-picker-card-media img.is-loaded{opacity:1;}
 @keyframes pcb-img-shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
-.motion-reduced .pcb-picker-card-media::before,
-.motion-reduced .pcb-complete-setup .card-media::before{animation:none;}
-.motion-reduced .pcb-picker-card-media img,
-.motion-reduced .pcb-complete-setup .card-media img{opacity:1;transition:none;}
+.motion-reduced .pcb-picker-card-media::before{animation:none;}
+.motion-reduced .pcb-picker-card-media img{opacity:1;transition:none;}
 .pcb-picker-card .opt-name{font-size:12.5px;font-weight:600;margin-bottom:3px;line-height:1.3;}
 .pcb-picker-card .opt-price{font-family:var(--font-mono);font-size:12px;color:var(--gold);}
 .pcb-picker-card .opt-tier{font-size:10px;color:var(--text-muted);margin-top:3px;line-height:1.3;}

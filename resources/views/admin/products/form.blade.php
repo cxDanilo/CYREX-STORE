@@ -271,7 +271,7 @@
     <div class="admin-preview-label">Vista previa</div>
     <div class="card" style="pointer-events:none;">
       <div class="card-media">
-        <img :src="preview" x-show="preview" alt="">
+        <img :src="preview" x-show="preview" alt="" style="opacity:1;">
         <span x-show="variants.length" class="badge">Variantes</span>
       </div>
       <div class="card-body">
