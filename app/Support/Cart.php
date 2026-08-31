@@ -105,7 +105,12 @@ class Cart
                 'product' => $product,
                 'variant' => $variant,
                 'combo' => null,
-                'price' => (float) ($variant?->price_override ?? $product->price),
+                // effectivePrice() ya resuelve solo si hay una oferta
+                // activa para este producto — el precio de una variante
+                // con su propio price_override sigue ganando por encima
+                // de la oferta, igual que ya ganaba por encima del precio
+                // base antes de que existieran las ofertas.
+                'price' => (float) ($variant?->price_override ?? $product->effectivePrice()),
                 'currency' => $product->currency,
             ];
         })->filter()->values();
