@@ -87,18 +87,20 @@
           <div>
             <div style="font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin:14px 0 6px;">{{ $categoryName }}</div>
             @foreach($products as $product)
-              <label style="display:flex;align-items:center;gap:8px;padding:6px 0;"
+              <label class="combo-product-row"
                      x-show="!q || '{{ \Illuminate\Support\Str::lower($product->name) }}'.includes(q.toLowerCase())">
                 <input type="checkbox" name="product_ids[]" value="{{ $product->id }}"
                        x-model="selected"
                        {{ in_array($product->id, $selectedIds) ? 'checked' : '' }}>
-                <span>{{ $product->name }}</span>
-                <span class="mono" style="color:var(--text-muted);font-size:12px;margin-left:auto;">
-                  @if($product->currency === 'USD')
-                    ${{ number_format($product->price, 2) }}
-                  @else
-                    Bs {{ number_format($product->price, 2) }}
-                  @endif
+                <span class="combo-product-row-info">
+                  <span class="combo-product-row-name">{{ $product->name }}</span>
+                  <span class="combo-product-row-price mono">
+                    @if($product->currency === 'USD')
+                      ${{ number_format($product->price, 2) }}
+                    @else
+                      Bs {{ number_format($product->price, 2) }}
+                    @endif
+                  </span>
                 </span>
               </label>
             @endforeach

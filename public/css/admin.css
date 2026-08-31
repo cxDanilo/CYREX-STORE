@@ -82,6 +82,20 @@ input[type=file]{max-width:100%;}
 .form-group select,
 .form-group textarea{width:100%;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text-primary);font-size:14px;outline:none;transition:border-color .15s;}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold);}
+
+/* Checklist de productos del combo — antes cada fila era un <label>
+   con display:flex nomás, sin separador ni tope de ancho para el
+   nombre: con nombres largos (típico en piezas de PC, con socket/RAM/
+   form factor en el título) el precio (margin-left:auto) quedaba
+   flotando en cualquier lado dentro de la fila envuelta, y sin borde
+   entre filas todo se leía como un solo bloque de texto corrido. */
+.combo-product-row{display:flex;align-items:flex-start;gap:10px;padding:9px 6px;border-bottom:1px solid var(--border);cursor:pointer;}
+.combo-product-row:last-child{border-bottom:none;}
+.combo-product-row:hover{background:var(--bg-elevated-2);}
+.combo-product-row input[type=checkbox]{margin-top:3px;flex-shrink:0;}
+.combo-product-row-info{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex:1;min-width:0;}
+.combo-product-row-name{font-size:13px;line-height:1.4;}
+.combo-product-row-price{color:var(--text-muted);font-size:12px;white-space:nowrap;flex-shrink:0;}
 .form-group select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238E8E93' stroke-width='1.5' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px;}
 .form-group .error{color:var(--red);font-size:12px;margin-top:5px;}
 .form-hint{font-size:12px;color:var(--text-muted);margin-top:5px;}
