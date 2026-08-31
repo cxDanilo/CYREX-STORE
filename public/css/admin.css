@@ -96,6 +96,14 @@ input[type=file]{max-width:100%;}
 .combo-product-row-info{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex:1;min-width:0;}
 .combo-product-row-name{font-size:13px;line-height:1.4;}
 .combo-product-row-price{color:var(--text-muted);font-size:12px;white-space:nowrap;flex-shrink:0;}
+
+/* Fila de producto de Ofertas: mismo checklist de Combos + un cuarto
+   "carril" fijo a la derecha con el precio de oferta, que solo aparece
+   si esa fila está marcada. flex-wrap para que el error de validación
+   (si lo hay) pueda ocupar una línea propia debajo sin romper el resto. */
+.offer-product-row{flex-wrap:wrap;}
+.offer-price-input{flex-shrink:0;width:110px;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text-primary);font-size:12.5px;}
+.offer-price-input:focus{border-color:var(--gold);outline:none;}
 .form-group select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238E8E93' stroke-width='1.5' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px;}
 .form-group .error{color:var(--red);font-size:12px;margin-top:5px;}
 .form-hint{font-size:12px;color:var(--text-muted);margin-top:5px;}

@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\PcBuilderOptionController as AdminPcBuilderOption
 use App\Http\Controllers\Admin\AttributeFieldController as AdminAttributeFieldController;
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\Admin\ComboController as AdminComboController;
+use App\Http\Controllers\Admin\OfferController as AdminOfferController;
 use App\Http\Controllers\Admin\ChangelogController as AdminChangelogController;
 use App\Http\Controllers\ComboController;
 use App\Http\Controllers\PageController;
@@ -109,6 +110,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('combos/{combo}', [AdminComboController::class, 'update'])->name('combos.update');
         Route::delete('combos/{combo}', [AdminComboController::class, 'destroy'])->name('combos.destroy');
         Route::patch('combos/{combo}/estado', [AdminComboController::class, 'toggleActive'])->name('combos.toggle-active');
+
+        Route::get('ofertas', [AdminOfferController::class, 'edit'])->name('ofertas.edit');
+        Route::put('ofertas', [AdminOfferController::class, 'update'])->name('ofertas.update');
 
         Route::get('usuarios', [AdminUserController::class, 'index'])->name('usuarios.index');
 
