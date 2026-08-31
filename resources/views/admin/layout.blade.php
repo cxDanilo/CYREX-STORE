@@ -32,7 +32,7 @@
       $navGroups = [
         'catalogo' => [
           'label' => 'Catálogo',
-          'match' => ['admin.productos.*', 'admin.categorias.*', 'admin.promociones.*', 'admin.woocommerce.*', 'admin.attribute-fields.*', 'admin.pc-builder-options.*'],
+          'match' => ['admin.productos.*', 'admin.categorias.*', 'admin.promociones.*', 'admin.combos.*', 'admin.woocommerce.*', 'admin.attribute-fields.*', 'admin.pc-builder-options.*'],
         ],
         'contenido' => [
           'label' => 'Contenido',
@@ -62,6 +62,7 @@
         <a href="{{ route('admin.productos.index') }}" class="{{ request()->routeIs('admin.productos.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'productos']) Productos</a>
         <a href="{{ route('admin.categorias.index') }}" class="{{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'categorias']) Categorías</a>
         <a href="{{ route('admin.promociones.index') }}" class="{{ request()->routeIs('admin.promociones.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'promociones']) Promociones</a>
+        <a href="{{ route('admin.combos.index') }}" class="{{ request()->routeIs('admin.combos.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'combos']) Combos</a>
         @if(auth()->user()->isAdmin())
           <a href="{{ route('admin.woocommerce.create') }}" class="{{ request()->routeIs('admin.woocommerce.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'importar']) Importar WooCommerce</a>
         @endif

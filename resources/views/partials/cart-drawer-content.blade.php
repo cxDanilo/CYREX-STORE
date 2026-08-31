@@ -5,15 +5,23 @@
     @foreach($cartItems as $item)
       <div class="cart-item">
         <div class="cart-item-media">
-          @if($item->product->image_thumb_url)
+          @if($item->type === 'combo')
+            @if($item->combo->image_thumb_url)
+              <img src="{{ $item->combo->image_thumb_url }}" alt="" loading="lazy">
+            @endif
+          @elseif($item->product->image_thumb_url)
             <img src="{{ $item->product->image_thumb_url }}" alt="" loading="lazy">
           @endif
         </div>
         <div class="cart-item-body">
           <div class="cart-item-name">
-            {{ $item->product->name }}
-            @if($item->variant)
-              <span style="color:var(--text-muted);">({{ $item->variant->variant_value }})</span>
+            @if($item->type === 'combo')
+              {{ $item->combo->name }} <span style="margin-left:4px;font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--gold);border:1px solid var(--gold);border-radius:6px;padding:1px 5px;">Combo</span>
+            @else
+              {{ $item->product->name }}
+              @if($item->variant)
+                <span style="color:var(--text-muted);">({{ $item->variant->variant_value }})</span>
+              @endif
             @endif
           </div>
           <div class="cart-item-price mono">

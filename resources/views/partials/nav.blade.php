@@ -9,6 +9,10 @@ document.addEventListener('alpine:init', () => {
       return this.keys.includes(productId + ':' + (variantId ?? ''));
     },
 
+    hasCombo(comboId) {
+      return this.keys.includes('combo:' + comboId);
+    },
+
     async add(productId, variantId) {
       const res = await fetch('{{ route('cart.add') }}', {
         method: 'POST',
@@ -18,6 +22,21 @@ document.addEventListener('alpine:init', () => {
           'X-CSRF-TOKEN': '{{ csrf_token() }}',
         },
         body: JSON.stringify({ product_id: productId, variant_id: variantId }),
+      });
+      const data = await res.json();
+      this.apply(data);
+      this.open = true;
+    },
+
+    async addCombo(comboId) {
+      const res = await fetch('{{ route('cart.add-combo') }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        },
+        body: JSON.stringify({ combo_id: comboId }),
       });
       const data = await res.json();
       this.apply(data);

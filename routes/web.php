@@ -22,7 +22,9 @@ use App\Http\Controllers\Admin\CacheController as AdminCacheController;
 use App\Http\Controllers\Admin\PcBuilderOptionController as AdminPcBuilderOptionController;
 use App\Http\Controllers\Admin\AttributeFieldController as AdminAttributeFieldController;
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
+use App\Http\Controllers\Admin\ComboController as AdminComboController;
 use App\Http\Controllers\Admin\ChangelogController as AdminChangelogController;
+use App\Http\Controllers\ComboController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductQuickEditController;
 use App\Http\Controllers\SitemapController;
@@ -33,6 +35,7 @@ Route::get('/arma-tu-pc', [App\Http\Controllers\PcBuilderController::class, 'ind
 Route::post('/arma-tu-pc/cotizacion', [App\Http\Controllers\PcBuilderQuoteController::class, 'download'])->middleware('throttle:6,1')->name('pc-builder.quote');
 Route::get('/tienda', [ShopController::class, 'index'])->name('shop');
 Route::get('/producto/{slug}', [ShopController::class, 'show'])->name('product.show');
+Route::get('/combo/{slug}', [ComboController::class, 'show'])->name('combo.show');
 Route::get('/buscar-sugerencias', [ShopController::class, 'suggest'])->name('shop.suggest');
 
 // --- PREVIEW TEMPORAL, sacar junto con resources/views/dev/liquid-preview.blade.php,
@@ -46,6 +49,7 @@ if (app()->environment('local')) {
 Route::middleware(['auth', 'admin'])->patch('/producto/{product}/edicion-rapida', [ProductQuickEditController::class, 'update'])->name('product.quick-update');
 
 Route::post('/carrito/agregar', [CartController::class, 'add'])->name('cart.add');
+Route::post('/carrito/agregar-combo', [CartController::class, 'addCombo'])->name('cart.add-combo');
 Route::delete('/carrito/quitar/{key}', [CartController::class, 'remove'])->name('cart.remove');
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -97,6 +101,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('promociones/{promotion}', [AdminPromotionController::class, 'update'])->name('promociones.update');
         Route::delete('promociones/{promotion}', [AdminPromotionController::class, 'destroy'])->name('promociones.destroy');
         Route::patch('promociones/{promotion}/estado', [AdminPromotionController::class, 'toggleActive'])->name('promociones.toggle-active');
+
+        Route::get('combos', [AdminComboController::class, 'index'])->name('combos.index');
+        Route::get('combos/nuevo', [AdminComboController::class, 'create'])->name('combos.create');
+        Route::post('combos', [AdminComboController::class, 'store'])->name('combos.store');
+        Route::get('combos/{combo}/editar', [AdminComboController::class, 'edit'])->name('combos.edit');
+        Route::put('combos/{combo}', [AdminComboController::class, 'update'])->name('combos.update');
+        Route::delete('combos/{combo}', [AdminComboController::class, 'destroy'])->name('combos.destroy');
+        Route::patch('combos/{combo}/estado', [AdminComboController::class, 'toggleActive'])->name('combos.toggle-active');
 
         Route::get('usuarios', [AdminUserController::class, 'index'])->name('usuarios.index');
 

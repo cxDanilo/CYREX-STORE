@@ -25,6 +25,21 @@ class CartController extends Controller
         return back()->with('status', 'Agregado al carrito.');
     }
 
+    public function addCombo(Request $request)
+    {
+        $data = $request->validate([
+            'combo_id' => ['required', 'exists:combos,id'],
+        ]);
+
+        Cart::addCombo((int) $data['combo_id']);
+
+        if ($request->wantsJson()) {
+            return $this->cartResponse();
+        }
+
+        return back()->with('status', 'Combo agregado al carrito.');
+    }
+
     public function remove(Request $request, string $key)
     {
         Cart::remove($key);
