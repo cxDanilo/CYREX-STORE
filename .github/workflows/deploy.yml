@@ -50,7 +50,21 @@ jobs:
             trap 'exit 1' HUP INT TERM
             php artisan down --retry=15 || true
 
-            if [ -f .git/shallow ]; then git fetch --unshallow; fi
+            # git fetch --unshallow puede fallar por la misma flakiness de
+            # red de GitHub<->servidor de más arriba — si eso pasa una sola
+            # vez y el script sigue de largo, el historial completo se
+            # pierde para siempre en este checkout (version.txt/changelog.txt
+            # quedan basados en 1 solo commit). Reintenta antes de rendirse,
+            # y cae a un --depth bien grande si el unshallow en sí sigue
+            # fallando — nunca bloquea el deploy en sí (|| true al final).
+            if [ -f .git/shallow ]; then
+              echo "Repo shallow — corriendo git fetch --unshallow..."
+              git fetch --unshallow || git fetch --unshallow || git fetch --unshallow || true
+              if [ -f .git/shallow ]; then
+                echo "Seguía shallow, probando con --depth grande como respaldo..."
+                git fetch --depth=100000 origin main || true
+              fi
+            fi
 
             n=0
             until [ $n -ge 3 ]
@@ -72,8 +86,19 @@ jobs:
             php artisan view:clear
             php artisan config:cache
             php artisan view:cache
-            git log --pretty=format:'%H|%ad|%s' --date=format:'%Y-%m-%d %H:%M' -n 200 > storage/app/changelog.txt
-            git rev-list --count HEAD > storage/app/version.txt
+            # Si por lo que sea el repo terminó shallow igual (a pesar del
+            # resguardo de arriba), el conteo de commits sale mucho más bajo
+            # que el real — mejor dejar el changelog/versión como estaban
+            # (aunque queden un poco viejos) que pisarlos con un "0.0.1" que
+            # asusta sin ser cierto.
+            NEW_COMMIT_COUNT=$(git rev-list --count HEAD)
+            OLD_COMMIT_COUNT=$(cat storage/app/version.txt 2>/dev/null || echo 0)
+            if [ "$NEW_COMMIT_COUNT" -ge "$OLD_COMMIT_COUNT" ]; then
+              git log --pretty=format:'%H|%ad|%s' --date=format:'%Y-%m-%d %H:%M' -n 200 > storage/app/changelog.txt
+              echo "$NEW_COMMIT_COUNT" > storage/app/version.txt
+            else
+              echo "El conteo de commits bajó ($OLD_COMMIT_COUNT -> $NEW_COMMIT_COUNT), probable repo shallow — no se pisa changelog.txt/version.txt."
+            fi
 
       - name: Esperar antes de reintentar (intento 2)
         if: steps.deploy1.outcome == 'failure'
