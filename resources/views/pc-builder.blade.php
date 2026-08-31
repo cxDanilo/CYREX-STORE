@@ -410,14 +410,17 @@
               </p>
             </template>
             <div class="pcb-picker-grid">
-              <template x-for="opt in currentOptions" :key="opt.product.id">
+              <template x-for="(opt, i) in currentOptions" :key="opt.product.id">
                 <button type="button" class="pcb-picker-card"
                         :class="[opt.blocked && 'disabled', item(type)?.id === opt.product.id && 'selected']"
                         :disabled="opt.blocked"
+                        :style="'transition-delay:' + Math.min(i, 12) * 25 + 'ms'"
                         @click="!opt.blocked && pick(type, opt.product)"
                         x-transition:enter="pcb-card-enter" x-transition:enter-start="pcb-card-enter-start" x-transition:enter-end="pcb-card-enter-end">
                   <div class="pcb-picker-card-media">
-                    <img :src="opt.product.image_url" x-show="opt.product.image_url" loading="lazy" width="140" height="140" style="width:100%;height:100%;object-fit:cover;">
+                    <img :src="opt.product.image_url" x-show="opt.product.image_url" loading="lazy" width="140" height="140"
+                         style="width:100%;height:100%;object-fit:cover;"
+                         onload="this.classList.add('is-loaded')" onerror="this.classList.add('is-loaded')">
                   </div>
                   <div class="opt-name" x-text="opt.product.name"></div>
                   <div class="opt-price" x-text="'$' + opt.product.price_usd.toFixed(2)"></div>
@@ -492,7 +495,8 @@
                 <a class="card" href="{{ route('product.show', $product->slug) }}">
                   <div class="card-media">
                     @if($product->image_thumb_url)
-                      <img src="{{ $product->image_thumb_url }}" alt="{{ $product->name }}" loading="lazy">
+                      <img src="{{ $product->image_thumb_url }}" alt="{{ $product->name }}" loading="lazy"
+                           onload="this.classList.add('is-loaded')" onerror="this.classList.add('is-loaded')">
                     @endif
                   </div>
                   <div class="card-body">
