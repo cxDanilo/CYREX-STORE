@@ -65,6 +65,14 @@ input[type=file]{max-width:100%;}
 .admin-search input{flex:1;max-width:320px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:100px;padding:10px 18px;color:var(--text-primary);font-size:13.5px;outline:none;}
 .admin-search input:focus{border-color:var(--border-strong);}
 
+/* Buscador de productos en Combos/Ofertas — era un <input> sin ninguna
+   clase (ni .form-group ni .admin-search), así que salía sin ningún
+   estilo propio, blanco/nativo del navegador en vez del resto del
+   formulario oscuro. */
+.admin-product-search{display:block;width:100%;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text-primary);font-size:13.5px;outline:none;margin-bottom:14px;transition:border-color .15s;}
+.admin-product-search:focus{border-color:var(--gold);}
+.admin-product-search::placeholder{color:var(--text-muted);}
+
 .admin-empty{padding:60px 20px;text-align:center;color:var(--text-muted);font-size:14px;}
 
 /* FORM */
@@ -79,9 +87,28 @@ input[type=file]{max-width:100%;}
 .form-group input[type=number],
 .form-group input[type=email],
 .form-group input[type=password],
+.form-group input[type=date],
+.form-group input[type=datetime-local],
+.form-group input[type=time],
 .form-group select,
 .form-group textarea{width:100%;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text-primary);font-size:14px;outline:none;transition:border-color .15s;}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold);}
+/* input[type=date]/datetime-local/time quedaban afuera de la lista de
+   arriba — sin ningún estilo propio, el navegador los pinta con su
+   fondo claro nativo, bien distinto del resto del formulario oscuro
+   (justo lo que se ve raro en la fecha de Ofertas). El ícono del
+   calendario/reloj también viene negro por default — invertido, se ve
+   claro sobre el fondo oscuro en vez de invisible. */
+.form-group input[type=date]::-webkit-calendar-picker-indicator,
+.form-group input[type=datetime-local]::-webkit-calendar-picker-indicator,
+.form-group input[type=time]::-webkit-calendar-picker-indicator{filter:invert(.7);cursor:pointer;}
+
+/* Checkboxes/radios del admin usaban el azul default del navegador —
+   accent-color los recolorea a dorado sin tocar ninguna vista (siguen
+   siendo checkboxes nativos de verdad, con todo el comportamiento de
+   accesibilidad/teclado intacto). */
+input[type=checkbox],
+input[type=radio]{accent-color:var(--gold);width:16px;height:16px;cursor:pointer;}
 
 /* Checklist de productos del combo — antes cada fila era un <label>
    con display:flex nomás, sin separador ni tope de ancho para el

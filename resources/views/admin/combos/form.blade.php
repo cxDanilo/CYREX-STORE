@@ -80,7 +80,7 @@
       <div class="form-hint" style="margin-bottom:10px;">El orden en que los marques acá es el orden en que se muestran en la página del combo. La foto del combo es la del primer producto elegido.</div>
       @error('product_ids') <div class="error" style="margin-bottom:10px;">{{ $message }}</div> @enderror
 
-      <input type="text" x-model="q" placeholder="Buscar producto..." style="margin-bottom:14px;">
+      <input type="text" x-model="q" placeholder="Buscar producto..." class="admin-product-search">
 
       <div style="max-height:420px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:14px;">
         @foreach($categorizedProducts as $categoryName => $products)

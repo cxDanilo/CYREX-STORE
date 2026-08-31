@@ -46,7 +46,7 @@
       <h3>Productos en oferta</h3>
       <div class="form-hint" style="margin-bottom:10px;">Desmarcar un producto lo saca de la oferta actual, pero no borra el precio que le pusiste — queda listo por si lo volvés a marcar en la próxima.</div>
 
-      <input type="text" x-model="q" placeholder="Buscar producto..." style="margin-bottom:14px;">
+      <input type="text" x-model="q" placeholder="Buscar producto..." class="admin-product-search">
 
       <div style="max-height:480px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:14px;">
         @foreach($categorizedProducts as $categoryName => $products)
