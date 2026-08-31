@@ -64,6 +64,35 @@ window.addEventListener('DOMContentLoaded', function () {
     return link.pathname === '/tienda' || link.pathname.indexOf('/producto/') === 0;
   }
 
+  // El banner de categoría (.page-head.has-banner) se pinta con
+  // background-image, no con un <img> — sin esto, el fade-in de
+  // page-nav-section-in arrancaba apenas se insertaba el HTML, y si esa
+  // foto puntual todavía no estaba en caché del navegador se veía
+  // aparecer de golpe un instante después de que el resto del encabezado
+  // ya había terminado de entrar ("se ve muy seco" fue el reporte
+  // exacto). Precargarla ANTES de aplicar la página nueva hace que el
+  // fade-in del encabezado entero arranque recién cuando la foto ya está
+  // lista — como máximo demora 500ms extra, para no colgar la
+  // navegación entera si esa imagen puntual fallara en cargar.
+  function extractBannerUrl(html) {
+    var match = html.match(/--shop-banner-image:\s*url\(['"]?([^'")]+)['"]?\)/);
+
+    return match ? match[1] : null;
+  }
+
+  function preloadImage(url, timeoutMs) {
+    return new Promise(function (resolve) {
+      if (!url) { resolve(); return; }
+      var settled = false;
+      var finish = function () { if (!settled) { settled = true; resolve(); } };
+      var img = new Image();
+      img.onload = finish;
+      img.onerror = finish;
+      img.src = url;
+      setTimeout(finish, timeoutMs);
+    });
+  }
+
   // Ver shop-ajax.js: mismo motivo — la card entra antes de que la
   // imagen en sí termine de bajar de la red, así que la foto necesita
   // su propio fade-in disparado por 'load', no por la inserción del
@@ -172,7 +201,10 @@ window.addEventListener('DOMContentLoaded', function () {
           history.pushState({ scrollY: 0 }, '', url);
         }
 
-        applyPage(entry, opts);
+        preloadImage(extractBannerUrl(entry.mainHTML), 500).then(function () {
+          if (signal.aborted) return;
+          applyPage(entry, opts);
+        });
       })
       .catch(function (err) {
         if (err.name === 'AbortError') return;
