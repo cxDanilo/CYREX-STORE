@@ -852,12 +852,12 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .cms-garantia-icon{display:inline-flex;width:22px;height:22px;color:var(--gold);flex-shrink:0;}
 .cms-garantia-icon svg{width:100%;height:100%;}
 
-.trust-badges{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:28px 0;}
-.trust-badge{background:var(--bg-elevated);border:1px solid var(--border);border-radius:14px;padding:18px;}
-.trust-badge-icon{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--gold-dim);color:var(--gold);margin-bottom:12px;}
-.trust-badge-icon svg{width:18px;height:18px;}
-.trust-badge h4{font-family:var(--font-display);font-weight:600;font-size:14.5px;margin-bottom:6px;}
-.trust-badge p{font-size:12.5px;line-height:1.55;color:var(--text-secondary);}
+.trust-badges{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:36px 0;}
+.trust-badge{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:24px;}
+.trust-badge-icon{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:var(--gold-dim);color:var(--gold);margin-bottom:14px;}
+.trust-badge-icon svg{width:20px;height:20px;}
+.trust-badge h4{font-family:var(--font-display);font-weight:600;font-size:15.5px;margin-bottom:8px;}
+.trust-badge p{font-size:13px;line-height:1.6;color:var(--text-secondary);}
 
 .cms-marcas-wrap{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);}
 .cms-marcas-track{display:flex;gap:56px;align-items:center;width:max-content;animation:cms-marquee 28s linear infinite;}
