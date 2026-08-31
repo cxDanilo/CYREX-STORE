@@ -378,6 +378,8 @@
       </a>
     </div>
 
+    @include('partials.trust-badges')
+
     {{-- Sin escapar: las descripciones importadas de WooCommerce traen HTML real
          (listas de specs, etc.) — mismo criterio que el bloque html_libre del CMS,
          contenido cargado por el admin, no por un usuario del sitio.
