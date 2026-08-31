@@ -10,8 +10,12 @@
   --green:#3DDC84;--red:#E24B4A;
   --font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;
 }
-*{margin:0;padding:0;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;scrollbar-width:thin;scrollbar-color:var(--border-strong) transparent;}
 html{background:var(--bg);min-height:100%;}
+*::-webkit-scrollbar{width:8px;height:8px;}
+*::-webkit-scrollbar-track{background:transparent;}
+*::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:10px;transition:background .2s;}
+*::-webkit-scrollbar-thumb:hover{background:var(--gold);}
 /* !important solo acá: el editor de contenido (GrapesJS) inyecta su
    propio "body{background-color:#fff}" dentro del canvas para simular
    una hoja en blanco, con la misma prioridad que esta regla — sin
