@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Support\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -47,6 +48,10 @@ class CategoryController extends Controller
             $data['icon_image'] = $this->storeIcon($request);
         }
 
+        if ($request->hasFile('banner_image')) {
+            $data['banner_image'] = $this->storeBanner($request);
+        }
+
         Category::create($data);
 
         return redirect()->route('admin.categorias.index')->with('status', 'Categoría creada.');
@@ -71,6 +76,14 @@ class CategoryController extends Controller
             $data['icon_image'] = null;
         }
 
+        if ($request->hasFile('banner_image')) {
+            $this->deleteBanner($category);
+            $data['banner_image'] = $this->storeBanner($request);
+        } elseif ($request->boolean('remove_banner_image')) {
+            $this->deleteBanner($category);
+            $data['banner_image'] = null;
+        }
+
         $category->update($data);
 
         return redirect()->route('admin.categorias.index')->with('status', 'Categoría actualizada.');
@@ -90,6 +103,7 @@ class CategoryController extends Controller
         }
 
         $this->deleteIcon($category);
+        $this->deleteBanner($category);
         $category->delete();
 
         return back()->with('status', 'Categoría eliminada.');
@@ -139,6 +153,7 @@ class CategoryController extends Controller
             'parent_id' => $parentRules,
             'icon' => ['nullable', 'in:'.implode(',', self::ICONS)],
             'icon_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:1024'],
+            'banner_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'component_type' => ['nullable', 'in:'.implode(',', [
                 ...array_keys(config('pc_builder.component_types')),
                 ...array_keys(config('pc_builder.extra_attribute_types', [])),
@@ -146,7 +161,7 @@ class CategoryController extends Controller
             ])],
         ]);
 
-        unset($data['icon_image']);
+        unset($data['icon_image'], $data['banner_image']);
 
         if (! empty($data['parent_id'])) {
             $data['icon'] = null;
@@ -168,6 +183,32 @@ class CategoryController extends Controller
     {
         if ($category->icon_image) {
             Storage::disk('uploads')->delete($category->icon_image);
+        }
+    }
+
+    private function storeBanner(Request $request): string
+    {
+        $file = $request->file('banner_image');
+        $filename = Str::random(20).'.'.$file->getClientOriginalExtension();
+        $relativePath = 'categories/banners/'.$filename;
+        $file->storeAs('categories/banners', $filename, 'uploads');
+
+        // Mismo optimizador que productos/medios — el banner se muestra
+        // a ancho completo, así que sí conviene el resize/recompresión
+        // (a diferencia del ícono, que es chico y no vale la pena).
+        ImageOptimizer::process(
+            Storage::disk('uploads')->path($relativePath),
+            $relativePath,
+            $file->getMimeType()
+        );
+
+        return $relativePath;
+    }
+
+    private function deleteBanner(Category $category): void
+    {
+        if ($category->banner_image) {
+            Storage::disk('uploads')->delete($category->banner_image);
         }
     }
 }

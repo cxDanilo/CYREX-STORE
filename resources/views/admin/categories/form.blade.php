@@ -73,6 +73,21 @@
       </div>
 
       <div class="form-group">
+        <label for="banner_image">Banner de la tienda</label>
+        @if($category->banner_image_url)
+          <div style="margin-bottom:10px;">
+            <img src="{{ $category->banner_image_url }}" alt="" style="width:100%;max-width:320px;aspect-ratio:16/5;object-fit:cover;border-radius:10px;display:block;margin-bottom:8px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary);">
+              <input type="checkbox" name="remove_banner_image" value="1"> Quitar banner (vuelve a usar uno genérico al azar)
+            </label>
+          </div>
+        @endif
+        <input type="file" id="banner_image" name="banner_image" accept="image/png,image/jpeg,image/webp">
+        <div class="form-hint">Fondo del encabezado en /tienda cuando esta categoría está seleccionada. Si no subes uno, se usa al azar entre los genéricos de Admin → Ajustes. PNG/JPG/WEBP, máx 4MB.</div>
+        @error('banner_image') <div class="error">{{ $message }}</div> @enderror
+      </div>
+
+      <div class="form-group">
         <label for="component_type">Tipo de componente / atributos</label>
         <select id="component_type" name="component_type">
           <option value="">No aplica</option>

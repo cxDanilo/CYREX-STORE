@@ -43,11 +43,16 @@ class ShopController extends Controller
 
         $products = $query->paginate(12)->withQueryString();
 
-        // Una imagen al azar (entre las que el admin cargó en Ajustes)
-        // como fondo del título — cambia en cada visita, no mientras se
-        // navega la página.
-        $bannerImages = json_decode(Setting::get('shop_banner_images', '[]'), true) ?: [];
-        $shopBannerImage = $bannerImages ? asset('uploads/'.$bannerImages[array_rand($bannerImages)]) : null;
+        // Si la categoría activa tiene su propio banner cargado (Admin →
+        // Categorías), se usa ese — si no, cae a una imagen al azar entre
+        // las genéricas de Ajustes (cambia en cada visita, no mientras se
+        // navega la página).
+        if ($activeCategory?->banner_image_url) {
+            $shopBannerImage = $activeCategory->banner_image_url;
+        } else {
+            $bannerImages = json_decode(Setting::get('shop_banner_images', '[]'), true) ?: [];
+            $shopBannerImage = $bannerImages ? asset('uploads/'.$bannerImages[array_rand($bannerImages)]) : null;
+        }
 
         // Pedido AJAX (orden/filtro/página cambiados sin recargar, ver
         // public/js/shop-ajax.js): solo el fragmento de resultados, no la
