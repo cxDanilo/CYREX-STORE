@@ -349,12 +349,13 @@ return [
         'view' => 'cms.blocks.combos',
         'category' => 'Comercio',
         'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><rect x="13" y="7" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 15v2M17 15v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
-        'defaults' => ['titulo' => 'Combos armados', 'titulo_destacado' => '', 'subtitulo' => '', 'limite' => 4],
+        'defaults' => ['titulo' => 'Combos armados', 'titulo_destacado' => '', 'subtitulo' => '', 'limite' => 8, 'intervalo' => 6000],
         'fields' => [
             'titulo' => ['type' => 'text', 'label' => 'Título (opcional)'],
             'titulo_destacado' => ['type' => 'text', 'label' => 'Palabras finales destacadas en dorado (opcional)'],
             'subtitulo' => ['type' => 'textarea', 'label' => 'Subtítulo (opcional)'],
-            'limite' => ['type' => 'number', 'label' => 'Cantidad de combos a mostrar'],
+            'limite' => ['type' => 'number', 'label' => 'Cantidad máxima de combos a traer (se muestran de a 4 y van rotando solos si hay más)'],
+            'intervalo' => ['type' => 'number', 'label' => 'Segundos entre cada rotación (en milisegundos, ej. 6000 = 6s)'],
         ],
     ],
 
