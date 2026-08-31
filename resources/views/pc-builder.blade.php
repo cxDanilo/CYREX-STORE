@@ -40,13 +40,16 @@
         furthestStep: 0,
         ramQty: 1,
         totalFlashReady: false,
-        // Con el catálogo cargado, mostrar TODAS las opciones de un paso
+        // Habilitado por defecto: mostrar TODAS las opciones de un paso
         // (incluidas las que ya sabemos incompatibles, solo bloqueadas)
         // significa pedir también las imágenes de las que nunca se van a
-        // poder elegir. Este switch las saca del todo del listado — ni se
-        // renderizan ni se descarga su imagen — para pasos con muchas
-        // opciones cargadas.
-        hideIncompatible: false,
+        // poder elegir, compitiendo por ancho de banda con las que sí
+        // importan. Con esto en true, las incompatibles ni se renderizan
+        // ni se descargan de entrada — prefetchIncompatibleImages() las va
+        // trayendo solita en segundo plano (ver más abajo), así que si el
+        // usuario apaga el switch para verlas igual, ya están precargadas.
+        hideIncompatible: true,
+        prefetchedImageUrls: new Set(),
         // Se pregunta recién al terminar el armado — null = todavía no
         // eligió, true = que se lo armen en Cyrex (se suma el cargo de
         // abajo), false = se lleva las piezas sueltas.
@@ -259,6 +262,34 @@
           return this.hideIncompatible ? this.rawOptions.filter(opt => !opt.blocked) : this.rawOptions;
         },
 
+        // Trae en segundo plano (baja prioridad, recién cuando el
+        // navegador está ocioso) las imágenes de las opciones bloqueadas
+        // del paso actual, aunque estén ocultas por el switch de arriba —
+        // así, si el usuario lo apaga para verlas de todos modos, ya están
+        // precargadas y aparecen al instante en vez de recién empezar a
+        // bajar en ese momento. new Image() solo mete el archivo en la
+        // caché del navegador, no toca el DOM.
+        prefetchIncompatibleImages() {
+          const toFetch = this.rawOptions.filter(opt =>
+            opt.blocked && opt.product.image_url && !this.prefetchedImageUrls.has(opt.product.image_url)
+          );
+          if (!toFetch.length) return;
+          // timeout:2000 fuerza que corra igual aunque el navegador nunca
+          // reporte tiempo ocioso (ej. pestaña en segundo plano) — sin
+          // esto, requestIdleCallback puede no dispararse nunca.
+          const schedule = window.requestIdleCallback
+            ? (fn) => window.requestIdleCallback(fn, { timeout: 2000 })
+            : (fn) => setTimeout(fn, 400);
+          schedule(() => {
+            toFetch.forEach(opt => {
+              this.prefetchedImageUrls.add(opt.product.image_url);
+              const img = new Image();
+              img.decoding = 'async';
+              img.src = opt.product.image_url;
+            });
+          });
+        },
+
         // El carrito no maneja cantidades (decisión de diseño ya tomada
         // para todo el sitio) — si se eligieron 2 memorias, acá solo se
         // agrega 1 unidad al carrito; la cantidad real sí queda reflejada
@@ -297,7 +328,8 @@
           form.submit();
           form.remove();
         }
-     }">
+     }"
+     x-effect="prefetchIncompatibleImages()">
 
   <div class="pcb-stepper">
     <template x-for="(s, i) in stepList" :key="s.key">
