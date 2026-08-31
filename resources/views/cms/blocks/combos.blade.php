@@ -13,7 +13,7 @@
   $paginas = $combos->chunk($porPagina);
 @endphp
 @if($combos->isNotEmpty())
-<div class="wrap cms-block">
+<div class="wrap cms-block cms-combos">
   @if(!empty($data['titulo']) || !empty($data['subtitulo']))
     <div class="cms-productos-head">
       @if(!empty($data['titulo']))
