@@ -26,17 +26,17 @@
       <tbody>
         @foreach($templates as $template)
           <tr>
-            <td>
+            <td class="admin-table-title">
               {{ $template->name }}
               @if($template->description)
-                <div style="color:var(--text-muted);font-size:12px;margin-top:2px;">{{ $template->description }}</div>
+                <div style="color:var(--text-muted);font-size:12px;margin-top:2px;font-weight:400;">{{ $template->description }}</div>
               @endif
             </td>
-            <td style="color:var(--text-secondary);font-size:13px;">
+            <td style="color:var(--text-secondary);font-size:13px;" data-label="Estructura" class="admin-table-block">
               {{ collect($template->default_blocks)->implode(' → ') ?: '— sin bloques —' }}
             </td>
-            <td class="mono">{{ $template->pages_count }}</td>
-            <td>
+            <td class="mono" data-label="Páginas">{{ $template->pages_count }}</td>
+            <td class="cell-actions">
               <div class="cell-actions">
                 <a href="{{ route('admin.plantillas.edit', $template) }}" class="btn btn-sm">Editar</a>
                 <form method="POST" action="{{ route('admin.plantillas.destroy', $template) }}" onsubmit="return confirm('¿Eliminar la plantilla {{ $template->name }}? Las páginas que la usan no se borran, solo quedan sin plantilla.');">

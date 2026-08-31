@@ -26,10 +26,10 @@
       <tbody>
         @foreach($menus as $menu)
           <tr>
-            <td>{{ $menu->name }}</td>
-            <td class="mono" style="color:var(--text-secondary);">{{ $menu->key }}</td>
-            <td class="mono">{{ $menu->items_count }}</td>
-            <td>
+            <td class="admin-table-title">{{ $menu->name }}</td>
+            <td class="mono" style="color:var(--text-secondary);" data-label="Key">{{ $menu->key }}</td>
+            <td class="mono" data-label="Ítems">{{ $menu->items_count }}</td>
+            <td class="cell-actions">
               <div class="cell-actions">
                 <a href="{{ route('admin.menus.edit', $menu) }}" class="btn btn-sm">Editar</a>
                 <form method="POST" action="{{ route('admin.menus.destroy', $menu) }}" onsubmit="return confirm('¿Eliminar el menú {{ $menu->name }}?');">

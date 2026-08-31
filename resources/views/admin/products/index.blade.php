@@ -38,24 +38,24 @@
                 @endif
               </div>
             </td>
-            <td>
+            <td class="admin-table-title">
               {{ $product->name }}
               @if($product->has_variants)
                 <span style="color:var(--text-muted);font-size:12px;"> · variantes</span>
               @endif
             </td>
-            <td style="color:var(--text-secondary);">{{ $product->category->name }}</td>
-            <td class="mono">
+            <td style="color:var(--text-secondary);" data-label="Categoría">{{ $product->category->name }}</td>
+            <td class="mono" data-label="Precio">
               @if($product->currency === 'USD')
                 ${{ number_format($product->price, 2) }}
               @else
                 Bs {{ number_format($product->price, 2) }}
               @endif
             </td>
-            <td>
+            <td data-label="Estado">
               <span class="status-badge {{ $product->status }}">{{ $product->status === 'active' ? 'Publicado' : 'Privado' }}</span>
             </td>
-            <td>
+            <td class="cell-actions">
               <div class="cell-actions">
                 <form method="POST" action="{{ route('admin.productos.toggle-status', $product) }}">
                   @csrf @method('PATCH')

@@ -38,8 +38,8 @@
             <tbody>
               @foreach($groupOptions as $option)
                 <tr>
-                  <td class="mono" style="color:var(--text-secondary);">{{ $option->value }}</td>
-                  <td>
+                  <td class="mono" style="color:var(--text-secondary);" data-label="Valor guardado">{{ $option->value }}</td>
+                  <td class="admin-table-title">
                     <span x-show="editing !== {{ $option->id }}">{{ $option->label }}</span>
                     <form x-show="editing === {{ $option->id }}" x-cloak method="POST" action="{{ route('admin.pc-builder-options.update', $option) }}" style="display:flex;gap:8px;">
                       @csrf @method('PUT')
@@ -48,7 +48,7 @@
                       <button type="button" class="btn btn-sm" @click="editing = null">Cancelar</button>
                     </form>
                   </td>
-                  <td>
+                  <td class="cell-actions">
                     <div class="cell-actions">
                       <button type="button" class="btn btn-sm" x-show="editing !== {{ $option->id }}" @click="editing = {{ $option->id }}">Editar</button>
                       <form method="POST" action="{{ route('admin.pc-builder-options.destroy', $option) }}" onsubmit="return confirm('¿Eliminar \'{{ $option->label }}\'? Los productos que ya la tengan cargada la conservan, pero no va a aparecer más como opción.');">
@@ -106,11 +106,13 @@
                   <input type="hidden" name="type_key" value="{{ $typeKey }}">
                   <input type="hidden" name="field_key" value="{{ $fieldKey }}">
                   <input type="hidden" name="enabled" value="0">
-                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary);">
-                    <input type="checkbox" name="enabled" value="1" {{ $isFilter ? 'checked' : '' }} onchange="this.form.requestSubmit()">
-                    {{ $bf['label'] }}
-                    @if($dynamic) <span class="mono" style="color:var(--text-muted);">(opciones en Compatibilidad)</span> @endif
-                    — usar como filtro en la tienda
+                  <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text-secondary);">
+                    <input type="checkbox" name="enabled" value="1" {{ $isFilter ? 'checked' : '' }} onchange="this.form.requestSubmit()" style="flex-shrink:0;margin-top:3px;">
+                    <span>
+                      {{ $bf['label'] }}
+                      @if($dynamic) <span class="mono" style="color:var(--text-muted);">(opciones en Compatibilidad)</span> @endif
+                      — usar como filtro en la tienda
+                    </span>
                   </label>
                 </form>
               @endforeach
@@ -137,7 +139,7 @@
             <tbody>
               @foreach($typeFields as $field)
                 <tr>
-                  <td>
+                  <td class="admin-table-title">
                     <span x-show="editing !== {{ $field->id }}">{{ $field->label }} <span class="mono" style="color:var(--text-muted);">({{ $field->field_key }})</span></span>
                     <form x-show="editing === {{ $field->id }}" x-cloak method="POST" action="{{ route('admin.attribute-fields.update', $field) }}"
                           x-data="{ options: {{ Js::from(collect($field->options ?? [])->map(fn ($label, $key) => ['key' => $key, 'label' => $label])->values()) }} }"
@@ -164,9 +166,9 @@
                       </div>
                     </form>
                   </td>
-                  <td>{{ ['select' => 'Lista (una)', 'checkboxes' => 'Lista (varias)', 'number' => 'Número'][$field->field_type] ?? $field->field_type }}</td>
-                  <td>{{ $field->shop_filter ? 'Sí' : 'No' }}</td>
-                  <td>
+                  <td data-label="Tipo">{{ ['select' => 'Lista (una)', 'checkboxes' => 'Lista (varias)', 'number' => 'Número'][$field->field_type] ?? $field->field_type }}</td>
+                  <td data-label="Filtro tienda">{{ $field->shop_filter ? 'Sí' : 'No' }}</td>
+                  <td class="cell-actions">
                     <div class="cell-actions">
                       <button type="button" class="btn btn-sm" x-show="editing !== {{ $field->id }}" @click="editing = {{ $field->id }}">Editar</button>
                       <form method="POST" action="{{ route('admin.attribute-fields.destroy', $field) }}" onsubmit="return confirm('¿Eliminar \'{{ $field->label }}\'? Los productos que ya lo tengan cargado lo conservan, pero no se va a mostrar ni poder editar más.');">

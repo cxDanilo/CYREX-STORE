@@ -26,12 +26,12 @@
       <tbody>
         @foreach($pages as $page)
           <tr>
-            <td>{{ $page->title }}</td>
-            <td class="mono" style="color:var(--text-secondary);">/{{ $page->slug }}</td>
-            <td style="color:var(--text-secondary);">{{ $page->template?->name ?? '—' }}</td>
-            <td><span class="status-badge {{ $page->status === 'published' ? 'active' : 'inactive' }}">{{ $page->status === 'published' ? 'Publicada' : 'Borrador' }}</span></td>
-            <td class="mono">{{ $page->show_in_footer ? 'Sí' : 'No' }}</td>
-            <td>
+            <td class="admin-table-title">{{ $page->title }}</td>
+            <td class="mono" style="color:var(--text-secondary);" data-label="Slug">/{{ $page->slug }}</td>
+            <td style="color:var(--text-secondary);" data-label="Plantilla">{{ $page->template?->name ?? '—' }}</td>
+            <td data-label="Estado"><span class="status-badge {{ $page->status === 'published' ? 'active' : 'inactive' }}">{{ $page->status === 'published' ? 'Publicada' : 'Borrador' }}</span></td>
+            <td class="mono" data-label="Footer">{{ $page->show_in_footer ? 'Sí' : 'No' }}</td>
+            <td class="cell-actions">
               <div class="cell-actions">
                 <a href="{{ route('admin.paginas.content', $page) }}" class="btn btn-sm">Contenido</a>
                 <a href="{{ route('admin.paginas.edit', $page) }}" class="btn btn-sm">Editar</a>

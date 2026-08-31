@@ -27,14 +27,14 @@
       <tbody>
         @foreach($users as $user)
           <tr>
-            <td>{{ $user->name }}</td>
-            <td style="color:var(--text-secondary);">{{ $user->email }}</td>
-            <td>
+            <td class="admin-table-title">{{ $user->name }}</td>
+            <td style="color:var(--text-secondary);" data-label="Email">{{ $user->email }}</td>
+            <td data-label="Rol">
               <span class="mono" style="color:{{ $user->isAdmin() ? 'var(--gold)' : 'var(--text-secondary)' }};">{{ \App\Models\User::ROLES[$user->role] ?? $user->role }}</span>
             </td>
-            <td class="mono" style="color:var(--text-muted);font-size:12.5px;">{{ $user->created_at->format('d/m/Y') }}</td>
+            <td class="mono" style="color:var(--text-muted);font-size:12.5px;" data-label="Registrado">{{ $user->created_at->format('d/m/Y') }}</td>
             @if(auth()->user()->isAdmin())
-              <td>
+              <td class="cell-actions">
                 <div class="cell-actions">
                   <a href="{{ route('admin.usuarios.edit', $user) }}" class="btn btn-sm">Editar</a>
                   @if($user->id !== auth()->id())

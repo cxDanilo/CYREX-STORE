@@ -27,23 +27,23 @@
       <tbody>
         @foreach($promotions as $promotion)
           <tr>
-            <td>
+            <td class="admin-table-title">
               <strong>{{ $promotion->name }}</strong>
               @if($promotion->show_as_modal)
                 <span style="color:var(--text-muted);font-size:12px;"> · con modal</span>
               @endif
             </td>
-            <td style="color:var(--text-secondary);">
+            <td style="color:var(--text-secondary);" data-label="Tipo">
               @if($promotion->is_recurring)
                 Recurrente · {{ str_pad($promotion->recurring_day, 2, '0', STR_PAD_LEFT) }}/{{ str_pad($promotion->recurring_month, 2, '0', STR_PAD_LEFT) }}
               @else
                 Puntual
               @endif
             </td>
-            <td class="mono" style="color:var(--text-secondary);font-size:12.5px;">
+            <td class="mono" style="color:var(--text-secondary);font-size:12.5px;" data-label="Fechas">
               {{ $promotion->starts_at->format('d/m/Y') }} – {{ $promotion->ends_at->format('d/m/Y') }}
             </td>
-            <td>
+            <td data-label="Estado">
               @if(! $promotion->active)
                 <span class="status-badge inactive">Inactiva</span>
               @elseif($promotion->isActiveNow())
@@ -54,7 +54,7 @@
                 <span class="status-badge inactive">Programada</span>
               @endif
             </td>
-            <td>
+            <td class="cell-actions">
               <div class="cell-actions">
                 <form method="POST" action="{{ route('admin.promociones.toggle-active', $promotion) }}">
                   @csrf @method('PATCH')

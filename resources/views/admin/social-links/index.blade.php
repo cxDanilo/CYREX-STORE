@@ -26,10 +26,10 @@
         @foreach($socialLinks as $link)
           <tr>
             <td style="width:28px;color:var(--gold);">@include('partials.social-icon', ['platform' => $link->platform])</td>
-            <td style="text-transform:capitalize;">{{ $link->platform }}</td>
-            <td class="mono" style="color:var(--text-secondary);">{{ $link->url }}</td>
-            <td class="mono">{{ $link->sort_order }}</td>
-            <td>
+            <td style="text-transform:capitalize;" class="admin-table-title">{{ $link->platform }}</td>
+            <td class="mono" style="color:var(--text-secondary);" data-label="URL">{{ $link->url }}</td>
+            <td class="mono" data-label="Orden">{{ $link->sort_order }}</td>
+            <td class="cell-actions">
               <div class="cell-actions">
                 <a href="{{ route('admin.redes.edit', $link) }}" class="btn btn-sm">Editar</a>
                 <form method="POST" action="{{ route('admin.redes.destroy', $link) }}" onsubmit="return confirm('¿Eliminar este link?');">

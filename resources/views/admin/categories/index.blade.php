@@ -30,10 +30,10 @@
           <tr draggable="true" data-id="{{ $parent->id }}" class="cat-row">
             <td class="cat-drag-handle" title="Arrastrar para reordenar">⋮⋮</td>
             <td style="width:32px;color:var(--gold);">@include('partials.category-icon', ['icon' => $parent->icon, 'iconImage' => $parent->icon_image_url])</td>
-            <td><strong>{{ $parent->name }}</strong></td>
-            <td class="mono" style="color:var(--text-secondary);">{{ $parent->slug }}</td>
-            <td class="mono">{{ $parent->products_count }}</td>
-            <td>
+            <td class="admin-table-title"><strong>{{ $parent->name }}</strong></td>
+            <td class="mono" style="color:var(--text-secondary);" data-label="Slug">{{ $parent->slug }}</td>
+            <td class="mono" data-label="Productos">{{ $parent->products_count }}</td>
+            <td class="cell-actions">
               <div class="cell-actions">
                 <a href="{{ route('admin.categorias.edit', $parent) }}" class="btn btn-sm">Editar</a>
                 <form method="POST" action="{{ route('admin.categorias.destroy', $parent) }}" onsubmit="return confirm('¿Eliminar {{ $parent->name }}? Esta acción no se puede deshacer.');">
@@ -45,17 +45,17 @@
           </tr>
           @if($parent->children->isNotEmpty())
             <tr class="cat-children-anchor" data-parent="{{ $parent->id }}">
-              <td colspan="6" style="padding:0;border:none;">
+              <td colspan="6" class="admin-table-nested" style="padding:0;border:none;">
                 <table class="admin-table" style="margin:0;">
                   <tbody data-group="children-{{ $parent->id }}">
                     @foreach($parent->children as $child)
                       <tr draggable="true" data-id="{{ $child->id }}" class="cat-row">
                         <td class="cat-drag-handle" style="width:32px;" title="Arrastrar para reordenar">⋮⋮</td>
                         <td style="width:32px;"></td>
-                        <td style="padding-left:34px;color:var(--text-secondary);">— {{ $child->name }}</td>
-                        <td class="mono" style="color:var(--text-secondary);">{{ $child->slug }}</td>
-                        <td class="mono">{{ $child->products_count }}</td>
-                        <td>
+                        <td class="admin-table-title" style="padding-left:34px;color:var(--text-secondary);">— {{ $child->name }}</td>
+                        <td class="mono" style="color:var(--text-secondary);" data-label="Slug">{{ $child->slug }}</td>
+                        <td class="mono" data-label="Productos">{{ $child->products_count }}</td>
+                        <td class="cell-actions">
                           <div class="cell-actions">
                             <a href="{{ route('admin.categorias.edit', $child) }}" class="btn btn-sm">Editar</a>
                             <form method="POST" action="{{ route('admin.categorias.destroy', $child) }}" onsubmit="return confirm('¿Eliminar {{ $child->name }}? Esta acción no se puede deshacer.');">

@@ -27,23 +27,23 @@
       <tbody>
         @foreach($logs as $log)
           <tr>
-            <td class="mono" style="color:var(--text-muted);font-size:12.5px;white-space:nowrap;">{{ $log->created_at->format('d/m/Y H:i') }}</td>
-            <td>{{ $log->user_name }}</td>
-            <td>
+            <td class="mono" style="color:var(--text-muted);font-size:12.5px;white-space:nowrap;" data-label="Fecha">{{ $log->created_at->format('d/m/Y H:i') }}</td>
+            <td data-label="Usuario">{{ $log->user_name }}</td>
+            <td data-label="Acción">
               @php
                 $actionLabel = ['created' => 'Creó', 'updated' => 'Editó', 'deleted' => 'Eliminó'][$log->action] ?? $log->action;
                 $actionColor = ['created' => 'var(--green)', 'updated' => 'var(--gold)', 'deleted' => 'var(--red)'][$log->action] ?? 'var(--text-secondary)';
               @endphp
               <span class="mono" style="color:{{ $actionColor }};">{{ $actionLabel }}</span>
             </td>
-            <td>
+            <td class="admin-table-title">
               @if($log->product)
                 <a href="{{ route('admin.productos.edit', $log->product) }}">{{ $log->product_name }}</a>
               @else
                 <span style="color:var(--text-muted);">{{ $log->product_name }} (eliminado)</span>
               @endif
             </td>
-            <td style="max-width:420px;">
+            <td style="max-width:420px;" data-label="Qué cambió" class="admin-table-block">
               @if(empty($log->changes))
                 <span style="color:var(--text-muted);">—</span>
               @else

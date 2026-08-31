@@ -24,11 +24,11 @@
       <tbody>
         @foreach($entries as $entry)
           <tr>
-            <td class="mono" style="color:var(--text-muted);font-size:12.5px;white-space:nowrap;">
+            <td class="mono" style="color:var(--text-muted);font-size:12.5px;white-space:nowrap;" data-label="Fecha">
               {{ $entry['date']?->format('d/m/Y H:i') ?? '—' }}
             </td>
-            <td class="mono" style="color:var(--text-muted);font-size:11.5px;">{{ $entry['hash'] }}</td>
-            <td>{{ $entry['subject'] }}</td>
+            <td class="mono" style="color:var(--text-muted);font-size:11.5px;" data-label="Hash">{{ $entry['hash'] }}</td>
+            <td class="admin-table-title">{{ $entry['subject'] }}</td>
           </tr>
         @endforeach
       </tbody>
