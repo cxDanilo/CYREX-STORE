@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<div class="admin-body" x-data="{ navOpen: false }" x-on:keydown.escape.window="navOpen = false">
+<div class="admin-body" x-data="{ navOpen: false }" x-on:keydown.escape.window="navOpen = false" x-effect="document.body.style.overflow = navOpen ? 'hidden' : ''">
   <div class="admin-nav-backdrop" x-show="navOpen" x-cloak x-on:click="navOpen = false" x-transition.opacity></div>
 
   <aside class="admin-sidebar" :class="{ 'is-open': navOpen }">

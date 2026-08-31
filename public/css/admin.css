@@ -1,7 +1,7 @@
 .admin-body{display:flex;min-height:100vh;}
 input[type=file]{max-width:100%;}
 
-.admin-sidebar{width:240px;flex-shrink:0;background:var(--bg-elevated);border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
+.admin-sidebar{width:240px;flex-shrink:0;background:var(--bg-elevated);border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
 .admin-logo{font-family:var(--font-display);font-weight:700;font-size:19px;letter-spacing:-0.02em;padding:0 10px;margin-bottom:32px;}
 .admin-logo span{color:var(--gold);}
 .admin-nav{display:flex;flex-direction:column;gap:2px;flex:1;}
