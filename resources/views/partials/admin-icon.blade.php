@@ -23,6 +23,7 @@
     'purgar' => '<path d="M16 10a6 6 0 1 1-1.8-4.3"/><path d="M16 3v3.5h-3.5"/>',
     'salir' => '<path d="M8 3H4.5a1.5 1.5 0 0 0-1.5 1.5v11A1.5 1.5 0 0 0 4.5 17H8"/><path d="M13 6.5 17 10l-4 3.5"/><path d="M17 10H8"/>',
     'cerrar' => '<path d="m5 5 10 10"/><path d="m15 5-10 10"/>',
+    'chevron' => '<path d="m6 8 4 4 4-4"/>',
   ];
 @endphp
 <svg class="admin-nav-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{!! $paths[$name] ?? '' !!}</svg>
