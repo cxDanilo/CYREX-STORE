@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('title', $product->name . ' — Cyrex Store')
+@section('meta_description', \Illuminate\Support\Str::limit(strip_tags($product->description ?? ''), 160) ?: $product->name . ' — disponible en Cyrex Store.')
+@section('og_image', $product->image_url ?? asset('images/logo-horizontal.png'))
+@section('og_type', 'product')
 
 @section('content')
 

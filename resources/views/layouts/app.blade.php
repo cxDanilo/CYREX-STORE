@@ -18,6 +18,30 @@
 @hasSection('meta_description')
 <meta name="description" content="@yield('meta_description')">
 @endif
+
+{{-- Open Graph / Twitter Card — sin esto, compartir un link (sobre todo
+     por WhatsApp, que es como vende la tienda) mostraba una vista previa
+     vacía/genérica en vez de la foto y el nombre del producto. og:title
+     y og:description reutilizan las mismas secciones title/meta_description
+     que cada página ya define (@yield se puede llamar más de una vez),
+     así que no hace falta declarar el texto dos veces por página — solo
+     og_image necesita una sección propia, con el logo como respaldo para
+     páginas que no definen una foto puntual (home, tienda, etc.). --}}
+<meta property="og:type" content="@yield('og_type', 'website')">
+<meta property="og:site_name" content="Cyrex Store">
+<meta property="og:url" content="{{ url()->current() }}">
+<meta property="og:title" content="@yield('title', 'Cyrex Store')">
+@hasSection('meta_description')
+<meta property="og:description" content="@yield('meta_description')">
+@endif
+<meta property="og:image" content="@yield('og_image', asset('images/logo-horizontal.png'))">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="@yield('title', 'Cyrex Store')">
+@hasSection('meta_description')
+<meta name="twitter:description" content="@yield('meta_description')">
+@endif
+<meta name="twitter:image" content="@yield('og_image', asset('images/logo-horizontal.png'))">
 <link rel="stylesheet" href="{{ asset('css/fonts.css') }}?v={{ filemtime(public_path('css/fonts.css')) }}">
 <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
 <style>:root{--logo-height:{{ $logoHeight }}px;--gold:{{ $accentColor ?? '#FFD900' }};}</style>
