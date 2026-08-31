@@ -60,3 +60,40 @@ window.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('scroll', onScroll, { passive: true });
   update();
 });
+
+// Parallax sutil del banner de categoría (tienda) y del armador — la
+// imagen se mueve un poco más lento que el resto al scrollear, da
+// sensación de profundidad. .page-head mide poco (~150-250px), así que
+// el recorrido es corto a propósito: más que eso se ve forzado en un
+// banner tan bajo. Se busca el elemento DE NUEVO en cada frame (no se
+// guarda una sola vez) porque la navegación suave de la tienda
+// (page-nav.js) reemplaza el <main> entero al cambiar de categoría.
+window.addEventListener('DOMContentLoaded', function () {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (document.body.classList.contains('motion-reduced')) return;
+
+  var ticking = false;
+
+  function update() {
+    ticking = false;
+    var pageHead = document.querySelector('.page-head.has-banner');
+    if (!pageHead) return;
+
+    var rect = pageHead.getBoundingClientRect();
+    var mid = window.innerHeight / 2;
+    // -1 = el banner todavía está bien abajo en pantalla, 1 = ya se fue
+    // bien arriba, 0 = centrado en el viewport.
+    var progress = (mid - (rect.top + rect.height / 2)) / (mid + rect.height / 2);
+    progress = Math.min(1, Math.max(-1, progress));
+    pageHead.style.setProperty('--banner-parallax', (progress * 14).toFixed(1) + 'px');
+  }
+
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  update();
+});

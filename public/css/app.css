@@ -1085,7 +1085,15 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .motion-reduced .error-404-mascot{animation:none;}
 
 /* BANNER DE FONDO EN TIENDA */
-.page-head.has-banner{position:relative;background-image:linear-gradient(rgba(8,8,8,.55),rgba(8,8,8,.8)),var(--shop-banner-image);background-size:cover;background-position:center;border-radius:20px;border-bottom:none;padding:64px 32px 36px;margin-top:20px;}
+/* --banner-parallax la actualiza public/js/nav-scroll.js atada al
+   scroll. El corrimiento va SOLO en la posición de la foto (segunda
+   capa) — el degradado (primera capa) se queda fijo en el centro, ya
+   que al no tener relación de aspecto propia, background-size:cover
+   lo deja del tamaño exacto del contenedor sin margen de sobra, y
+   correrlo dejaría ver un borde sin degradado en un extremo. La foto
+   sí desborda de sobra con cover, así que a ella no le pasa nada. Sin
+   JS (o con prefers-reduced-motion) cae a 0px, queda igual que antes. */
+.page-head.has-banner{position:relative;background-image:linear-gradient(rgba(8,8,8,.55),rgba(8,8,8,.8)),var(--shop-banner-image);background-size:cover;background-position:center,center calc(50% + var(--banner-parallax, 0px));border-radius:20px;border-bottom:none;padding:64px 32px 36px;margin-top:20px;}
 .page-head.has-banner .breadcrumb,.page-head.has-banner h1{text-shadow:0 1px 6px rgba(0,0,0,.5);}
 
 @media (max-width:768px){
