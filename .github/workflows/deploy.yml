@@ -100,6 +100,30 @@ jobs:
               echo "El conteo de commits bajó ($OLD_COMMIT_COUNT -> $NEW_COMMIT_COUNT), probable repo shallow — no se pisa changelog.txt/version.txt."
             fi
 
+            # El trap de arriba (php artisan up al salir) no siempre alcanza
+            # para dejar el sitio respondiendo de verdad — una vez, después
+            # de un deploy que GitHub marcó como exitoso, el sitio quedó
+            # trabado en mantenimiento igual, y hubo que levantarlo a mano.
+            # Acá se confirma con una visita real (no localhost — este
+            # server sirve detrás de un proxy/CDN, así que hay que pegarle
+            # al dominio público de una) y se reintenta "up" unas veces
+            # antes de dar el deploy por terminado.
+            php artisan up || true
+            ok=0
+            for i in 1 2 3 4 5; do
+              code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 https://dev.cyrexstore.com/ || echo "000")
+              case "$code" in
+                5*|000) ;;
+                *) ok=1; break ;;
+              esac
+              echo "El sitio respondió $code, reintentando 'php artisan up' ($i/5)..."
+              sleep 3
+              php artisan up || true
+            done
+            if [ "$ok" -ne 1 ]; then
+              echo "El sitio sigue sin responder bien después de varios intentos — revisar a mano por SSH."
+            fi
+
       - name: Esperar antes de reintentar (intento 2)
         if: steps.deploy1.outcome == 'failure'
         run: sleep 20
