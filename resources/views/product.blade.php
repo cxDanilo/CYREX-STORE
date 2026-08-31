@@ -410,8 +410,8 @@
     @foreach($related as $r)
       <a class="card" href="{{ route('product.show', $r->slug) }}" style="display:block;">
         <div class="card-media">
-          @if($r->image_url)
-            <img src="{{ $r->image_url }}" alt="{{ $r->name }}" loading="lazy" style="{{ $r->is_sold_out ? 'filter:grayscale(1);' : '' }}">
+          @if($r->image_thumb_url)
+            <img src="{{ $r->image_thumb_url }}" alt="{{ $r->name }}" loading="lazy" style="{{ $r->is_sold_out ? 'filter:grayscale(1);' : '' }}">
           @endif
           <div class="card-badges">
             @if($r->is_sold_out)

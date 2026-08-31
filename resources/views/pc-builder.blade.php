@@ -40,6 +40,13 @@
         furthestStep: 0,
         ramQty: 1,
         totalFlashReady: false,
+        // Con el catálogo cargado, mostrar TODAS las opciones de un paso
+        // (incluidas las que ya sabemos incompatibles, solo bloqueadas)
+        // significa pedir también las imágenes de las que nunca se van a
+        // poder elegir. Este switch las saca del todo del listado — ni se
+        // renderizan ni se descarga su imagen — para pasos con muchas
+        // opciones cargadas.
+        hideIncompatible: false,
         // Se pregunta recién al terminar el armado — null = todavía no
         // eligió, true = que se lo armen en Cyrex (se suma el cargo de
         // abajo), false = se lleva las piezas sueltas.
@@ -233,7 +240,7 @@
         // que depende todo, en vez de varias llamadas a función separadas
         // sobre el mismo dato. Para 'cpu' además filtra por la plataforma
         // elegida en el paso 0.
-        get currentOptions() {
+        get rawOptions() {
           const type = this.currentType;
           if (!type) return [];
           let list = this.catalog[type] || [];
@@ -244,6 +251,12 @@
             const errs = this.incompatibleWith(type, product);
             return { product, blocked: errs.length > 0, reason: errs[0]?.msg || null };
           });
+        },
+        get hasIncompatibleOptions() {
+          return this.rawOptions.some(opt => opt.blocked);
+        },
+        get currentOptions() {
+          return this.hideIncompatible ? this.rawOptions.filter(opt => !opt.blocked) : this.rawOptions;
         },
 
         // El carrito no maneja cantidades (decisión de diseño ya tomada
@@ -337,7 +350,16 @@
                 <span x-text="extraHint"></span>
               </div>
             </template>
-            <h3 style="margin-bottom:14px;">Elige: <span x-text="types[type]"></span></h3>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+              <h3 style="margin-bottom:0;">Elige: <span x-text="types[type]"></span></h3>
+              <label class="pcb-hide-incompat" x-show="hasIncompatibleOptions">
+                <span class="pcb-switch">
+                  <input type="checkbox" x-model="hideIncompatible">
+                  <span class="pcb-switch-track"></span>
+                </span>
+                <span>Ocultar opciones no compatibles</span>
+              </label>
+            </div>
             <template x-if="type === 'ram' && item('ram')">
               <div class="pcb-ram-qty">
                 <span>Cantidad:</span>
@@ -363,7 +385,7 @@
                         @click="!opt.blocked && pick(type, opt.product)"
                         x-transition:enter="pcb-card-enter" x-transition:enter-start="pcb-card-enter-start" x-transition:enter-end="pcb-card-enter-end">
                   <div class="pcb-picker-card-media">
-                    <img :src="opt.product.image_url" x-show="opt.product.image_url" style="width:100%;height:100%;object-fit:cover;">
+                    <img :src="opt.product.image_url" x-show="opt.product.image_url" loading="lazy" width="140" height="140" style="width:100%;height:100%;object-fit:cover;">
                   </div>
                   <div class="opt-name" x-text="opt.product.name"></div>
                   <div class="opt-price" x-text="'$' + opt.product.price_usd.toFixed(2)"></div>
@@ -437,8 +459,8 @@
               @foreach($page as $product)
                 <a class="card" href="{{ route('product.show', $product->slug) }}">
                   <div class="card-media">
-                    @if($product->image_url)
-                      <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy">
+                    @if($product->image_thumb_url)
+                      <img src="{{ $product->image_thumb_url }}" alt="{{ $product->name }}" loading="lazy">
                     @endif
                   </div>
                   <div class="card-body">

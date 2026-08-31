@@ -5,8 +5,8 @@
     @foreach($cartItems as $item)
       <div class="cart-item">
         <div class="cart-item-media">
-          @if($item->product->image_url)
-            <img src="{{ $item->product->image_url }}" alt="" loading="lazy">
+          @if($item->product->image_thumb_url)
+            <img src="{{ $item->product->image_thumb_url }}" alt="" loading="lazy">
           @endif
         </div>
         <div class="cart-item-body">

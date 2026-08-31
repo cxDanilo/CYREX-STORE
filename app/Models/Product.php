@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
@@ -94,6 +95,27 @@ class Product extends Model
     public function getImageUrlAttribute(): ?string
     {
         return $this->image ? asset('uploads/'.$this->image) : null;
+    }
+
+    /**
+     * Miniatura de 400px que ImageOptimizer::process() ya genera al subir
+     * la imagen (mismo directorio, prefijo "thumb_") — para listados donde
+     * la foto se muestra chica (armador, tienda, relacionados) esto evita
+     * bajar el original de hasta 2000px. Cae al original si la miniatura
+     * no existe (fotos subidas antes de que existiera este optimizador).
+     */
+    public function getImageThumbUrlAttribute(): ?string
+    {
+        if (! $this->image) {
+            return null;
+        }
+
+        $dir = dirname($this->image);
+        $thumbPath = ($dir === '.' ? '' : $dir.'/').'thumb_'.basename($this->image);
+
+        return Storage::disk('uploads')->exists($thumbPath)
+            ? asset('uploads/'.$thumbPath)
+            : $this->image_url;
     }
 
     public function getComponentTypeAttribute(): ?string
