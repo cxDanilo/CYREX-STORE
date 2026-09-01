@@ -18,10 +18,33 @@ class AnalyticsController extends Controller
 
     public function index()
     {
-        $windowStart = now()->subDays(self::WINDOW_DAYS);
+        return view('admin.analytics.index', $this->buildData());
+    }
 
-        return view('admin.analytics.index', [
-            'onlineCount' => $this->onlineCount(),
+    // Devuelve el mismo panel ya renderizado como HTML (mismo truco que
+    // ya usa el carrito en partials/nav.blade.php: el server manda el
+    // HTML armado, el JS solo lo reemplaza) — así se puede pollear desde
+    // el navegador sin reimplementar cada tabla dos veces (una en Blade,
+    // otra en JS).
+    public function refresh()
+    {
+        return response()->json([
+            'html' => view('admin.analytics._content', $this->buildData())->render(),
+        ]);
+    }
+
+    private function buildData(): array
+    {
+        $windowStart = now()->subDays(self::WINDOW_DAYS);
+        $online = AnalyticsVisit::where('last_seen_at', '>=', now()->subMinutes(5));
+
+        return [
+            'onlineCount' => (clone $online)->count(),
+            'onlineVisitors' => (clone $online)
+                ->orderByDesc('last_seen_at')
+                ->limit(20)
+                ->get(['exit_label', 'last_seen_at'])
+                ->map(fn ($v) => ['page' => $v->exit_label, 'hace' => $v->last_seen_at->diffForHumans()]),
             'summary' => $this->summary(),
             'trend' => $this->dailyTrend(),
             'topPages' => AnalyticsPageView::where('created_at', '>=', $windowStart)
@@ -52,28 +75,7 @@ class AnalyticsController extends Controller
                 ->orderByDesc('total')
                 ->limit(10)
                 ->get(),
-        ]);
-    }
-
-    public function online()
-    {
-        $query = AnalyticsVisit::where('last_seen_at', '>=', now()->subMinutes(5));
-
-        $count = (clone $query)->count();
-        $recent = (clone $query)->orderByDesc('last_seen_at')->limit(20)->get(['exit_label', 'last_seen_at']);
-
-        return response()->json([
-            'count' => $count,
-            'visitors' => $recent->map(fn ($v) => [
-                'page' => $v->exit_label,
-                'hace' => $v->last_seen_at->diffForHumans(),
-            ]),
-        ]);
-    }
-
-    private function onlineCount(): int
-    {
-        return AnalyticsVisit::where('last_seen_at', '>=', now()->subMinutes(5))->count();
+        ];
     }
 
     private function summary(): array

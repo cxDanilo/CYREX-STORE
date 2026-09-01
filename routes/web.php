@@ -119,7 +119,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('ofertas', [AdminOfferController::class, 'update'])->name('ofertas.update');
 
         Route::get('analitica', [AdminAnalyticsController::class, 'index'])->name('analitica.index');
-        Route::get('analitica/conectados', [AdminAnalyticsController::class, 'online'])->name('analitica.online');
+        Route::get('analitica/datos', [AdminAnalyticsController::class, 'refresh'])->name('analitica.refresh');
 
         Route::get('usuarios', [AdminUserController::class, 'index'])->name('usuarios.index');
 
