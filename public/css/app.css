@@ -515,7 +515,12 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
    versión chica de las tarjetas (ver .card-offer-countdown). */
 .offer-countdown{margin-top:12px;}
 .offer-countdown-label{display:block;font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;}
-.offer-countdown-digits{display:flex;align-items:center;gap:6px;animation:offer-pulse 1.6s ease-in-out infinite;border-radius:12px;}
+/* display:inline-flex (no flex) a propósito: flex es block-level y se
+   estira a todo el ancho del padre — el pulso (box-shadow) entonces
+   dibujaba su brillo alrededor de esa caja invisible entera, dejando
+   un hueco vacío con borde a la derecha de los dígitos reales. Con
+   inline-flex el contenedor mide justo lo que ocupan los 4 dígitos. */
+.offer-countdown-digits{display:inline-flex;align-items:center;gap:6px;animation:offer-pulse 1.6s ease-in-out infinite;border-radius:12px;}
 .offer-countdown-seg{display:flex;flex-direction:column;align-items:center;background:rgba(226,75,74,.14);border:1px solid var(--red);border-radius:10px;padding:8px 12px;min-width:54px;}
 .offer-countdown-seg span{font-family:var(--font-mono);font-size:26px;font-weight:700;color:#fff;line-height:1;font-variant-numeric:tabular-nums;}
 .offer-countdown-seg small{font-family:var(--font-mono);font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-top:4px;}
