@@ -385,7 +385,18 @@
         <div class="price-alt"
              x-effect="syncPrice($el, showBob ? basePrice : basePrice * rate, showBob ? '≈ $' : '≈ Bs ', showBob ? ' USD' : '')"><span class="price-text">{{ $priceAltInitial }}</span></div>
       @endif
-      <div class="card-offer-countdown" x-show="hasOffer && !variantHasOverride" x-text="$store.offer.remaining" style="margin-top:6px;"></div>
+      <div class="offer-countdown" x-show="hasOffer && !variantHasOverride">
+        <span class="offer-countdown-label">⏳ Termina en</span>
+        <div class="offer-countdown-digits">
+          <div class="offer-countdown-seg"><span x-text="$store.offer.d"></span><small>días</small></div>
+          <span class="offer-countdown-colon">:</span>
+          <div class="offer-countdown-seg"><span x-text="$store.offer.h"></span><small>hrs</small></div>
+          <span class="offer-countdown-colon">:</span>
+          <div class="offer-countdown-seg"><span x-text="$store.offer.m"></span><small>min</small></div>
+          <span class="offer-countdown-colon">:</span>
+          <div class="offer-countdown-seg"><span x-text="$store.offer.s"></span><small>seg</small></div>
+        </div>
+      </div>
     </div>
 
     <div class="stock-pill out-of-stock" x-show="!editing && !inStock">✕ Agotado</div>

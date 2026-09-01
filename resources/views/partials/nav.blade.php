@@ -89,6 +89,10 @@ document.addEventListener('alpine:init', () => {
     active: {{ $offerActive ? 'true' : 'false' }},
     endsAt: @js($offerEndsAtIso),
     remaining: '',
+    // d/h/m/s ya separados y con padding — el contador grande de la
+    // página de producto los usa para armar los "dígitos" propios, en
+    // vez de parsear el string remaining con una regex.
+    d: '00', h: '00', m: '00', s: '00',
     init() {
       if (this.active && this.endsAt) {
         this.tick();
@@ -101,7 +105,11 @@ document.addEventListener('alpine:init', () => {
       const h = Math.floor((diff % 86400000) / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
       const s = Math.floor((diff % 60000) / 1000);
-      this.remaining = (d > 0 ? d + 'd ' : '') + String(h).padStart(2, '0') + 'h ' + String(m).padStart(2, '0') + 'm ' + String(s).padStart(2, '0') + 's';
+      this.d = String(d).padStart(2, '0');
+      this.h = String(h).padStart(2, '0');
+      this.m = String(m).padStart(2, '0');
+      this.s = String(s).padStart(2, '0');
+      this.remaining = (d > 0 ? d + 'd ' : '') + this.h + 'h ' + this.m + 'm ' + this.s + 's';
     },
   });
 });
