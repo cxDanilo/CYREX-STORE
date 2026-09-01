@@ -52,6 +52,7 @@
     @endphp
     <nav class="admin-nav" x-data="{ openGroup: @js($activeGroupKey) }" x-on:click="$event.target.closest('a') && (navOpen = false)">
       <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'dashboard']) Dashboard</a>
+      <a href="{{ route('admin.analitica.index') }}" class="{{ request()->routeIs('admin.analitica.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'analitica']) Analítica</a>
 
       {{-- Catálogo --}}
       <button type="button" class="admin-nav-group-toggle" :class="{ 'is-open': openGroup === 'catalogo' }" @click="openGroup = openGroup === 'catalogo' ? null : 'catalogo'">

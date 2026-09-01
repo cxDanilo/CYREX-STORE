@@ -24,6 +24,8 @@ use App\Http\Controllers\Admin\AttributeFieldController as AdminAttributeFieldCo
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\Admin\ComboController as AdminComboController;
 use App\Http\Controllers\Admin\OfferController as AdminOfferController;
+use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
+use App\Http\Controllers\VisitHeartbeatController;
 use App\Http\Controllers\Admin\ChangelogController as AdminChangelogController;
 use App\Http\Controllers\ComboController;
 use App\Http\Controllers\PageController;
@@ -52,6 +54,8 @@ Route::middleware(['auth', 'admin'])->patch('/producto/{product}/edicion-rapida'
 Route::post('/carrito/agregar', [CartController::class, 'add'])->name('cart.add');
 Route::post('/carrito/agregar-combo', [CartController::class, 'addCombo'])->name('cart.add-combo');
 Route::delete('/carrito/quitar/{key}', [CartController::class, 'remove'])->name('cart.remove');
+
+Route::post('/visita/latido', [VisitHeartbeatController::class, 'ping'])->name('visit.heartbeat');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('guest')->group(function () {
@@ -113,6 +117,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('ofertas', [AdminOfferController::class, 'edit'])->name('ofertas.edit');
         Route::put('ofertas', [AdminOfferController::class, 'update'])->name('ofertas.update');
+
+        Route::get('analitica', [AdminAnalyticsController::class, 'index'])->name('analitica.index');
+        Route::get('analitica/conectados', [AdminAnalyticsController::class, 'online'])->name('analitica.online');
 
         Route::get('usuarios', [AdminUserController::class, 'index'])->name('usuarios.index');
 

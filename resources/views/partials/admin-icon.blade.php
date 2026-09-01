@@ -5,6 +5,7 @@
 @php
   $paths = [
     'dashboard' => '<rect x="2.5" y="2.5" width="6" height="6" rx="1.3"/><rect x="11.5" y="2.5" width="6" height="6" rx="1.3"/><rect x="2.5" y="11.5" width="6" height="6" rx="1.3"/><rect x="11.5" y="11.5" width="6" height="6" rx="1.3"/>',
+    'analitica' => '<path d="M3 16.5V10"/><path d="M9.3 16.5V4"/><path d="M15.5 16.5v-6.5"/>',
     'productos' => '<path d="M3 6.5 10 3l7 3.5v7L10 17 3 13.5v-7Z"/><path d="M3 6.5 10 10l7-3.5"/><path d="M10 10v7"/>',
     'categorias' => '<path d="M3 5.5c0-.83.67-1.5 1.5-1.5h3.6c.5 0 .96.24 1.25.65l.8 1.1c.29.4.75.65 1.25.65h4.35c.83 0 1.5.67 1.5 1.5v6.6c0 .83-.67 1.5-1.5 1.5h-11c-.83 0-1.5-.67-1.5-1.5v-8.9Z"/>',
     'promociones' => '<path d="M10.5 3h4.5a2 2 0 0 1 2 2v4.5a2 2 0 0 1-.59 1.41l-7 7a2 2 0 0 1-2.82 0l-4.5-4.5a2 2 0 0 1 0-2.82l7-7A2 2 0 0 1 10.5 3Z"/><circle cx="13" cy="7" r="1.1"/>',

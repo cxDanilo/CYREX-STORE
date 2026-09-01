@@ -147,6 +147,21 @@
 @if($promoEffect ?? null)
   <script src="{{ asset('js/promo-effects.js') }}?v={{ filemtime(public_path('js/promo-effects.js')) }}"></script>
 @endif
+<script>
+// Sin esto, alguien que se queda leyendo una sola página sin hacer clic
+// "desaparece" de Conectados ahora en Admin > Analítica a los 5 minutos
+// aunque siga ahí — solo refresca la marca de actividad, no cuenta como
+// una página vista nueva. Se detiene solo si la pestaña queda en segundo
+// plano, para no inflar el conteo con pestañas abiertas sin mirar.
+setInterval(() => {
+  if (document.visibilityState === 'visible') {
+    fetch('{{ route('visit.heartbeat') }}', {
+      method: 'POST',
+      headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+    });
+  }
+}, 60000);
+</script>
 @yield('scripts')
 </body>
 </html>

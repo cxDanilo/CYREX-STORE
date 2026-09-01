@@ -315,6 +315,26 @@ a.media-tag-chip:hover,a.media-tag-chip.is-active{border-color:var(--gold);color
 .admin-dashboard-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13.5px;}
 .admin-dashboard-row:last-child{border-bottom:none;}
 
+/* ANALÍTICA */
+.analytics-online-card{display:flex;flex-direction:column;}
+.analytics-online-head{display:flex;align-items:center;gap:8px;}
+.analytics-online-dot{width:8px;height:8px;border-radius:100px;background:var(--green);animation:status-breathe 2.4s ease-in-out infinite;flex-shrink:0;}
+.analytics-online-list{margin-top:12px;display:flex;flex-direction:column;gap:0;}
+.analytics-online-row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--text-secondary);}
+.analytics-online-row:last-child{border-bottom:none;}
+.analytics-online-row .p{color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.analytics-online-row .t{font-family:var(--font-mono);color:var(--text-muted);flex-shrink:0;}
+.analytics-trend{display:flex;align-items:flex-end;gap:5px;height:130px;overflow-x:auto;overflow-y:hidden;}
+.analytics-trend-bar{flex:1 0 32px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+.analytics-trend-bar-fill{width:100%;background:var(--gold-dim);border:1px solid var(--gold);border-radius:4px 4px 0 0;min-height:3px;transition:height .4s ease;}
+.analytics-trend-bar-n{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);margin-bottom:4px;}
+.analytics-trend-bar-label{font-family:var(--font-mono);font-size:9.5px;color:var(--text-muted);margin-top:8px;white-space:nowrap;}
+.analytics-rank-row{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13.5px;}
+.analytics-rank-row:last-child{border-bottom:none;}
+.analytics-rank-row .label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.analytics-rank-row .n{font-family:var(--font-mono);color:var(--gold);flex-shrink:0;}
+.analytics-empty{color:var(--text-muted);font-size:13px;padding:8px 0;}
+
 /* IMPORTADOR WOOCOMMERCE */
 .wc-mapping-table{width:100%;border-collapse:collapse;margin-bottom:20px;}
 .wc-mapping-table th,.wc-mapping-table td{padding:8px 10px;border-bottom:1px solid var(--border);font-size:13px;text-align:left;}
