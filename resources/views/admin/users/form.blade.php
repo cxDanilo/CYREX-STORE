@@ -45,19 +45,25 @@
 
     <div class="form-section">
       <h3>Referidos</h3>
-      <div class="form-hint" style="margin-bottom:14px;">Si le das un código y un WhatsApp propio, cualquier visitante que entre con <span class="mono">?ref=</span> seguido de ese código ve los botones de WhatsApp del sitio apuntando a este número, en vez del general de Ajustes — así no se te escapa un cliente al que ya atendiste.</div>
+      <div class="form-hint" style="margin-bottom:14px;">Si le cargás un WhatsApp propio, cualquier visitante que entre por su link ve los botones de WhatsApp del sitio apuntando a este número, en vez del general de Ajustes — así no se te escapa un cliente al que ya atendiste.</div>
 
-      <div class="form-group">
-        <label for="ref_code">Código de referido</label>
-        <input type="text" id="ref_code" name="ref_code" value="{{ old('ref_code', $user->ref_code) }}" maxlength="20" placeholder="ej. danilo">
-        <div class="form-hint">Corto y sin espacios — es lo que va en el link: cyrexstore.com?ref=danilo. Dejalo vacío si esta persona no necesita uno.</div>
-        @error('ref_code') <div class="error">{{ $message }}</div> @enderror
-      </div>
+      @if($user->exists && $user->ref_code)
+        <div class="form-group">
+          <label>Su link para compartir</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="ref-link" readonly value="{{ route('home') }}?ref={{ $user->ref_code }}" class="mono" onclick="this.select()">
+            <button type="button" class="btn btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('ref-link').value).then(() => { this.textContent = '¡Copiado!'; setTimeout(() => this.textContent = 'Copiar', 1500); })">Copiar</button>
+          </div>
+          <div class="form-hint">El código (<span class="mono">{{ $user->ref_code }}</span>) se generó solo al crear el usuario — no se puede editar, para que este link nunca deje de funcionar.</div>
+        </div>
+      @else
+        <div class="form-hint">El link para compartir se genera solo al guardar por primera vez.</div>
+      @endif
 
       <div class="form-group">
         <label for="whatsapp_number">WhatsApp personal</label>
         <input type="text" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number', $user->whatsapp_number) }}" placeholder="59177947379">
-        <div class="form-hint">Con código de país, solo números. Si lo dejás vacío, su código de referido no hace nada (cae al número general).</div>
+        <div class="form-hint">Con código de país, solo números. Si lo dejás vacío, su link no hace nada (cae al número general).</div>
         @error('whatsapp_number') <div class="error">{{ $message }}</div> @enderror
       </div>
     </div>

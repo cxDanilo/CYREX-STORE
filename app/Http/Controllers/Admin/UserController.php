@@ -32,20 +32,35 @@ class UserController extends Controller
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', Password::min(8)],
             'role' => ['required', Rule::in(array_keys(User::ROLES))],
-            'ref_code' => ['nullable', 'string', 'max:20', 'alpha_dash', 'unique:users,ref_code'],
             'whatsapp_number' => ['nullable', 'regex:/^[0-9]{6,15}$/'],
         ]);
 
         $data['password'] = bcrypt($data['password']);
-        // En minúscula siempre, para que un link con ?ref=D matchee igual
-        // que uno con ?ref=d.
-        if (! empty($data['ref_code'])) {
-            $data['ref_code'] = Str::lower($data['ref_code']);
-        }
+        // El código se genera solo, una sola vez, acá — nunca a mano, así
+        // no hay forma de que dos vendedores terminen con el mismo.
+        $data['ref_code'] = self::generateRefCode($data['name']);
 
         User::create($data);
 
         return redirect()->route('admin.usuarios.index')->with('status', 'Usuario creado.');
+    }
+
+    // Corto y legible (el nombre, en vez de algo random) — si ya existe
+    // ese slug le suma un número hasta encontrar uno libre. Se llama una
+    // sola vez, al crear, para que el link ya compartido de alguien nunca
+    // cambie de código más adelante.
+    public static function generateRefCode(string $name): string
+    {
+        $base = Str::slug($name) ?: 'user';
+        $code = $base;
+        $i = 2;
+
+        while (User::where('ref_code', $code)->exists()) {
+            $code = $base.$i;
+            $i++;
+        }
+
+        return $code;
     }
 
     public function edit(User $user)
@@ -60,12 +75,13 @@ class UserController extends Controller
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'password' => ['nullable', Password::min(8)],
             'role' => ['required', Rule::in(array_keys(User::ROLES))],
-            'ref_code' => ['nullable', 'string', 'max:20', 'alpha_dash', Rule::unique('users', 'ref_code')->ignore($user->id)],
             'whatsapp_number' => ['nullable', 'regex:/^[0-9]{6,15}$/'],
         ]);
 
-        if (! empty($data['ref_code'])) {
-            $data['ref_code'] = Str::lower($data['ref_code']);
+        // El código de referido no se toca acá — queda fijo desde que se
+        // creó el usuario, para no romper un link que ya esté circulando.
+        if (empty($user->ref_code)) {
+            $data['ref_code'] = self::generateRefCode($data['name']);
         }
 
         // Un admin no puede sacarse el rol de admin a sí mismo por
