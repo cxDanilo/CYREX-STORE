@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\ReferralRouter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 
@@ -69,6 +71,18 @@ class AuthController extends Controller
         RateLimiter::clear($throttleKey);
         $request->session()->forget('login_throttle_email');
         $request->session()->regenerate();
+
+        // Para que el vendedor pueda navegar el sitio público desde su
+        // propio celular/notebook (mostrarle algo a un cliente en
+        // persona, o simplemente probar su link) y ya vea su propio
+        // número de WhatsApp, sin tener que entrar primero por su link
+        // con ?ref=. Acá SÍ se pisa cualquier cookie que hubiera —a
+        // diferencia de CaptureReferral, que nunca pisa una existente
+        // para proteger a un cliente ya referido— porque este es su
+        // propio dispositivo, iniciando sesión como él mismo.
+        if (Auth::user()->ref_code) {
+            Cookie::queue(ReferralRouter::COOKIE_NAME, Auth::user()->ref_code, 60 * 24 * ReferralRouter::COOKIE_DAYS);
+        }
 
         return redirect()->intended(route('admin.dashboard'));
     }
