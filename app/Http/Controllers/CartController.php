@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ExchangeRate;
 use App\Models\Setting;
 use App\Support\Cart;
+use App\Support\ReferralRouter;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -55,7 +56,7 @@ class CartController extends Controller
     {
         $rate = ExchangeRate::current();
         $currency = Setting::get('default_currency', 'USD');
-        $whatsappNumber = Setting::get('whatsapp_number', '59177947379');
+        $whatsappNumber = ReferralRouter::whatsappNumber();
         $items = Cart::items();
 
         $html = view('partials.cart-drawer-content', [

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
@@ -31,9 +32,16 @@ class UserController extends Controller
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', Password::min(8)],
             'role' => ['required', Rule::in(array_keys(User::ROLES))],
+            'ref_code' => ['nullable', 'string', 'max:20', 'alpha_dash', 'unique:users,ref_code'],
+            'whatsapp_number' => ['nullable', 'regex:/^[0-9]{6,15}$/'],
         ]);
 
         $data['password'] = bcrypt($data['password']);
+        // En minúscula siempre, para que un link con ?ref=D matchee igual
+        // que uno con ?ref=d.
+        if (! empty($data['ref_code'])) {
+            $data['ref_code'] = Str::lower($data['ref_code']);
+        }
 
         User::create($data);
 
@@ -52,7 +60,13 @@ class UserController extends Controller
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'password' => ['nullable', Password::min(8)],
             'role' => ['required', Rule::in(array_keys(User::ROLES))],
+            'ref_code' => ['nullable', 'string', 'max:20', 'alpha_dash', Rule::unique('users', 'ref_code')->ignore($user->id)],
+            'whatsapp_number' => ['nullable', 'regex:/^[0-9]{6,15}$/'],
         ]);
+
+        if (! empty($data['ref_code'])) {
+            $data['ref_code'] = Str::lower($data['ref_code']);
+        }
 
         // Un admin no puede sacarse el rol de admin a sí mismo por
         // accidente — evita quedar todos afuera si es el único admin.

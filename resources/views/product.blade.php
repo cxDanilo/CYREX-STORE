@@ -21,7 +21,7 @@
   $originalPriceMainInitial = $showBobInitial
       ? 'Bs '.number_format($realPriceUsd * $rate, 2)
       : '$'.number_format($realPriceUsd, 2);
-  $whatsappNumber = \App\Models\Setting::get('whatsapp_number', '59177947379');
+  $whatsappNumber = \App\Support\ReferralRouter::whatsappNumber();
   $productUrl = route('product.show', $product->slug);
 
   // Para piezas de PC, los datos de "Compatibilidad" (socket, tipo de

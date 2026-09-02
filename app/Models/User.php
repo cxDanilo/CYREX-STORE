@@ -23,6 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'ref_code',
+        'whatsapp_number',
     ];
 
     public const ROLES = ['admin' => 'Administrador', 'editor' => 'Editor'];

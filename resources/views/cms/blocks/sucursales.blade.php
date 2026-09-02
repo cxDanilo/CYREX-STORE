@@ -23,7 +23,7 @@
   $conMapa = collect($items)
       ->filter(fn ($s) => empty($s['proximamente']) && $mapaSrc($s))
       ->values();
-  $whatsappGeneral = \App\Models\Setting::get('whatsapp_number', '59177947379');
+  $whatsappGeneral = \App\Support\ReferralRouter::whatsappNumber();
 @endphp
 <div class="wrap cms-block cms-sucursales" id="sucursales">
   <div class="cms-sucursales-list">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ExchangeRate;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Support\ReferralRouter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
@@ -81,7 +82,7 @@ class PcBuilderQuoteController extends Controller
             'quoteNumber' => $quoteNumber,
             'date' => now()->format('d/m/Y'),
             'logoFullPath' => $logoFullPath,
-            'whatsappNumber' => Setting::get('whatsapp_number', '59177947379'),
+            'whatsappNumber' => ReferralRouter::whatsappNumber(),
             'bannerText' => Setting::get('quote_banner_text', 'COTIZACIÓN'),
             'bannerColor' => $bannerColor,
             'bannerColorLight' => $this->lightenHex($bannerColor, 0.88),

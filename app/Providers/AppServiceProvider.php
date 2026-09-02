@@ -10,6 +10,7 @@ use App\Models\Promotion;
 use App\Models\Setting;
 use App\Models\SocialLink;
 use App\Support\Cart;
+use App\Support\ReferralRouter;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
@@ -44,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('partials.nav', function ($view) {
             $rate = ExchangeRate::current();
             $currency = Setting::get('default_currency', 'USD');
-            $whatsappNumber = Setting::get('whatsapp_number', '59177947379');
+            $whatsappNumber = ReferralRouter::whatsappNumber();
 
             $view->with([
                 'navCategories' => Cache::remember('nav.categories.with_children', self::NAV_CACHE_TTL, fn () => Category::parents()->with('children')->get()),
@@ -80,7 +81,7 @@ class AppServiceProvider extends ServiceProvider
                 'logoUrl' => $this->resolveLogoUrl(),
                 'footerCategories' => Cache::remember('footer.categories', self::NAV_CACHE_TTL, fn () => Category::parents()->get()),
                 'footerPages' => Cache::remember('footer.pages', self::NAV_CACHE_TTL, fn () => Page::inFooter()->published()->get()),
-                'whatsappNumber' => Setting::get('whatsapp_number', '59177947379'),
+                'whatsappNumber' => ReferralRouter::whatsappNumber(),
                 'whatsappCommunityUrl' => Setting::get('whatsapp_community_url', ''),
                 'whatsappCommunityBtnText' => Setting::get('whatsapp_community_btn_text', 'Únete a nuestra comunidad'),
                 'footerWhatsappBtnText' => Setting::get('footer_whatsapp_btn_text', 'Escríbenos por WhatsApp'),

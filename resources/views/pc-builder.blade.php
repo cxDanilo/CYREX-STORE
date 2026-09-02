@@ -632,7 +632,7 @@
       <button type="button" class="btn-cta-whatsapp" style="width:100%;margin-top:10px;" :disabled="!Object.keys(selected).length" x-show="Object.keys(selected).length" @click="downloadQuotePdf()">
         Descargar PDF
       </button>
-      <a :href="'https://wa.me/{{ \App\Models\Setting::get('whatsapp_number', '59177947379') }}?text=' + encodeURIComponent('Hola! Quiero armar esta PC:\n' + Object.entries(selected).map(([type, p]) => '- ' + (type === 'ram' && ramQty > 1 ? ramQty + 'x ' : '') + p.name).join('\n') + (wantsAssembly ? '\n- Armado e instalación: $' + assemblyFee.toFixed(2) : '') + '\nTotal aprox: $' + totalUsd().toFixed(2))"
+      <a :href="'https://wa.me/{{ \App\Support\ReferralRouter::whatsappNumber() }}?text=' + encodeURIComponent('Hola! Quiero armar esta PC:\n' + Object.entries(selected).map(([type, p]) => '- ' + (type === 'ram' && ramQty > 1 ? ramQty + 'x ' : '') + p.name).join('\n') + (wantsAssembly ? '\n- Armado e instalación: $' + assemblyFee.toFixed(2) : '') + '\nTotal aprox: $' + totalUsd().toFixed(2))"
          target="_blank" rel="noopener" class="btn-cta-whatsapp" style="width:100%;margin-top:10px;text-decoration:none;" x-show="Object.keys(selected).length">
         Consultar por WhatsApp
       </a>
