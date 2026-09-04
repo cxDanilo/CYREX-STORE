@@ -28,6 +28,13 @@ class CaptureReferral
 
             if (User::where('ref_code', $code)->exists()) {
                 Cookie::queue(ReferralRouter::COOKIE_NAME, $code, 60 * 24 * ReferralRouter::COOKIE_DAYS);
+
+                // Cookie::queue() solo va en la respuesta que sale — recién
+                // estaría disponible para el navegador en el PRÓXIMO pedido.
+                // Sin esto, la primera página que ve un cliente que acaba de
+                // llegar por el link compartido (el momento que más importa)
+                // mostraría el número general en vez del del vendedor.
+                $request->cookies->set(ReferralRouter::COOKIE_NAME, $code);
             }
         }
 
