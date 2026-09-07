@@ -100,7 +100,7 @@
           <div style="flex:1;min-width:0;">
             <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp"
                    x-on:change="preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : preview">
-            <div class="form-hint">JPG, PNG o WEBP, máx. 4 MB. Si cargás fotos por color en Variantes, la página arranca mostrando la del primer color de la lista — esta de acá se ve solo si esa primera variante no tiene foto propia, y es la que aparece cuando se comparte el link por WhatsApp (esa vista previa no elige color).</div>
+            <div class="form-hint">JPG, PNG o WEBP, máx. 4 MB. Opcional si cada variante ya tiene su propia foto (ej. Kumara en negro/blanco) — sin ninguna acá, se usa sola la foto de la primera variante en todos lados (tienda, vista previa de WhatsApp, etc.).</div>
             @if($product->image)
               <label style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:var(--text-secondary);">
                 <input type="checkbox" name="remove_image" value="1" x-on:change="if($event.target.checked) preview = null">

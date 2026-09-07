@@ -108,7 +108,17 @@ class Product extends Model
 
     public function getImageUrlAttribute(): ?string
     {
-        return $this->image ? asset('uploads/'.$this->image) : null;
+        if ($this->image) {
+            return asset('uploads/'.$this->image);
+        }
+
+        // Sin foto propia: productos que se manejan solo con foto por
+        // variante (ej. un color por variante, sin una "genérica" de
+        // por medio, como Kumara en negro/blanco) no deberían verse en
+        // blanco en toda la tienda, el carrito, o la vista previa al
+        // compartir el link — se usa la de la primera variante que sí
+        // tenga una en vez de dejarlo vacío.
+        return $this->variants->first(fn ($v) => $v->image)?->image_url;
     }
 
     /**
@@ -116,12 +126,14 @@ class Product extends Model
      * la imagen (mismo directorio, prefijo "thumb_") — para listados donde
      * la foto se muestra chica (armador, tienda, relacionados) esto evita
      * bajar el original de hasta 2000px. Cae al original si la miniatura
-     * no existe (fotos subidas antes de que existiera este optimizador).
+     * no existe (fotos subidas antes de que existiera este optimizador),
+     * o si la foto en sí es la de respaldo de una variante (ver
+     * getImageUrlAttribute() — esas no tienen su propia miniatura).
      */
     public function getImageThumbUrlAttribute(): ?string
     {
         if (! $this->image) {
-            return null;
+            return $this->image_url;
         }
 
         $dir = dirname($this->image);

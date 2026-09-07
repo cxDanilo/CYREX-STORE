@@ -3,11 +3,11 @@
 
   if ($modo === 'manual') {
     $slugs = collect($data['items'] ?? [])->pluck('producto')->filter()->values();
-    $productos = \App\Models\Product::whereIn('slug', $slugs)->where('status', 'active')->with(['category'])->get()
+    $productos = \App\Models\Product::whereIn('slug', $slugs)->where('status', 'active')->with(['category', 'variants'])->get()
       ->sortBy(fn ($p) => $slugs->search($p->slug))
       ->values();
   } else {
-    $query = \App\Models\Product::where('status', 'active')->with(['category']);
+    $query = \App\Models\Product::where('status', 'active')->with(['category', 'variants']);
 
     if (!empty($data['categoria'])) {
       $cat = \App\Models\Category::where('slug', $data['categoria'])->first();
