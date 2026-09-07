@@ -186,6 +186,16 @@ window.addEventListener('DOMContentLoaded', function () {
     fetch(url, { signal: signal })
       .then(function (res) {
         if (!res.ok) throw new Error('bad status');
+
+        // Si el servidor respondió con un redirect (ej. un vendedor
+        // logueado navegando: cada página pública le suma su propio
+        // ?ref= solo, ver PropagateOwnReferral) fetch() lo sigue solo y
+        // `res.url` ya queda apuntando a la URL final — sin actualizar
+        // `url` acá, el pushState de más abajo dejaba la barra de
+        // direcciones en la URL vieja (sin el ?ref=), como si el
+        // redirect nunca hubiera pasado.
+        url = res.url;
+
         return res.text();
       })
       .then(function (html) {
