@@ -129,6 +129,19 @@
   @empty
     <p style="color:var(--text-secondary);">No hay productos en esta categoría todavía.</p>
   @endforelse
+
+  @php
+    $helpWaText = $activeCategory
+      ? "Hola! Buscaba algo en \"{$activeCategory->name}\" y no lo encontré en la tienda. ¿Me pueden ayudar?"
+      : 'Hola! No encontré lo que buscaba en la tienda. ¿Me pueden ayudar?';
+  @endphp
+  <a class="card card-help" href="https://wa.me/{{ \App\Support\ReferralRouter::whatsappNumber() }}?text={{ urlencode($helpWaText) }}" target="_blank" rel="noopener">
+    <div class="card-help-media">@include('partials.whatsapp-icon')</div>
+    <div class="card-body">
+      <div class="card-name">¿No encuentras lo que buscas?</div>
+      <div class="card-help-cta">Nosotros te lo traemos →</div>
+    </div>
+  </a>
 </div>
 
 <div class="pagination-links">
