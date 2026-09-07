@@ -7,7 +7,7 @@
       collapseTimer: null,
       // El widget entero sigue en el DOM aun cuando el ajuste lo
       // limita a /tienda (ver comentario en nav.blade.php) — sin este
-      // chequeo, el timer de abajo marcaba el hint como "visto" en
+      // chequeo, el timer de abajo marcaba el hint como visto en
       // CUALQUIER página aunque estuviera con display:none, y el
       // visitante nunca llegaba a verlo de verdad en /tienda.
       visibleHere: {{ ($categoryMenuScope === 'all' || request()->routeIs('shop')) ? 'true' : 'false' }},
