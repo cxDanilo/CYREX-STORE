@@ -70,17 +70,45 @@ jobs:
       # de GitHub hacia el servidor (el mismo sentido que un deploy), no
       # para bajarlos — por eso buscaba los archivos en la máquina de
       # GitHub y nunca los encontraba ("tar: empty archive"), sin
-      # importar si la ruta era relativa o absoluta. Se reemplaza por un
-      # scp común y corriente, donde el sentido de la copia es
-      # inequívoco (el lado con "host:" siempre es el remoto).
+      # importar si la ruta era relativa o absoluta.
+      #
+      # El reemplazo con sshpass+scp tampoco sirvió: sshpass "adivina"
+      # cuándo aparece el prompt de contraseña por pantalla, y ahí dio
+      # un falso "contraseña incorrecta" (exit 5) con la MISMA
+      # contraseña que un segundo antes había funcionado bien en el
+      # paso de arriba. paramiko hace la autenticación como un
+      # intercambio de protocolo de verdad (igual que la librería que ya
+      # usa appleboy/ssh-action), sin necesidad de adivinar nada por
+      # pantalla.
       - name: Bajar el backup a GitHub
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PASSWORD: ${{ secrets.DEPLOY_PASSWORD }}
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
+          pip install --quiet paramiko
           mkdir -p backup-final
-          sshpass -p "${{ secrets.DEPLOY_PASSWORD }}" scp -P "${{ secrets.DEPLOY_PORT }}" -o StrictHostKeyChecking=no \
-            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/home/u570719467/domains/cyrexstore.com/public_html/dev/backups/db.sql.gz" \
-            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/home/u570719467/domains/cyrexstore.com/public_html/dev/backups/uploads.tar.gz" \
-            backup-final/
+          python3 - <<'PYEOF'
+          import os
+          import paramiko
+
+          client = paramiko.SSHClient()
+          client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+          client.connect(
+              os.environ['DEPLOY_HOST'],
+              port=int(os.environ['DEPLOY_PORT']),
+              username=os.environ['DEPLOY_USER'],
+              password=os.environ['DEPLOY_PASSWORD'],
+          )
+          sftp = client.open_sftp()
+          remote_dir = '/home/u570719467/domains/cyrexstore.com/public_html/dev/backups'
+          for name in ['db.sql.gz', 'uploads.tar.gz']:
+              sftp.get(f'{remote_dir}/{name}', f'backup-final/{name}')
+              print(f'bajado: {name}')
+          sftp.close()
+          client.close()
+          PYEOF
           ls -la backup-final
 
       - name: Guardar como artifact (30 días de historial)
