@@ -1,0 +1,72 @@
+name: Backup diario de dev.cyrexstore.com
+
+# Corre solo todos los días, y también se puede disparar a mano desde la
+# pestaña Actions (botón "Run workflow") — útil para sacar un backup
+# extra justo antes de hacer algo riesgoso en el panel del hosting (como
+# restaurar una copia del WordPress), sin depender de esperar al horario
+# fijo.
+on:
+  schedule:
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      # Se guarda dos veces a propósito: una copia "de mano" en el mismo
+      # servidor (por si hace falta algo rápido sin salir de ahí) y la
+      # que de verdad importa, bajada a GitHub como artifact — así, si el
+      # problema es el hosting entero (como pasó acá: una restauración
+      # de backup de Hostinger pisó archivos de esta app de rebote), el
+      # backup real no vive en el mismo lugar que se rompió.
+      - name: Armar el backup en el servidor
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          script: |
+            set -e
+            cd ~/domains/cyrexstore.com/public_html/dev/cyrex-app
+
+            DB_HOST=$(grep "^DB_HOST=" .env | cut -d= -f2-)
+            DB_PORT=$(grep "^DB_PORT=" .env | cut -d= -f2-)
+            DB_DATABASE=$(grep "^DB_DATABASE=" .env | cut -d= -f2-)
+            DB_USERNAME=$(grep "^DB_USERNAME=" .env | cut -d= -f2-)
+            DB_PASSWORD=$(grep "^DB_PASSWORD=" .env | cut -d= -f2-)
+
+            mkdir -p ../backups
+            mysqldump -h"$DB_HOST" -P"$DB_PORT" -u"$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" | gzip > ../backups/db.sql.gz
+            tar -czf ../backups/uploads.tar.gz -C .. uploads-persistente
+
+            # Si por lo que sea el dump o el tar salieron vacíos/rotos,
+            # mejor que el job quede en rojo (y GitHub avise solo por
+            # mail) a subir un backup roto sin que nadie se entere hasta
+            # el día que haga falta usarlo.
+            db_size=$(stat -c%s ../backups/db.sql.gz)
+            uploads_size=$(stat -c%s ../backups/uploads.tar.gz)
+            echo "db.sql.gz: ${db_size} bytes — uploads.tar.gz: ${uploads_size} bytes"
+            if [ "$db_size" -lt 1024 ] || [ "$uploads_size" -lt 1024 ]; then
+              echo "Uno de los dos backups salió sospechosamente chico — abortando."
+              exit 1
+            fi
+
+      - name: Bajar el backup a GitHub
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          username: ${{ secrets.DEPLOY_USER }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          source: "domains/cyrexstore.com/public_html/dev/backups/db.sql.gz,domains/cyrexstore.com/public_html/dev/backups/uploads.tar.gz"
+          target: "./backup-descargado"
+          strip_components: 5
+
+      - name: Guardar como artifact (30 días de historial)
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-${{ github.run_id }}
+          path: backup-descargado/*
+          retention-days: 30
