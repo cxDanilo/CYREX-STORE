@@ -66,6 +66,10 @@ jobs:
               exit 1
             fi
 
+      # La ruta relativa que se usó antes no encontró nada ("tar: empty
+      # archive") — drone-scp (lo que usa esta acción por debajo) no
+      # arranca necesariamente en el home del usuario SSH. Con la ruta
+      # absoluta no hay ninguna ambigüedad de dónde arranca.
       - name: Bajar el backup a GitHub
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -73,13 +77,24 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT }}
           username: ${{ secrets.DEPLOY_USER }}
           password: ${{ secrets.DEPLOY_PASSWORD }}
-          source: "domains/cyrexstore.com/public_html/dev/backups/db.sql.gz,domains/cyrexstore.com/public_html/dev/backups/uploads.tar.gz"
+          source: "/home/u570719467/domains/cyrexstore.com/public_html/dev/backups/db.sql.gz,/home/u570719467/domains/cyrexstore.com/public_html/dev/backups/uploads.tar.gz"
           target: "./backup-descargado"
-          strip_components: 5
+          strip_components: 0
+
+      # En vez de adivinar cuántos niveles de carpeta hay que "pelar" con
+      # strip_components (frágil si drone-scp cambia cómo arma la ruta
+      # interna), se buscan los dos archivos por nombre donde hayan
+      # quedado y se copian a una carpeta plana antes de subirlos.
+      - name: Aplanar carpetas antes de subir
+        run: |
+          mkdir -p backup-final
+          find backup-descargado -name "db.sql.gz" -exec cp {} backup-final/ \;
+          find backup-descargado -name "uploads.tar.gz" -exec cp {} backup-final/ \;
+          ls -la backup-final
 
       - name: Guardar como artifact (30 días de historial)
         uses: actions/upload-artifact@v4
         with:
           name: backup-${{ github.run_id }}
-          path: backup-descargado/*
+          path: backup-final/*
           retention-days: 30
