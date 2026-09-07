@@ -38,7 +38,20 @@ jobs:
             DB_PASSWORD=$(grep "^DB_PASSWORD=" .env | cut -d= -f2-)
 
             mkdir -p ../backups
-            mysqldump -h"$DB_HOST" -P"$DB_PORT" -u"$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" | gzip > ../backups/db.sql.gz
+
+            # Con -h localhost, el cliente de mysqldump (a diferencia del
+            # driver de MySQL que usa Laravel) resuelve "localhost" por
+            # IPv6 (::1) en vez de usar el socket local — y el usuario de
+            # la base solo tiene permiso desde 'localhost' de verdad,  no
+            # desde esa IP, así que la conexión se rechazaba con "Access
+            # denied ...@'::1'". Sin -h/-P, mysqldump usa el socket local
+            # por default, igual que ya hace Laravel con éxito.
+            if [ "$DB_HOST" = "localhost" ]; then
+              MYSQL_HOST_ARGS=()
+            else
+              MYSQL_HOST_ARGS=(-h"$DB_HOST" -P"$DB_PORT")
+            fi
+            mysqldump "${MYSQL_HOST_ARGS[@]}" -u"$DB_USERNAME" -p"$DB_PASSWORD" "$DB_DATABASE" | gzip > ../backups/db.sql.gz
             tar -czf ../backups/uploads.tar.gz -C .. uploads-persistente
 
             # Si por lo que sea el dump o el tar salieron vacíos/rotos,
