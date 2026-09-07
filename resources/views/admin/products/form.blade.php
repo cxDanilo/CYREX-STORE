@@ -37,6 +37,7 @@
         <label for="name">Nombre</label>
         <input type="text" id="name" name="name" x-model="name" required
                x-on:input="if(!$refs.slug.dataset.touched) $refs.slug.value = window.autoSlugify($event.target.value)">
+        <div class="form-hint">Si viene en varios colores/tamaños, no los pongas acá — ej. "Kumara", no "Kumara Negro". El color va abajo, en Variantes, así el cliente elige uno sin salir de la ficha.</div>
         @error('name') <div class="error">{{ $message }}</div> @enderror
       </div>
 
@@ -99,7 +100,7 @@
           <div style="flex:1;min-width:0;">
             <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp"
                    x-on:change="preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : preview">
-            <div class="form-hint">JPG, PNG o WEBP, máx. 4 MB.</div>
+            <div class="form-hint">JPG, PNG o WEBP, máx. 4 MB. Si cargás fotos por color en Variantes, la página arranca mostrando la del primer color de la lista — esta de acá se ve solo si esa primera variante no tiene foto propia, y es la que aparece cuando se comparte el link por WhatsApp (esa vista previa no elige color).</div>
             @if($product->image)
               <label style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:var(--text-secondary);">
                 <input type="checkbox" name="remove_image" value="1" x-on:change="if($event.target.checked) preview = null">
@@ -260,7 +261,7 @@
 
     <div class="form-section">
       <h3>Variantes</h3>
-      <p class="form-hint" style="margin-bottom:14px;">Si el producto viene en más de una opción (ej. color), agrégalas aquí — no crees un producto nuevo por cada variante.</p>
+      <p class="form-hint" style="margin-bottom:14px;">Si el producto viene en más de una opción (ej. color), agrégalas aquí — no crees un producto nuevo por cada variante. La foto y el precio de cada una son opcionales: dejalos vacíos y usan los de arriba. Ej. el Kumara cuesta lo mismo en negro y blanco → dejá el precio vacío en las dos variantes, y ponele a cada una la foto de su color para que el cliente vea cuál está eligiendo.</p>
       <template x-for="(variant, i) in variants" :key="i">
         <div class="repeater-row" style="grid-template-columns:auto 1fr 1fr 1fr auto;">
           <div class="variant-thumb" @click="$event.target.closest('.variant-thumb').querySelector('input[type=file]').click()" title="Foto de esta variante (opcional)">
