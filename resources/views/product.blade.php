@@ -370,13 +370,6 @@
           <button type="button" @click="toggled = true; showBob = false" :class="!showBob && 'active'">USD</button>
           <button type="button" @click="toggled = true; showBob = true" :class="showBob && 'active'">BOB</button>
         </div>
-        @if(\App\Models\Setting::get('show_exchange_rate_badge', 'on') === 'on')
-          <div class="exchange-rate-note">1 USD = Bs {{ number_format($rate, 2) }}</div>
-          <span class="exchange-rate-badge">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0 1 15.4-6.4L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.4 6.4L3 16m0 5v-5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Se actualiza a diario
-          </span>
-        @endif
       @endif
       <div x-show="hasOffer && !variantHasOverride" style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
         <span class="card-badge-promo">-{{ $product->offerDiscountPercent() }}% OFERTA</span>

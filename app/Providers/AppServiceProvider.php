@@ -94,6 +94,12 @@ class AppServiceProvider extends ServiceProvider
                 'promoBarTeaser' => $activePromotion ? null : Promotion::inTeaser(),
                 'promoModal' => $activePromotion?->show_as_modal ? $activePromotion : null,
                 'promoEffect' => ($activePromotion && $activePromotion->effect !== 'none') ? $activePromotion->effect : null,
+                // Widget flotante de "Tasa del día" — mismas dos condiciones
+                // que antes decidían mostrar la notita junto al precio en
+                // la página de producto (ver product.blade.php), ahora
+                // aplicadas a un solo widget compartido en todo el sitio.
+                'showExchangeRateFloat' => Setting::get('currency_mode', 'both') === 'both' && Setting::get('show_exchange_rate_badge', 'on') === 'on',
+                'exchangeRate' => ExchangeRate::current(),
             ]);
         });
 

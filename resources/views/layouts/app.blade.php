@@ -138,6 +138,8 @@
   @include('partials.promo-modal')
 @endif
 
+@include('partials.exchange-rate-float')
+
 <script src="{{ asset('js/product-tilt.js') }}?v={{ filemtime(public_path('js/product-tilt.js')) }}"></script>
 <script src="{{ asset('js/nav-scroll.js') }}?v={{ filemtime(public_path('js/nav-scroll.js')) }}"></script>
 <script src="{{ asset('js/social-rotator.js') }}?v={{ filemtime(public_path('js/social-rotator.js')) }}"></script>
