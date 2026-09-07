@@ -20,6 +20,7 @@ class Product extends Model
         'category_id', 'name', 'slug', 'description', 'price', 'currency',
         'sku', 'has_variants', 'status', 'specs', 'image', 'compat',
         'is_sold_out', 'sold_out_at', 'promotion_id', 'offer_price', 'offer_selected',
+        'discount_group_id',
     ];
 
     protected $casts = [
@@ -36,6 +37,14 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    // Campaña de descuento que puso el offer_price/offer_selected
+    // actuales, si vinieron de una (ver Admin\DiscountGroupController)
+    // — null si el producto se puso en oferta a mano sin campaña.
+    public function discountGroup(): BelongsTo
+    {
+        return $this->belongsTo(DiscountGroup::class);
     }
 
     // Categorías ADICIONALES — category() de arriba sigue siendo LA
@@ -150,13 +159,14 @@ class Product extends Model
     }
 
     /**
-     * Ofertas: lote único con switch e ídem fecha global (Admin → Ofertas),
+     * Ofertas: lote único con switch e ídem fecha global (Admin →
+     * Descuentos, ver Admin\DiscountGroupController y DiscountGroup),
      * a propósito separado del sistema de Promotion (ese es cosmético —
      * banners/badges estacionales — y nunca tocó precios). offer_selected
-     * y offer_price van separados adrede: desmarcar un producto de la
-     * tanda actual no borra su precio de oferta, así la próxima vez que
-     * se arme una oferta parecida no hay que volver a escribir los precios
-     * de cero (ver Admin\OfferController).
+     * y offer_price van separados adrede: sacar un producto de una
+     * campaña (sin que la campaña entera termine) no borra su precio de
+     * oferta, así la próxima vez que se arme una oferta parecida no hay
+     * que volver a escribir los precios de cero.
      */
     public function hasActiveOffer(): bool
     {

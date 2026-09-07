@@ -222,7 +222,7 @@
           </option>
         @endforeach
       </select>
-      <div class="form-hint">Mientras haya una elegida acá: cualquier producto con oferta activa ahora mismo (Admin → Ofertas) aparece listado en esa categoría solo, sin que nadie lo agregue ni lo saque a mano — se actualiza solo cuando la oferta empieza y cuando termina.</div>
+      <div class="form-hint">Mientras haya una elegida acá: cualquier producto con oferta activa ahora mismo (Admin → Descuentos) aparece listado en esa categoría solo, sin que nadie lo agregue ni lo saque a mano — se actualiza solo cuando la oferta empieza y cuando termina.</div>
       @error('auto_promo_category_id') <div class="error">{{ $message }}</div> @enderror
     </div>
   </div>

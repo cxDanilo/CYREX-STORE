@@ -24,7 +24,7 @@ use App\Http\Controllers\Admin\PcBuilderOptionController as AdminPcBuilderOption
 use App\Http\Controllers\Admin\AttributeFieldController as AdminAttributeFieldController;
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\Admin\ComboController as AdminComboController;
-use App\Http\Controllers\Admin\OfferController as AdminOfferController;
+use App\Http\Controllers\Admin\DiscountGroupController as AdminDiscountGroupController;
 use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
 use App\Http\Controllers\VisitHeartbeatController;
 use App\Http\Controllers\Admin\ChangelogController as AdminChangelogController;
@@ -91,6 +91,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('productos/{product}', [AdminProductController::class, 'update'])->name('productos.update');
         Route::delete('productos/{product}', [AdminProductController::class, 'destroy'])->name('productos.destroy');
         Route::patch('productos/{product}/estado', [AdminProductController::class, 'toggleStatus'])->name('productos.toggle-status');
+        Route::patch('productos/{product}/edicion-rapida', [AdminProductController::class, 'quickEdit'])->name('productos.quick-edit');
 
         Route::get('categorias', [AdminCategoryController::class, 'index'])->name('categorias.index');
         Route::get('categorias/nueva', [AdminCategoryController::class, 'create'])->name('categorias.create');
@@ -116,8 +117,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('combos/{combo}', [AdminComboController::class, 'destroy'])->name('combos.destroy');
         Route::patch('combos/{combo}/estado', [AdminComboController::class, 'toggleActive'])->name('combos.toggle-active');
 
-        Route::get('ofertas', [AdminOfferController::class, 'edit'])->name('ofertas.edit');
-        Route::put('ofertas', [AdminOfferController::class, 'update'])->name('ofertas.update');
+        Route::get('descuentos', [AdminDiscountGroupController::class, 'index'])->name('descuentos.index');
+        Route::post('descuentos', [AdminDiscountGroupController::class, 'store'])->name('descuentos.store');
+        Route::put('descuentos/{discountGroup}', [AdminDiscountGroupController::class, 'update'])->name('descuentos.update');
+        Route::delete('descuentos/{discountGroup}', [AdminDiscountGroupController::class, 'destroy'])->name('descuentos.destroy');
 
         Route::get('analitica', [AdminAnalyticsController::class, 'index'])->name('analitica.index');
         Route::get('analitica/datos', [AdminAnalyticsController::class, 'refresh'])->name('analitica.refresh');

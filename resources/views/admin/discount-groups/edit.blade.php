@@ -1,50 +1,62 @@
 @extends('admin.layout')
 
-@section('title', 'Ofertas')
+@section('title', 'Descuentos')
 
 @section('content')
 
 @php
   $allProducts = $categorizedProducts->flatten();
-  $selectedIds = old('product_ids', $allProducts->where('offer_selected', true)->pluck('id')->all());
+  $selectedIds = old('product_ids', $group ? $group->products->pluck('id')->all() : []);
   $priceMap = [];
   foreach ($allProducts as $p) {
       $priceMap[$p->id] = old('offer_price.'.$p->id, $p->offer_price);
   }
-  $endsAtLocal = $endsAt ? \Carbon\Carbon::parse($endsAt)->timezone('America/La_Paz')->format('Y-m-d\TH:i') : '';
+  $endsAtLocal = $group ? $group->ends_at->timezone('America/La_Paz')->format('Y-m-d\TH:i') : '';
 @endphp
 
-<p class="form-hint" style="margin-bottom:20px;">Los productos marcados acá muestran su precio real tachado + el precio de oferta, con cuenta regresiva, en toda la tienda — sin tocar el precio real de cada producto. Apagar el switch (o que pase la fecha) hace que todo vuelva solo al precio normal.</p>
+<p class="form-hint" style="margin-bottom:20px;">Los productos que sumes acá muestran su precio real tachado + el precio de oferta, con cuenta regresiva, en toda la tienda — sin tocar el precio real de cada producto. Al llegar la fecha de fin, la campaña se borra sola y todos vuelven a su precio normal (no hace falta apagar nada a mano).</p>
+
+@if($group)
+  <div class="form-section" style="margin-bottom:20px;">
+    <form method="POST" action="{{ route('admin.descuentos.destroy', $group) }}" onsubmit="return confirm('¿Terminar la campaña «{{ $group->name }}» ahora? Los productos vuelven a su precio normal de inmediato.');">
+      @csrf
+      @method('DELETE')
+      <button type="submit" class="btn btn-danger btn-sm">Terminar campaña ahora</button>
+    </form>
+  </div>
+@endif
 
 <div x-data="{
       q: '',
       selected: @js(collect($selectedIds)->map(fn ($id) => (string) $id)->all()),
       prices: @js(collect($priceMap)->mapWithKeys(fn ($v, $k) => [(string) $k => $v])->all()),
     }" style="max-width:760px;">
-  <form method="POST" action="{{ route('admin.ofertas.update') }}" class="admin-form">
+  <form method="POST" action="{{ $group ? route('admin.descuentos.update', $group) : route('admin.descuentos.store') }}" class="admin-form">
     @csrf
-    @method('PUT')
+    @if($group)
+      @method('PUT')
+    @endif
 
     <div class="form-section">
-      <h3>Interruptor general</h3>
+      <h3>{{ $group ? 'Editar campaña' : 'Nueva campaña' }}</h3>
 
-      <label style="display:flex;align-items:center;gap:8px;">
-        <input type="checkbox" name="active" value="1" {{ old('active', $active) ? 'checked' : '' }}>
-        Activar ofertas
-      </label>
-      <div class="form-hint">Con esto apagado, todos los productos marcados abajo vuelven a mostrar su precio normal — sin borrar la selección ni los precios de oferta, por si la volvés a activar después.</div>
+      <div class="form-group">
+        <label for="name">Nombre</label>
+        <input type="text" id="name" name="name" value="{{ old('name', $group->name ?? '') }}" placeholder="Ej. Días Amarillos" required>
+        @error('name') <div class="error">{{ $message }}</div> @enderror
+      </div>
 
       <div class="form-group" style="margin-top:16px;">
-        <label for="ends_at">Termina la oferta (hora de Bolivia)</label>
+        <label for="ends_at">Termina (hora de Bolivia)</label>
         <input type="datetime-local" id="ends_at" name="ends_at" value="{{ old('ends_at', $endsAtLocal) }}" required>
-        <div class="form-hint">Misma fecha para todos los productos marcados — la cuenta regresiva de cada tarjeta cuenta hasta acá.</div>
+        <div class="form-hint">Misma fecha para todos los productos de la campaña — la cuenta regresiva de cada tarjeta cuenta hasta acá.</div>
         @error('ends_at') <div class="error">{{ $message }}</div> @enderror
       </div>
     </div>
 
     <div class="form-section">
-      <h3>Productos en oferta</h3>
-      <div class="form-hint" style="margin-bottom:10px;">Desmarcar un producto lo saca de la oferta actual, pero no borra el precio que le pusiste — queda listo por si lo volvés a marcar en la próxima.</div>
+      <h3>Productos en la campaña</h3>
+      <div class="form-hint" style="margin-bottom:10px;">Desmarcar un producto lo saca de esta campaña (no borra el precio que le pusiste, por si lo volvés a sumar).</div>
 
       <input type="text" x-model="q" placeholder="Buscar producto..." class="admin-product-search">
 
@@ -90,7 +102,7 @@
           </div>
         @endforeach
       </div>
-      <div class="form-hint" style="margin-top:10px;"><span x-text="selected.length"></span> producto(s) en la oferta actual.</div>
+      <div class="form-hint" style="margin-top:10px;"><span x-text="selected.length"></span> producto(s) en la campaña.</div>
     </div>
 
     <div class="form-actions">

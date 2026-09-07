@@ -13,7 +13,7 @@
   <button type="submit" class="btn btn-sm">Buscar</button>
 </form>
 
-<div class="admin-table-wrap">
+<div class="admin-table-wrap" x-data="{ editing: null }">
   @if($products->isEmpty())
     <div class="admin-empty">No hay productos que coincidan.</div>
   @else
@@ -43,6 +43,9 @@
               @if($product->has_variants)
                 <span style="color:var(--text-muted);font-size:12px;"> · variantes</span>
               @endif
+              @if($product->offer_selected)
+                <span style="color:var(--gold);font-size:12px;"> · en oferta</span>
+              @endif
             </td>
             <td style="color:var(--text-secondary);" data-label="Categoría">{{ $product->category->name }}</td>
             <td class="mono" data-label="Precio">
@@ -54,6 +57,9 @@
             </td>
             <td data-label="Estado">
               <span class="status-badge {{ $product->status }}">{{ $product->status === 'active' ? 'Publicado' : 'Privado' }}</span>
+              @if($product->is_sold_out)
+                <span class="status-badge inactive">Agotado</span>
+              @endif
             </td>
             <td class="cell-actions">
               <div class="cell-actions">
@@ -61,12 +67,54 @@
                   @csrf @method('PATCH')
                   <button type="submit" class="btn btn-sm">{{ $product->status === 'active' ? 'Poner en privado' : 'Publicar' }}</button>
                 </form>
+                <button type="button" class="btn btn-sm" x-show="editing !== {{ $product->id }}" @click="editing = {{ $product->id }}">Edición rápida</button>
+                <button type="button" class="btn btn-sm" x-show="editing === {{ $product->id }}" x-cloak @click="editing = null">Cerrar</button>
                 <a href="{{ route('admin.productos.edit', $product) }}" class="btn btn-sm">Editar</a>
                 <form method="POST" action="{{ route('admin.productos.destroy', $product) }}" onsubmit="return confirm('¿Eliminar {{ $product->name }}? Esta acción no se puede deshacer.');">
                   @csrf @method('DELETE')
                   <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
                 </form>
               </div>
+            </td>
+          </tr>
+          <tr x-show="editing === {{ $product->id }}" x-cloak>
+            <td colspan="6" style="background:var(--bg-elevated-2);">
+              <form method="POST" action="{{ route('admin.productos.quick-edit', $product) }}"
+                    x-data="{ onOffer: {{ $product->offer_selected ? 'true' : 'false' }} }"
+                    style="display:flex;flex-direction:column;gap:12px;max-width:480px;padding:6px 0;">
+                @csrf
+                @method('PATCH')
+
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;">
+                  <input type="checkbox" name="is_sold_out" value="1" {{ $product->is_sold_out ? 'checked' : '' }}>
+                  Agotado
+                </label>
+
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;">
+                  <input type="checkbox" name="offer_selected" value="1" x-model="onOffer">
+                  En oferta
+                </label>
+
+                <div x-show="onOffer" x-cloak style="display:flex;flex-direction:column;gap:10px;padding-left:24px;">
+                  <div class="form-group" style="margin:0;">
+                    <label>Precio de oferta</label>
+                    <input type="number" step="0.01" min="0.01" name="offer_price" value="{{ old('offer_price', $product->offer_price) }}">
+                    @error('offer_price') <div class="error">{{ $message }}</div> @enderror
+                  </div>
+
+                  @if($activeDiscountGroup)
+                    <div class="form-hint" style="margin:0;">Termina junto con la campaña «{{ $activeDiscountGroup->name }}» el {{ $activeDiscountGroup->ends_at->timezone('America/La_Paz')->format('d/m/Y H:i') }}.</div>
+                  @else
+                    <div class="form-group" style="margin:0;">
+                      <label>Termina (hora de Bolivia)</label>
+                      <input type="datetime-local" name="ends_at" value="{{ old('ends_at') }}">
+                      @error('ends_at') <div class="error">{{ $message }}</div> @enderror
+                    </div>
+                  @endif
+                </div>
+
+                <button type="submit" class="btn btn-sm btn-primary" style="align-self:flex-start;">Guardar</button>
+              </form>
             </td>
           </tr>
         @endforeach
