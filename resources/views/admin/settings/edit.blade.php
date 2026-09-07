@@ -211,6 +211,20 @@
       </select>
       <div class="form-hint">En mobile las categorías siempre están disponibles desde el menú hamburguesa, sin importar esta opción.</div>
     </div>
+
+    <div class="form-group">
+      <label for="auto_promo_category_id">Categoría automática de ofertas</label>
+      <select id="auto_promo_category_id" name="auto_promo_category_id">
+        <option value="">Desactivado</option>
+        @foreach($categories as $cat)
+          <option value="{{ $cat->id }}" {{ (string) old('auto_promo_category_id', $autoPromoCategoryId) === (string) $cat->id ? 'selected' : '' }}>
+            {{ $cat->parent_id ? '— ' : '' }}{{ $cat->name }}
+          </option>
+        @endforeach
+      </select>
+      <div class="form-hint">Mientras haya una elegida acá: cualquier producto con oferta activa ahora mismo (Admin → Ofertas) aparece listado en esa categoría solo, sin que nadie lo agregue ni lo saque a mano — se actualiza solo cuando la oferta empieza y cuando termina.</div>
+      @error('auto_promo_category_id') <div class="error">{{ $message }}</div> @enderror
+    </div>
   </div>
 
   <div class="form-section">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\ExchangeRate;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -35,13 +36,15 @@ class SettingsController extends Controller
         $showExchangeRateBadge = Setting::get('show_exchange_rate_badge', 'on');
         $whatsappCommunityUrl = Setting::get('whatsapp_community_url', '');
         $whatsappCommunityBtnText = Setting::get('whatsapp_community_btn_text', 'Únete a nuestra comunidad');
+        $autoPromoCategoryId = Setting::get('auto_promo_category_id', '');
+        $categories = Category::orderBy('parent_id')->orderBy('name')->get();
 
         return view('admin.settings.edit', compact(
             'currentRate', 'currencyMode', 'defaultCurrency', 'whatsappNumber', 'categoryMenuScope',
             'logoHeight', 'logoPath', 'whatsappBtnText', 'shopCtaText', 'footerWhatsappBtnText',
             'footerTagline', 'accentColor', 'reducedMotion', 'ga4MeasurementId', 'shopBannerImages',
             'quoteBannerText', 'quoteBannerColor', 'showExchangeRateBadge', 'whatsappCommunityUrl',
-            'whatsappCommunityBtnText', 'pcbuilderHeroImage'
+            'whatsappCommunityBtnText', 'pcbuilderHeroImage', 'autoPromoCategoryId', 'categories'
         ));
     }
 
@@ -74,6 +77,7 @@ class SettingsController extends Controller
             'whatsapp_community_btn_text' => ['required', 'string', 'max:60'],
             'pcbuilder_hero' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'remove_pcbuilder_hero' => ['nullable', 'boolean'],
+            'auto_promo_category_id' => ['nullable', 'exists:categories,id'],
         ]);
 
         if ($request->filled('rate') && (float) $data['rate'] !== ExchangeRate::current()) {
@@ -98,6 +102,7 @@ class SettingsController extends Controller
         Setting::set('show_exchange_rate_badge', $data['show_exchange_rate_badge']);
         Setting::set('whatsapp_community_url', $data['whatsapp_community_url'] ?? '');
         Setting::set('whatsapp_community_btn_text', $data['whatsapp_community_btn_text']);
+        Setting::set('auto_promo_category_id', $data['auto_promo_category_id'] ?? '');
         $this->updateBannerImages($request);
 
         if ($request->hasFile('logo')) {

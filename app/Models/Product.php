@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -34,6 +36,15 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    // Categorías ADICIONALES — category() de arriba sigue siendo LA
+    // categoría real del producto (filtro de atributos, migas de pan,
+    // etc.). Esto es para que también aparezca listado en otros lados
+    // (ej. una categoría "Promociones" armada a mano) sin perderla.
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'product_category');
     }
 
     public function promotion(): BelongsTo
@@ -149,6 +160,28 @@ class Product extends Model
         $raw = Setting::get('offer_ends_at');
 
         return $raw ? Carbon::parse($raw) : null;
+    }
+
+    // Mismas condiciones que hasActiveOffer() de arriba, pero como
+    // filtro de consulta — para la categoría automática de ofertas
+    // (Ajustes), que necesita encontrar los productos en oferta sin
+    // cargar todo el catálogo a PHP primero. offer_active/offer_ends_at
+    // son globales (un solo Setting, no una columna por producto), así
+    // que esa parte se resuelve una sola vez acá, no por fila.
+    public function scopeHasActiveOffer(Builder $query): Builder
+    {
+        if (Setting::get('offer_active', '0') !== '1') {
+            return $query->whereRaw('1 = 0');
+        }
+
+        $endsAt = Setting::get('offer_ends_at');
+        if (! $endsAt || ! Carbon::parse($endsAt)->isFuture()) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('offer_selected', true)
+            ->whereNotNull('offer_price')
+            ->whereColumn('offer_price', '<', 'price');
     }
 
     // Precio real si no hay oferta activa, precio de oferta si la hay.

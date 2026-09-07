@@ -61,6 +61,27 @@
         @error('category_id') <div class="error">{{ $message }}</div> @enderror
       </div>
 
+      @php
+        $selectedCategoryIds = old('category_ids', $product->exists ? $product->categories->pluck('id')->all() : []);
+      @endphp
+      <div class="form-group">
+        <label>Categorías adicionales (opcional)</label>
+        <div class="form-hint" style="margin-bottom:8px;">Además de su categoría de arriba, este producto también se va a listar en las que marques acá — por ejemplo, para que aparezca en una categoría "Promociones" sin dejar de ser lo que es.</div>
+        <div style="max-height:260px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:14px;">
+          @foreach($categories as $cat)
+            @continue($cat->id === $product->category_id)
+            <label class="combo-product-row">
+              <input type="checkbox" name="category_ids[]" value="{{ $cat->id }}"
+                     {{ in_array($cat->id, $selectedCategoryIds) ? 'checked' : '' }}>
+              <span class="combo-product-row-info">
+                <span class="combo-product-row-name">{{ $cat->parent_id ? '— ' : '' }}{{ $cat->name }}</span>
+              </span>
+            </label>
+          @endforeach
+        </div>
+        @error('category_ids') <div class="error">{{ $message }}</div> @enderror
+      </div>
+
       <div class="form-group">
         <label for="description">Descripción</label>
         <textarea id="description" name="description" rows="3" maxlength="500" x-model="description"></textarea>

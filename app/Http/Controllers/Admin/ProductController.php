@@ -54,6 +54,7 @@ class ProductController extends Controller
         $product = Product::create($data);
         $this->syncVariants($product, $variants);
         $this->syncGalleryImages($product, $request);
+        $product->categories()->sync($request->input('category_ids', []));
         ProductActivityLog::record($product, 'created');
 
         return redirect()->route('admin.productos.index')->with('status', 'Producto creado.');
@@ -62,7 +63,7 @@ class ProductController extends Controller
     public function edit(Request $request, Product $product)
     {
         $categories = Category::orderBy('parent_id')->orderBy('name')->get();
-        $product->load('variants');
+        $product->load('variants', 'categories');
         $activityLogs = ProductActivityLog::where('product_id', $product->id)->orderByDesc('created_at')->limit(20)->get();
         $backUrl = $this->sanitizeBackUrl($request->query('back'));
 
@@ -106,6 +107,7 @@ class ProductController extends Controller
         $this->logChanges($product, $before);
         $this->syncVariants($product, $variants);
         $this->syncGalleryImages($product, $request);
+        $product->categories()->sync($request->input('category_ids', []));
 
         $backUrl = $this->sanitizeBackUrl($request->input('back'));
 
@@ -182,10 +184,12 @@ class ProductController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'gallery_images' => ['nullable', 'array'],
             'gallery_images.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'category_ids' => ['nullable', 'array'],
+            'category_ids.*' => ['exists:categories,id'],
         ]);
 
         $data['is_sold_out'] = $request->boolean('is_sold_out');
-        unset($data['image'], $data['gallery_images']);
+        unset($data['image'], $data['gallery_images'], $data['category_ids']);
 
         return $data;
     }

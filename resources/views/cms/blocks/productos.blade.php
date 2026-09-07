@@ -5,7 +5,16 @@
     $cat = \App\Models\Category::where('slug', $data['categoria'])->first();
     if ($cat) {
       $ids = $cat->parent_id ? [$cat->id] : $cat->children()->pluck('id')->push($cat->id);
-      $query->whereIn('category_id', $ids);
+      $isAutoPromoCategory = (int) \App\Models\Setting::get('auto_promo_category_id', '') === $cat->id;
+
+      $query->where(function ($q) use ($ids, $isAutoPromoCategory) {
+        $q->whereIn('category_id', $ids)
+          ->orWhereHas('categories', fn ($q2) => $q2->whereIn('categories.id', $ids));
+
+        if ($isAutoPromoCategory) {
+          $q->orWhere(fn ($q3) => $q3->hasActiveOffer());
+        }
+      });
     }
   }
 

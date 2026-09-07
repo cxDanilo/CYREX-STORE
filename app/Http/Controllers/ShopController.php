@@ -25,7 +25,23 @@ class ShopController extends Controller
                 $ids = $activeCategory->parent_id
                     ? [$activeCategory->id]
                     : $activeCategory->children()->pluck('id')->push($activeCategory->id);
-                $query->whereIn('category_id', $ids);
+
+                // Además de su categoría real (category_id) y las
+                // adicionales que le hayan marcado a mano, si esta es la
+                // categoría elegida en Ajustes como "automática de
+                // ofertas", también entra cualquier producto con oferta
+                // activa ahora mismo — sin que nadie tenga que agregarlo
+                // ni sacarlo cuando la oferta termine.
+                $isAutoPromoCategory = (int) Setting::get('auto_promo_category_id', '') === $activeCategory->id;
+
+                $query->where(function (Builder $q) use ($ids, $isAutoPromoCategory) {
+                    $q->whereIn('category_id', $ids)
+                        ->orWhereHas('categories', fn (Builder $q2) => $q2->whereIn('categories.id', $ids));
+
+                    if ($isAutoPromoCategory) {
+                        $q->orWhere(fn (Builder $q3) => $q3->hasActiveOffer());
+                    }
+                });
 
                 [$filterField, $filterLabel, $filterOptions] = $this->resolveShopFilter($activeCategory->component_type);
             }
@@ -143,7 +159,7 @@ class ShopController extends Controller
     public function show(string $slug)
     {
         $rate = ExchangeRate::current();
-        $product = Product::where('slug', $slug)->with(['variants', 'category'])->firstOrFail();
+        $product = Product::where('slug', $slug)->with(['variants', 'category', 'categories'])->firstOrFail();
 
         // Un producto "privado" no debe ser visible por nadie del
         // público general aunque tenga el link directo — solo un admin
@@ -152,7 +168,15 @@ class ShopController extends Controller
             abort(404);
         }
 
-        $related = Product::where('category_id', $product->category_id)
+        // Mismo criterio que la tienda: comparten categoría si tienen la
+        // misma real, o si cualquiera de las adicionales de este producto
+        // coincide con la real o las adicionales del otro.
+        $categoryIds = $product->categories->pluck('id')->push($product->category_id)->unique()->values();
+
+        $related = Product::where(function (Builder $q) use ($categoryIds) {
+                $q->whereIn('category_id', $categoryIds)
+                    ->orWhereHas('categories', fn (Builder $q2) => $q2->whereIn('categories.id', $categoryIds));
+            })
             ->where('id', '!=', $product->id)
             ->where('status', 'active')
             ->with('variants')
