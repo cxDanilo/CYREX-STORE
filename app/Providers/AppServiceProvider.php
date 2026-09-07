@@ -48,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
             $whatsappNumber = ReferralRouter::whatsappNumber();
 
             $view->with([
-                'navCategories' => Cache::remember('nav.categories.with_children', self::NAV_CACHE_TTL, fn () => Category::parents()->with('children')->get()),
+                'navCategories' => $this->resolveNavCategories(),
                 'categoryMenuScope' => Setting::get('category_menu_scope', 'shop'),
                 'whatsappNumber' => $whatsappNumber,
                 'cartItems' => Cart::items(),
@@ -79,7 +79,7 @@ class AppServiceProvider extends ServiceProvider
             $view->with([
                 'logoHeight' => Setting::get('logo_height', '60'),
                 'logoUrl' => $this->resolveLogoUrl(),
-                'footerCategories' => Cache::remember('footer.categories', self::NAV_CACHE_TTL, fn () => Category::parents()->get()),
+                'footerCategories' => $this->resolveNavCategories(),
                 'footerPages' => Cache::remember('footer.pages', self::NAV_CACHE_TTL, fn () => Page::inFooter()->published()->get()),
                 'whatsappNumber' => ReferralRouter::whatsappNumber(),
                 'whatsappCommunityUrl' => Setting::get('whatsapp_community_url', ''),
@@ -105,6 +105,31 @@ class AppServiceProvider extends ServiceProvider
             ['partials.shop-results', 'cms.blocks.productos', 'cms.blocks.categoria-rotativa', 'cms.blocks.banner-productos', 'product'],
             fn ($view) => $view->with('cardActivePromotion', Promotion::active())
         );
+    }
+
+    /**
+     * Categorías del mega-menú/widget flotante — a propósito NO muestra
+     * una categoría o subcategoría que no tenga ningún producto activo
+     * (ni como categoría real, ni como adicional), para no mandar a un
+     * cliente a una página vacía. Un padre sin productos propios pero
+     * con al menos un hijo con productos SÍ se muestra igual (solo con
+     * esos hijos, filtrados) — es común que el padre en sí no tenga
+     * productos, todo vive en las subcategorías.
+     */
+    private function resolveNavCategories()
+    {
+        return Cache::remember('nav.categories.with_children', self::NAV_CACHE_TTL, function () {
+            return Category::parents()
+                ->withActiveProductCounts()
+                ->with(['children' => fn ($q) => $q->withActiveProductCounts()])
+                ->get()
+                ->each(fn ($parent) => $parent->setRelation(
+                    'children',
+                    $parent->children->filter->has_active_products->values()
+                ))
+                ->filter(fn ($parent) => $parent->has_active_products || $parent->children->isNotEmpty())
+                ->values();
+        });
     }
 
     private function resolveLogoUrl(): string
