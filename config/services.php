@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    // Token para disparar a mano el workflow de backup diario
+    // (.github/workflows/backup.yml) desde el botón del admin, sin tener
+    // que entrar a GitHub — ver .env.example para cómo generarlo.
+    'github' => [
+        'backup_token' => env('GITHUB_BACKUP_TOKEN'),
+    ],
+
 ];

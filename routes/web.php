@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\ProductActivityLogController as AdminProductActiv
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\WooCommerceImportController as AdminWooCommerceImportController;
 use App\Http\Controllers\Admin\CacheController as AdminCacheController;
+use App\Http\Controllers\Admin\BackupController as AdminBackupController;
 use App\Http\Controllers\Admin\PcBuilderOptionController as AdminPcBuilderOptionController;
 use App\Http\Controllers\Admin\AttributeFieldController as AdminAttributeFieldController;
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
@@ -131,6 +132,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('usuarios/{user}', [AdminUserController::class, 'destroy'])->name('usuarios.destroy');
 
             Route::post('cache/purgar', [AdminCacheController::class, 'purge'])->name('cache.purge');
+            Route::post('backup/disparar', [AdminBackupController::class, 'trigger'])->name('backup.trigger');
 
             // Descarga URLs externas del CSV al servidor (riesgo de SSRF /
             // ejecución de archivos maliciosos si el CSV no es confiable) —

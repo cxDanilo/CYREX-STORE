@@ -115,6 +115,10 @@
           @csrf
           <button type="submit" class="admin-nav-foot-btn">@include('partials.admin-icon', ['name' => 'purgar']) Purgar caché</button>
         </form>
+        <form method="POST" action="{{ route('admin.backup.trigger') }}" onsubmit="return confirm('¿Disparar un backup ahora? Tarda uno o dos minutos.');">
+          @csrf
+          <button type="submit" class="admin-nav-foot-btn">@include('partials.admin-icon', ['name' => 'backup']) Backup ahora</button>
+        </form>
       @endif
       <form method="POST" action="{{ route('admin.logout') }}">
         @csrf
