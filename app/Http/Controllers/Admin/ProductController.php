@@ -30,7 +30,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        $categories = Category::orderBy('parent_id')->orderBy('name')->get();
+        $categories = $this->categoriesForForm();
         $product = new Product(['status' => 'active', 'currency' => 'USD']);
         $activityLogs = collect();
         $backUrl = null;
@@ -62,7 +62,7 @@ class ProductController extends Controller
 
     public function edit(Request $request, Product $product)
     {
-        $categories = Category::orderBy('parent_id')->orderBy('name')->get();
+        $categories = $this->categoriesForForm();
         $product->load('variants', 'categories');
         $activityLogs = ProductActivityLog::where('product_id', $product->id)->orderByDesc('created_at')->limit(20)->get();
         $backUrl = $this->sanitizeBackUrl($request->query('back'));
@@ -112,6 +112,22 @@ class ProductController extends Controller
         $backUrl = $this->sanitizeBackUrl($request->input('back'));
 
         return redirect($backUrl ?? route('admin.productos.index'))->with('status', 'Producto actualizado.');
+    }
+
+    /**
+     * Categorías para los selectores del formulario, cada padre seguido
+     * de sus propios hijos (antes se pedían todas ordenadas solo por
+     * parent_id/nombre, lo que agrupaba TODOS los padres primero y
+     * TODOS los hijos de TODAS las categorías después, mezclados entre
+     * sí sin importar de qué padre era cada uno).
+     */
+    private function categoriesForForm()
+    {
+        return Category::whereNull('parent_id')
+            ->orderBy('sort_order')
+            ->with(['children' => fn ($q) => $q->orderBy('sort_order')])
+            ->get()
+            ->flatMap(fn ($parent) => collect([$parent])->concat($parent->children));
     }
 
     /**
