@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
@@ -45,11 +46,17 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $data = $this->validated($request);
+        $category = Category::find($data['category_id']);
         $data['specs'] = $this->specsFromRequest($request);
-        $data['compat'] = $this->compatFromRequest($request, Category::find($data['category_id']));
+        $data['compat'] = $this->compatFromRequest($request, $category);
         $variants = $this->variantsFromRequest($request);
         $data['has_variants'] = count($variants) > 0;
         $data['sold_out_at'] = $data['is_sold_out'] ? now() : null;
+
+        $this->throwIfAny(
+            $this->compatRequirementErrors($request, $category),
+            $this->imageRequirementErrors($request, $variants, null),
+        );
 
         if ($request->hasFile('image')) {
             $data['image'] = $this->storeImage($request);
@@ -77,10 +84,16 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $data = $this->validated($request, $product->id);
+        $category = Category::find($data['category_id']);
         $data['specs'] = $this->specsFromRequest($request);
-        $data['compat'] = $this->compatFromRequest($request, Category::find($data['category_id']));
+        $data['compat'] = $this->compatFromRequest($request, $category);
         $variants = $this->variantsFromRequest($request);
         $data['has_variants'] = count($variants) > 0;
+
+        $this->throwIfAny(
+            $this->compatRequirementErrors($request, $category),
+            $this->imageRequirementErrors($request, $variants, $product),
+        );
 
         // Capturado ANTES de guardar: Eloquent sincroniza sus valores
         // "originales" con los nuevos apenas el save() termina, así que
@@ -416,6 +429,96 @@ class ProductController extends Controller
         }
 
         return $compat ?: null;
+    }
+
+    /**
+     * Cuando la categoría elegida tiene campos propios (pieza de PC o
+     * solo atributo de filtro, da igual — config/pc_builder.php define
+     * ambos con el mismo formato), TODOS esos campos pasan a ser
+     * obligatorios. Se valida por separado de $this->validated()
+     * porque los campos son dinámicos según la categoría, no se pueden
+     * declarar de antemano con la sintaxis normal de reglas.
+     */
+    private function compatRequirementErrors(Request $request, ?Category $category): array
+    {
+        $type = $category?->component_type;
+        $fields = $type ? (\App\Support\PcBuilderFields::resolved()[$type] ?? null) : null;
+
+        if (! $fields) {
+            return [];
+        }
+
+        $errors = [];
+
+        foreach ($fields as $key => $field) {
+            if ($field['type'] === 'checkboxes') {
+                if (empty($request->input("compat.$key", []))) {
+                    $errors["compat.$key"] = "El campo \"{$field['label']}\" es obligatorio.";
+                }
+
+                continue;
+            }
+
+            $value = $request->input("compat.$key");
+
+            if ($value === null || $value === '') {
+                $errors["compat.$key"] = "El campo \"{$field['label']}\" es obligatorio.";
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * La imagen principal es obligatoria — salvo que el producto ya
+     * quede con al menos una variante con foto propia (ver el ajuste
+     * de getImageUrlAttribute() en Product, que usa esa foto como
+     * respaldo en toda la tienda cuando no hay imagen principal). Se
+     * revisa DESPUÉS de armar $variants (variantsFromRequest) para
+     * poder ver si alguna trae imagen nueva, sin duplicar esa lógica.
+     */
+    private function imageRequirementErrors(Request $request, array $variants, ?Product $existingProduct): array
+    {
+        if ($request->hasFile('image')) {
+            return [];
+        }
+
+        if ($existingProduct?->image && ! $request->boolean('remove_image')) {
+            return [];
+        }
+
+        $existingVariantImages = $existingProduct
+            ? $existingProduct->variants()->whereNotNull('image')->pluck('image', 'id')
+            : collect();
+
+        $hasVariantImage = collect($variants)->contains(function ($variant) use ($existingVariantImages) {
+            if ($variant['image_file']) {
+                return true;
+            }
+            if ($variant['remove_image']) {
+                return false;
+            }
+
+            return $variant['id'] && $existingVariantImages->has($variant['id']);
+        });
+
+        return $hasVariantImage ? [] : [
+            'image' => 'Subí una imagen principal, o agregale foto a al menos una variante.',
+        ];
+    }
+
+    // Junta los errores de todas las validaciones "extra" (las que no
+    // se pueden expresar como reglas fijas de $this->validated()) en
+    // una sola tirada — así el admin ve TODO lo que falta de una vez
+    // en vez de corregir un grupo, reenviar, y recién ahí enterarse
+    // del siguiente.
+    private function throwIfAny(array ...$errorSets): void
+    {
+        $errors = array_merge(...$errorSets);
+
+        if (! empty($errors)) {
+            throw ValidationException::withMessages($errors);
+        }
     }
 
     private function variantsFromRequest(Request $request): array

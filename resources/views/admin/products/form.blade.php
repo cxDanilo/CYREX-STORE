@@ -42,7 +42,7 @@
         price: @js((string) old('price', $product->price ?? '')),
         currency: @js(old('currency', $product->currency ?? 'USD')),
         categoryId: @js((string) old('category_id', $product->category_id ?? '')),
-        categories: @js($categories->map(fn($c) => ['id' => (string) $c->id, 'name' => $c->name, 'componentType' => $c->component_type])->values()),
+        categories: @js($categories->map(fn($c) => ['id' => (string) $c->id, 'name' => $c->name, 'label' => ($c->parent_id ? '— ' : '').$c->name, 'componentType' => $c->component_type])->values()),
         get categoryName() { return (this.categories.find(c => c.id === this.categoryId) || {}).name || ''; },
         componentFields: @js(\App\Support\PcBuilderFields::resolved()),
         pcBuilderTypes: @js(array_keys(config('pc_builder.component_types'))),
@@ -50,6 +50,7 @@
         get isPcPiece() { return this.pcBuilderTypes.includes(this.componentType); },
         get activeFields() { return this.componentType ? (this.componentFields[this.componentType] || {}) : {}; },
         compat: {{ Js::from((object) (old('compat', $product->compat) ?: [])) }},
+        compatErrors: @js(collect($errors->messages())->filter(fn ($v, $k) => str_starts_with($k, 'compat.'))->mapWithKeys(fn ($v, $k) => [substr($k, strlen('compat.')) => $v[0]])),
         tab: {!! $errorTab ? "'{$errorTab}'" : "localStorage.getItem('cyrexAdminProductTab') || 'general'" !!},
      }"
      x-init="$watch('tab', v => localStorage.setItem('cyrexAdminProductTab', v))">
@@ -73,7 +74,7 @@
       <h3>Información general</h3>
 
       <div class="form-group">
-        <label for="name">Nombre</label>
+        <label for="name">Nombre <span class="required-mark">*</span></label>
         <input type="text" id="name" name="name" x-model="name"
                x-on:input="if(!$refs.slug.dataset.touched) $refs.slug.value = window.autoSlugify($event.target.value)">
         <div class="form-hint">Si viene en varios colores/tamaños, no los pongas acá — ej. "Kumara", no "Kumara Negro". El color va abajo, en Variantes, así el cliente elige uno sin salir de la ficha.</div>
@@ -88,16 +89,28 @@
         @error('slug') <div class="error">{{ $message }}</div> @enderror
       </div>
 
-      <div class="form-group">
-        <label for="category_id">Categoría</label>
-        <select id="category_id" name="category_id" x-model="categoryId">
-          <option value="">Selecciona una categoría</option>
-          @foreach($categories as $cat)
-            <option value="{{ $cat->id }}">
-              {{ $cat->parent_id ? '— ' : '' }}{{ $cat->name }}
-            </option>
-          @endforeach
-        </select>
+      <div class="form-group" x-data="{ catOpen: false, catQuery: '' }" x-init="catQuery = categoryName">
+        <label for="category_search">Categoría <span class="required-mark">*</span></label>
+        <div class="combobox">
+          <input type="text" id="category_search" autocomplete="off"
+                 x-model="catQuery"
+                 @focus="catOpen = true; $el.select()"
+                 @keydown.escape="catOpen = false; catQuery = categoryName"
+                 @keydown.enter.prevent="
+                    const match = categories.filter(c => !catQuery || c.name.toLowerCase().includes(catQuery.toLowerCase()))[0];
+                    if (match) { categoryId = match.id; catQuery = match.name; catOpen = false; }
+                 "
+                 placeholder="Escribe para buscar, ej. &quot;fuente&quot;...">
+          <div class="combobox-menu" x-show="catOpen" x-cloak @click.outside="catOpen = false; catQuery = categoryName">
+            <template x-for="cat in categories.filter(c => !catQuery || c.name.toLowerCase().includes(catQuery.toLowerCase()))" :key="cat.id">
+              <button type="button" class="combobox-option" :class="{ 'is-active': cat.id === categoryId }"
+                      @click="categoryId = cat.id; catQuery = cat.name; catOpen = false"
+                      x-text="cat.label"></button>
+            </template>
+            <div class="combobox-empty" x-show="!categories.filter(c => !catQuery || c.name.toLowerCase().includes(catQuery.toLowerCase())).length">Sin resultados</div>
+          </div>
+        </div>
+        <input type="hidden" name="category_id" :value="categoryId">
         @error('category_id') <div class="error">{{ $message }}</div> @enderror
       </div>
 
@@ -139,7 +152,7 @@
 
     <div class="admin-form" x-show="tab === 'imagenes'" x-cloak>
     <div class="form-section">
-      <h3>Imagen del producto</h3>
+      <h3>Imagen del producto <span class="required-mark">*</span></h3>
       <div class="form-group">
         <div class="file-upload">
           <div class="file-upload-thumb">
@@ -148,7 +161,7 @@
           </div>
           <div class="file-upload-info">
             <div class="file-upload-name" x-text="preview ? 'Imagen cargada' : 'Ningún archivo elegido'"></div>
-            <div class="file-upload-meta">JPG, PNG o WEBP, máx. 4 MB. Opcional si cada variante ya tiene su propia foto — sin ninguna acá, se usa la de la primera variante en todos lados.</div>
+            <div class="file-upload-meta">JPG, PNG o WEBP, máx. 4 MB. Obligatoria — salvo que ya le hayas puesto foto a alguna variante en la pestaña Variantes, ahí se usa esa en todos lados.</div>
           </div>
           <div class="file-upload-actions">
             <button type="button" class="btn btn-sm" @click="$refs.imageInput.click()" x-text="preview ? 'Reemplazar' : 'Subir imagen'"></button>
@@ -208,7 +221,7 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label for="price">Precio</label>
+          <label for="price">Precio <span class="required-mark">*</span></label>
           <input type="number" step="0.01" min="0" id="price" name="price" x-model="price">
           @error('price') <div class="error">{{ $message }}</div> @enderror
         </div>
@@ -266,15 +279,17 @@
     <div class="form-section" x-show="componentType" x-cloak>
       <h3 x-text="isPcPiece ? 'Compatibilidad (Arma tu PC)' : 'Atributos de filtro'"></h3>
       <template x-if="isPcPiece">
-        <p class="form-hint" style="margin-bottom:14px;">Esta categoría está marcada como pieza de PC — completa estos datos para que el armador sepa con qué otras piezas es compatible este producto.</p>
+        <p class="form-hint" style="margin-bottom:14px;">Esta categoría está marcada como pieza de PC — completa estos datos (todos obligatorios) para que el armador sepa con qué otras piezas es compatible este producto.</p>
       </template>
       <template x-if="!isPcPiece">
-        <p class="form-hint" style="margin-bottom:14px;">Estos datos se usan como filtro en la tienda para esta categoría.</p>
+        <p class="form-hint" style="margin-bottom:14px;">Estos datos se usan como filtro en la tienda para esta categoría — todos obligatorios.</p>
       </template>
 
       <template x-for="(field, key) in activeFields" :key="key">
         <div class="form-group">
-          <label x-text="field.label"></label>
+          <label>
+            <span x-text="field.label"></span> <span class="required-mark">*</span>
+          </label>
 
           <template x-if="field.type === 'select'">
             <select :name="'compat[' + key + ']'" x-model="compat[key]">
@@ -314,6 +329,7 @@
               </template>
             </div>
           </template>
+          <div class="error" x-show="compatErrors[key]" x-text="compatErrors[key]"></div>
         </div>
       </template>
     </div>
