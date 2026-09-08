@@ -46,6 +46,10 @@ class ShopController extends Controller
                 });
 
                 [$filterField, $filterLabel, $filterOptions] = $this->resolveShopFilter($activeCategory->component_type);
+
+                if ($filterField) {
+                    $filterOptions = $this->filterOptionsWithProducts($filterOptions, $filterField, $ids, $isAutoPromoCategory);
+                }
             }
         }
 
@@ -112,6 +116,38 @@ class ShopController extends Controller
         }
 
         return [null, null, []];
+    }
+
+    /**
+     * Las opciones del filtro (ej. "80 Plus Bronze/Silver/Gold...") vienen
+     * de config/pc_builder.php o de un campo personalizado — una lista
+     * fija que no sabe nada de qué productos existen. Sin este filtro se
+     * veían pastillas para certificaciones/valores que ningún producto de
+     * la categoría tiene cargado, un callejón sin salida para quien las
+     * toca. Se deja solo el subconjunto con al menos un producto activo.
+     *
+     * @param  array<string,string>  $options
+     * @param  \Illuminate\Support\Collection<int,int>|array<int>  $categoryIds
+     * @return array<string,string>
+     */
+    private function filterOptionsWithProducts(array $options, string $filterField, $categoryIds, bool $isAutoPromoCategory): array
+    {
+        $valuesInUse = Product::where('status', 'active')
+            ->where(function (Builder $q) use ($categoryIds, $isAutoPromoCategory) {
+                $q->whereIn('category_id', $categoryIds)
+                    ->orWhereHas('categories', fn (Builder $q2) => $q2->whereIn('categories.id', $categoryIds));
+
+                if ($isAutoPromoCategory) {
+                    $q->orWhere(fn (Builder $q3) => $q3->hasActiveOffer());
+                }
+            })
+            ->get(['compat'])
+            ->map(fn (Product $p) => $p->compat[$filterField] ?? null)
+            ->filter(fn ($v) => $v !== null && $v !== '')
+            ->map(fn ($v) => (string) $v)
+            ->unique();
+
+        return array_intersect_key($options, array_flip($valuesInUse->all()));
     }
 
     /**
