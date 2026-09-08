@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\DiscountGroup;
 use App\Models\ExchangeRate;
 use App\Models\Product;
 use App\Models\Setting;
@@ -185,7 +186,8 @@ class ShopController extends Controller
 
         $currencyMode = Setting::get('currency_mode', 'both');
         $defaultCurrency = Setting::get('default_currency', 'USD');
+        $activeDiscountGroup = DiscountGroup::first();
 
-        return view('product', compact('rate', 'product', 'related', 'currencyMode', 'defaultCurrency'));
+        return view('product', compact('rate', 'product', 'related', 'currencyMode', 'defaultCurrency', 'activeDiscountGroup'));
     }
 }

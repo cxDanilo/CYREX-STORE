@@ -617,6 +617,22 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .admin-edit-image-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,10,11,.6);border-radius:20px;color:#fff;font-family:var(--font-mono);font-size:13px;cursor:pointer;opacity:0;transition:opacity .2s;}
 .gallery-main:hover .admin-edit-image-overlay,.admin-edit-image-overlay:hover{opacity:1;}
 
+/* Switch "En oferta" del editor rápido — misma técnica que el switch
+   del panel admin, pero como clase propia acá porque esta página no
+   carga admin.css (es la ficha pública, el editor solo se ve si el
+   que mira está logueado como admin). */
+.admin-edit-switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:14px;}
+.admin-edit-switch input{position:absolute;opacity:0;width:1px;height:1px;}
+.admin-edit-switch-track{position:relative;display:inline-block;width:40px;height:23px;border-radius:100px;background:var(--bg-elevated-2);border:1px solid var(--border);flex-shrink:0;transition:background .15s,border-color .15s;}
+.admin-edit-switch-track::before{content:'';position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:var(--text-muted);transition:transform .18s ease,background .15s;}
+.admin-edit-switch input:checked + .admin-edit-switch-track{background:var(--gold-dim);border-color:var(--gold);}
+.admin-edit-switch input:checked + .admin-edit-switch-track::before{transform:translateX(17px);background:var(--gold);}
+.admin-edit-switch-label{font-size:13.5px;color:var(--text-secondary);}
+.admin-edit-offer-fields{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:-4px 0 14px;}
+.admin-edit-offer-fields .admin-edit-input{width:140px;}
+.admin-edit-offer-hint{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);}
+.admin-edit-error{color:var(--red);font-size:12.5px;margin:-8px 0 14px;}
+
 .spec-table{width:100%;border-collapse:collapse;}
 .spec-table tr{border-bottom:1px solid var(--border);}
 .spec-table td{padding:12px 16px;font-size:14px;}

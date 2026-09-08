@@ -217,6 +217,14 @@
         editDescription: {{ Js::from($product->description ?? '') }},
         editImageUrl: {{ Js::from($product->image_url) }},
         editImagePreview: null,
+        editOfferSelected: {{ $product->offer_selected ? 'true' : 'false' }},
+        editOfferPrice: {{ Js::from($product->offer_price !== null ? (string) $product->offer_price : '') }},
+        editEndsAt: '',
+        initialOfferSelected: {{ $product->offer_selected ? 'true' : 'false' }},
+        initialOfferPrice: {{ Js::from($product->offer_price !== null ? (string) $product->offer_price : '') }},
+        activeGroupName: {{ Js::from($activeDiscountGroup?->name) }},
+        activeGroupEndsAtLabel: {{ Js::from($activeDiscountGroup ? $activeDiscountGroup->ends_at->timezone('America/La_Paz')->format('d/m/Y H:i') : null) }},
+        offerError: null,
         galleryImages: {{ Js::from($product->gallery_urls) }},
         galleryActive: null,
         get selectedVariantImage() {
@@ -250,6 +258,10 @@
           this.editPrice = this.originalPrice;
           this.editDescription = this.originalDescription;
           this.editImagePreview = null;
+          this.editOfferSelected = this.initialOfferSelected;
+          this.editOfferPrice = this.initialOfferPrice;
+          this.editEndsAt = '';
+          this.offerError = null;
           if (this.$refs.quickEditImage) this.$refs.quickEditImage.value = '';
           this.editing = false;
         },
@@ -259,11 +271,27 @@
         },
         async saveQuickEdit() {
           this.saving = true;
+          this.offerError = null;
+
+          // La oferta toca varias cosas que no son un simple valor
+          // reactivo (el contador regresivo compartido de nav.blade.php
+          // arranca una sola vez al cargar la página, el % del badge
+          // viene armado del servidor) — más simple y confiable
+          // recargar la página cuando de verdad cambió algo de la
+          // oferta, en vez de tratar de sincronizar cada pieza a mano.
+          const offerChanged = this.editOfferSelected !== this.initialOfferSelected
+            || (this.editOfferSelected && String(this.editOfferPrice) !== String(this.initialOfferPrice));
+
           const formData = new FormData();
           formData.append('_method', 'PATCH');
           formData.append('name', this.editName);
           formData.append('price', this.editPrice);
           formData.append('description', this.editDescription ?? '');
+          formData.append('offer_selected', this.editOfferSelected ? '1' : '0');
+          if (this.editOfferSelected) {
+            formData.append('offer_price', this.editOfferPrice ?? '');
+            if (!this.activeGroupName) formData.append('ends_at', this.editEndsAt ?? '');
+          }
           const fileInput = this.$refs.quickEditImage;
           if (fileInput && fileInput.files[0]) {
             formData.append('image', fileInput.files[0]);
@@ -277,14 +305,25 @@
               },
               body: formData,
             });
+            if (res.status === 422) {
+              const body = await res.json();
+              this.offerError = Object.values(body.errors || {}).flat()[0] || 'Revisá los datos de la oferta.';
+              return;
+            }
             if (!res.ok) throw new Error('quick edit failed');
+
+            if (offerChanged) {
+              location.reload();
+              return;
+            }
+
             const data = await res.json();
             this.editName = this.originalName = data.name;
             this.editPrice = this.originalPrice = data.price;
             // Si hay una oferta activa, lo que se muestra sigue siendo el
-            // precio de oferta (lo maneja Admin → Ofertas, no la edición
-            // rápida) — solo se refleja el precio nuevo acá cuando no hay
-            // ninguna oferta pisándolo.
+            // precio de oferta (lo maneja Admin → Descuentos) — solo se
+            // refleja el precio nuevo acá cuando no hay ninguna oferta
+            // pisándolo.
             if (!this.hasOffer) { this.effectivePrice = data.price; }
             this.editDescription = this.originalDescription = data.description ?? '';
             this.editImageUrl = data.image_url;
@@ -360,6 +399,29 @@
       <div class="admin-edit-price-row" x-show="editing" x-cloak x-transition>
         <input type="number" step="0.01" min="0" x-model.number="editPrice" class="admin-edit-input">
         <span class="admin-edit-currency-label" x-text="editCurrency"></span>
+      </div>
+    </template>
+
+    <template x-if="isAdmin">
+      <div x-show="editing" x-cloak x-transition>
+        <label class="admin-edit-switch">
+          <input type="checkbox" x-model="editOfferSelected">
+          <span class="admin-edit-switch-track"></span>
+          <span class="admin-edit-switch-label">En oferta</span>
+        </label>
+
+        <div class="admin-edit-offer-fields" x-show="editOfferSelected" x-cloak>
+          <input type="number" step="0.01" min="0.01" x-model="editOfferPrice" class="admin-edit-input" placeholder="Precio de oferta">
+          <template x-if="activeGroupName">
+            <span class="admin-edit-offer-hint" x-text="'Termina junto con «' + activeGroupName + '» el ' + activeGroupEndsAtLabel"></span>
+          </template>
+          <template x-if="!activeGroupName">
+            <input type="datetime-local" x-model="editEndsAt" class="admin-edit-input" style="width:210px;">
+          </template>
+        </div>
+        <template x-if="offerError">
+          <div class="admin-edit-error" x-text="offerError"></div>
+        </template>
       </div>
     </template>
 

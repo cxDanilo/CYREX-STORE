@@ -8,9 +8,7 @@ use App\Models\DiscountGroup;
 use App\Models\Product;
 use App\Models\ProductActivityLog;
 use App\Models\ProductImage;
-use App\Models\Setting;
 use App\Support\ImageOptimizer;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -220,21 +218,6 @@ class ProductController extends Controller
         $before = $product->getAttributes();
 
         $isSoldOut = $request->boolean('is_sold_out');
-        $enablingOffer = $request->boolean('offer_selected');
-        $activeGroup = DiscountGroup::first();
-
-        if ($enablingOffer) {
-            $price = (float) $data['offer_price'];
-
-            if ($price >= (float) $product->price) {
-                return back()->withErrors(['offer_price' => "El precio de oferta debe ser menor al precio real (\${$product->price})."])->withInput();
-            }
-
-            if (! $activeGroup && ! $request->filled('ends_at')) {
-                return back()->withErrors(['ends_at' => 'Poné una fecha de fin para esta oferta.'])->withInput();
-            }
-        }
-
         $updates = ['is_sold_out' => $isSoldOut];
 
         // Misma transición que usa el formulario completo (ver update()
@@ -245,34 +228,16 @@ class ProductController extends Controller
             $updates['sold_out_at'] = null;
         }
 
-        if ($enablingOffer) {
-            if (! $activeGroup) {
-                $activeGroup = DiscountGroup::create([
-                    'name' => "Oferta rápida: {$product->name}",
-                    'ends_at' => Carbon::parse($data['ends_at'], 'America/La_Paz')->utc(),
-                ]);
-                Setting::set('offer_active', '1');
-                Setting::set('offer_ends_at', $activeGroup->ends_at->toIso8601String());
-            }
-
-            $updates['offer_price'] = $data['offer_price'];
-            $updates['offer_selected'] = true;
-            $updates['discount_group_id'] = $activeGroup->id;
-        } else {
-            $updates['offer_selected'] = false;
-            $updates['discount_group_id'] = null;
-        }
-
         $product->update($updates);
-        ProductActivityLog::logFieldChanges($product, $before);
 
-        // Si esta oferta rápida era la única del grupo y se acaba de
-        // apagar, no tiene sentido dejar una campaña vacía esperando su
-        // fecha de fin sola.
-        if ($activeGroup && $activeGroup->products()->doesntExist()) {
-            $activeGroup->delete();
-            Setting::set('offer_active', '0');
-        }
+        \App\Support\ProductOfferManager::apply(
+            $product,
+            $request->boolean('offer_selected'),
+            $data['offer_price'] ?? null,
+            $data['ends_at'] ?? null
+        );
+
+        ProductActivityLog::logFieldChanges($product, $before);
 
         return back()->with('status', 'Producto actualizado.');
     }
