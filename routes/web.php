@@ -51,6 +51,7 @@ if (app()->environment('local')) {
 }
 
 Route::middleware(['auth', 'admin'])->patch('/producto/{product}/edicion-rapida', [ProductQuickEditController::class, 'update'])->name('product.quick-update');
+Route::middleware(['auth', 'admin'])->post('/admin-preferencia-moneda', [App\Http\Controllers\AdminCurrencyPrefController::class, 'toggle'])->name('admin.currency-pref.toggle');
 
 Route::post('/carrito/agregar', [CartController::class, 'add'])->name('cart.add');
 Route::post('/carrito/agregar-combo', [CartController::class, 'addCombo'])->name('cart.add-combo');

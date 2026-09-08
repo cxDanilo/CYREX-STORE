@@ -68,6 +68,18 @@ button,input,select{font-family:inherit;}
 .motion-reduced .promo-modal-overlay-enter,.motion-reduced .promo-modal-overlay-leave,.motion-reduced .promo-modal-enter{transition:opacity .12s ease;}
 .admin-session-bar-actions a,.admin-session-bar-actions button{background:none;border:none;color:#0A0A0B;font-family:inherit;font-size:12px;font-weight:600;text-decoration:underline;cursor:pointer;padding:0;transition:opacity .15s;}
 .admin-session-bar-actions a:hover,.admin-session-bar-actions button:hover{opacity:.65;}
+
+/* Switch "Solo Bs" en la barra de admin — misma técnica de siempre
+   (checkbox real oculto + track dibujado a mano), pero en tonos negros
+   sobre el fondo dorado de la barra en vez de dorado sobre oscuro,
+   porque acá el fondo YA es dorado. */
+.admin-currency-switch{display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-weight:600;}
+.admin-currency-switch input{position:absolute;opacity:0;width:1px;height:1px;}
+.admin-currency-switch-track{position:relative;display:inline-block;width:30px;height:17px;border-radius:100px;background:rgba(10,10,11,.18);border:1px solid rgba(10,10,11,.45);flex-shrink:0;transition:background .15s;}
+.admin-currency-switch-track::before{content:'';position:absolute;top:1px;left:1px;width:13px;height:13px;border-radius:50%;background:#0A0A0B;transition:transform .18s ease,background .15s;}
+.admin-currency-switch input:checked + .admin-currency-switch-track{background:#0A0A0B;}
+.admin-currency-switch input:checked + .admin-currency-switch-track::before{transform:translateX(13px);background:var(--gold);}
+.admin-currency-switch input:focus-visible + .admin-currency-switch-track{outline:2px solid #0A0A0B;outline-offset:2px;}
 body.has-admin-bar{padding-top:34px;}
 body.has-admin-bar nav{top:34px;}
 

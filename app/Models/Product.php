@@ -217,6 +217,15 @@ class Product extends Model
         return $this->hasActiveOffer() ? (float) $this->offer_price : (float) $this->price;
     }
 
+    // A diferencia de priceInBob() (que a propósito ignora ofertas, ver
+    // arriba), esta sí respeta una oferta activa — la usa el toggle de
+    // "solo Bs" del admin (AdminCurrencyPref) para la tienda/ficha, que
+    // deben verse igual que para el público salvo por la moneda.
+    public function effectivePriceInBob(float $rate): float
+    {
+        return $this->currency === 'BOB' ? $this->effectivePrice() : $this->effectivePrice() * $rate;
+    }
+
     public function offerDiscountPercent(): int
     {
         if (! $this->hasActiveOffer()) {

@@ -8,7 +8,7 @@
 @section('content')
 
 @php
-  $showBobInitial = $currencyMode === 'bob_only' || ($currencyMode === 'both' && $defaultCurrency === 'BOB');
+  $showBobInitial = $forceBob || $currencyMode === 'bob_only' || ($currencyMode === 'both' && $defaultCurrency === 'BOB');
   $hasOffer = $product->hasActiveOffer();
   $realPriceUsd = $product->currency === 'USD' ? (float) $product->price : (float) $product->price / $rate;
   $basePriceUsd = $product->currency === 'USD' ? $product->effectivePrice() : $product->effectivePrice() / $rate;
@@ -59,7 +59,7 @@
 <div class="wrap product-hero"
      x-data="{
         variant: {{ $product->variants->first()?->id ?? 'null' }},
-        showBob: {{ $currencyMode === 'bob_only' || ($currencyMode === 'both' && $defaultCurrency === 'BOB') ? 'true' : 'false' }},
+        showBob: {{ $showBobInitial ? 'true' : 'false' }},
         toggled: false,
         rate: {{ $rate }},
         // basePrice era un valor fijo calculado una sola vez en el

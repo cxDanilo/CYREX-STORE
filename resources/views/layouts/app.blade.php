@@ -61,6 +61,19 @@
   <div class="admin-session-bar">
     <span>👤 Estás logueado como <strong>{{ \App\Models\User::ROLES[auth()->user()->role] ?? auth()->user()->role }}</strong> ({{ auth()->user()->name }})</span>
     <div class="admin-session-bar-actions">
+      @if(auth()->user()->isAdmin())
+        {{-- Preferencia personal del admin (sesión, no Ajustes) para ver
+             el sitio en solo Bs mientras atiende a un cliente — no afecta
+             lo que ve el público. Ver App\Support\AdminCurrencyPref. --}}
+        <form method="POST" action="{{ route('admin.currency-pref.toggle') }}">
+          @csrf
+          <label class="admin-currency-switch" title="Ver todo el sitio en solo Bs — no afecta lo que ve el público">
+            <input type="checkbox" onchange="this.form.submit()" {{ session('admin_force_bob', false) ? 'checked' : '' }}>
+            <span class="admin-currency-switch-track"></span>
+            <span>Solo Bs</span>
+          </label>
+        </form>
+      @endif
       <a href="{{ route('admin.dashboard') }}">Ir al panel</a>
       <form method="POST" action="{{ route('admin.logout') }}">
         @csrf

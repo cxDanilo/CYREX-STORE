@@ -7,6 +7,7 @@ use App\Models\DiscountGroup;
 use App\Models\ExchangeRate;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Support\AdminCurrencyPref;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -59,6 +60,8 @@ class ShopController extends Controller
         $this->applySort($query, $request->get('orden', 'predeterminado'));
 
         $products = $query->paginate(12)->withQueryString();
+        $rate = ExchangeRate::current();
+        $forceBob = AdminCurrencyPref::forceBob();
 
         // Si la categoría activa tiene su propio banner cargado (Admin →
         // Categorías), se usa ese — si no, cae a una imagen al azar entre
@@ -77,10 +80,10 @@ class ShopController extends Controller
         // porque el fragmento también decide si mostrar "Ver todo el
         // catálogo ×" en base a activeCategory.
         if ($request->ajax()) {
-            return view('partials.shop-results', compact('products', 'activeCategory', 'filterField', 'filterLabel', 'filterOptions'));
+            return view('partials.shop-results', compact('products', 'activeCategory', 'filterField', 'filterLabel', 'filterOptions', 'rate', 'forceBob'));
         }
 
-        return view('shop', compact('products', 'activeCategory', 'shopBannerImage', 'filterField', 'filterLabel', 'filterOptions'));
+        return view('shop', compact('products', 'activeCategory', 'shopBannerImage', 'filterField', 'filterLabel', 'filterOptions', 'rate', 'forceBob'));
     }
 
     /**
@@ -187,7 +190,8 @@ class ShopController extends Controller
         $currencyMode = Setting::get('currency_mode', 'both');
         $defaultCurrency = Setting::get('default_currency', 'USD');
         $activeDiscountGroup = DiscountGroup::first();
+        $forceBob = AdminCurrencyPref::forceBob();
 
-        return view('product', compact('rate', 'product', 'related', 'currencyMode', 'defaultCurrency', 'activeDiscountGroup'));
+        return view('product', compact('rate', 'product', 'related', 'currencyMode', 'defaultCurrency', 'activeDiscountGroup', 'forceBob'));
     }
 }

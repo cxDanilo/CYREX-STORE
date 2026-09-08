@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Combo;
 use App\Models\ExchangeRate;
 use App\Models\Setting;
+use App\Support\AdminCurrencyPref;
 
 class ComboController extends Controller
 {
@@ -19,7 +20,8 @@ class ComboController extends Controller
 
         $currencyMode = Setting::get('currency_mode', 'both');
         $defaultCurrency = Setting::get('default_currency', 'USD');
+        $forceBob = AdminCurrencyPref::forceBob();
 
-        return view('combo', compact('combo', 'rate', 'currencyMode', 'defaultCurrency'));
+        return view('combo', compact('combo', 'rate', 'currencyMode', 'defaultCurrency', 'forceBob'));
     }
 }

@@ -107,7 +107,9 @@
         <div class="card-name">{{ $product->name }}</div>
         @if($product->hasActiveOffer())
           <div class="card-price-original">
-            @if($product->currency === 'USD')
+            @if(!empty($forceBob))
+              Bs {{ number_format($product->priceInBob($rate), 2) }}
+            @elseif($product->currency === 'USD')
               ${{ number_format($product->price, 2) }}
             @else
               Bs {{ number_format($product->price, 2) }}
@@ -115,7 +117,9 @@
           </div>
         @endif
         <div class="card-price">
-          @if($product->currency === 'USD')
+          @if(!empty($forceBob))
+            Bs {{ number_format($product->effectivePriceInBob($rate), 2) }} <small>BOB</small>
+          @elseif($product->currency === 'USD')
             ${{ number_format($product->effectivePrice(), 2) }} <small>USD</small>
           @else
             Bs {{ number_format($product->effectivePrice(), 2) }} <small>BOB</small>

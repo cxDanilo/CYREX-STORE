@@ -9,7 +9,7 @@
   $comboBob = $combo->priceInBob($rate);
   $individualUsd = $combo->individualTotalUsd($rate);
   $savingsUsd = max(0, $individualUsd - $comboUsd);
-  $showBobFirst = $currencyMode === 'bob_only' || ($currencyMode === 'both' && $defaultCurrency === 'BOB');
+  $showBobFirst = $forceBob || $currencyMode === 'bob_only' || ($currencyMode === 'both' && $defaultCurrency === 'BOB');
   $whatsappNumber = \App\Support\ReferralRouter::whatsappNumber();
   $waText = "Hola! Me interesa este combo:\n{$combo->name}\n"
       .($showBobFirst ? 'Bs '.number_format($comboBob, 2) : '$'.number_format($comboUsd, 2))
