@@ -164,27 +164,27 @@ input[type=file]::file-selector-button:hover{border-color:var(--gold);background
    toda la accesibilidad/teclado nativos intactos) — accent-color
    queda además como respaldo por si algún navegador viejo no soporta
    appearance:none en inputs. */
-input[type=checkbox],
-input[type=radio]{
+input[type=checkbox]:not(.sr-only-file),
+input[type=radio]:not(.sr-only-file){
   accent-color:var(--gold);
   appearance:none;-webkit-appearance:none;
   width:16px;height:16px;flex-shrink:0;cursor:pointer;
   background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:4px;
   position:relative;transition:background .15s,border-color .15s;
 }
-input[type=radio]{border-radius:50%;}
-input[type=checkbox]:checked,
-input[type=radio]:checked{background:var(--gold);border-color:var(--gold);}
-input[type=checkbox]:checked::after{
+input[type=radio]:not(.sr-only-file){border-radius:50%;}
+input[type=checkbox]:not(.sr-only-file):checked,
+input[type=radio]:not(.sr-only-file):checked{background:var(--gold);border-color:var(--gold);}
+input[type=checkbox]:not(.sr-only-file):checked::after{
   content:'';position:absolute;left:4px;top:1px;width:4px;height:8px;
   border:solid #0A0A0B;border-width:0 2px 2px 0;transform:rotate(45deg);
 }
-input[type=radio]:checked::after{
+input[type=radio]:not(.sr-only-file):checked::after{
   content:'';position:absolute;left:3px;top:3px;width:8px;height:8px;
   border-radius:50%;background:#0A0A0B;
 }
-input[type=checkbox]:focus-visible,
-input[type=radio]:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+input[type=checkbox]:not(.sr-only-file):focus-visible,
+input[type=radio]:not(.sr-only-file):focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
 
 /* SWITCH — para ajustes on/off puntuales (antes eran <select> con
    "Sí"/"No", que obliga a abrir un desplegable para ver 2 opciones).
