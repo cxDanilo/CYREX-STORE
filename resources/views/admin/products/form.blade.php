@@ -91,7 +91,7 @@
 
       <div class="form-group" x-data="{ catOpen: false, catQuery: '' }" x-init="catQuery = categoryName">
         <label for="category_search">Categoría <span class="required-mark">*</span></label>
-        <div class="combobox">
+        <div class="combobox" @click.outside="catOpen = false; catQuery = categoryName">
           <input type="text" id="category_search" autocomplete="off"
                  x-model="catQuery"
                  @focus="catOpen = true; $el.select()"
@@ -101,7 +101,7 @@
                     if (match) { categoryId = match.id; catQuery = match.name; catOpen = false; }
                  "
                  placeholder="Escribe para buscar, ej. &quot;fuente&quot;...">
-          <div class="combobox-menu" x-show="catOpen" x-cloak @click.outside="catOpen = false; catQuery = categoryName">
+          <div class="combobox-menu" x-show="catOpen" x-cloak>
             <template x-for="cat in categories.filter(c => !catQuery || c.name.toLowerCase().includes(catQuery.toLowerCase()))" :key="cat.id">
               <button type="button" class="combobox-option" :class="{ 'is-active': cat.id === categoryId }"
                       @click="categoryId = cat.id; catQuery = cat.name; catOpen = false"
