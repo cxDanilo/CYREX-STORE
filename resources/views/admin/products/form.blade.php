@@ -5,6 +5,33 @@
 
 @section('content')
 
+@php
+  // Nombre/categoría/precio ya NO llevan el atributo required en su
+  // <input> — con pestañas, un campo required que queda oculto
+  // (display:none en otra pestaña) hace que el navegador bloquee el
+  // envío del formulario en silencio (sin mostrar ningún error, ni
+  // mandar el POST) apenas se intenta enviar desde una pestaña
+  // distinta a la suya. La validación real la sigue haciendo el
+  // servidor (ProductController@validated) — lo único que cambia acá
+  // es que el chequeo del navegador ya no puede bloquear el envío.
+  //
+  // Si el guardado falló por un campo en una pestaña que no es la
+  // activa, el navegador nunca llega a mostrar el error — así que la
+  // pestaña con el error se abre sola, en vez de que se vea como que
+  // "no pasó nada" al tocar Guardar.
+  $tabErrorFields = [
+    'general' => ['name', 'slug', 'category_id', 'category_ids', 'category_ids.*', 'description'],
+    'imagenes' => ['image', 'gallery_images.*'],
+    'precio' => ['price', 'currency', 'sku', 'status', 'is_sold_out'],
+    'specs' => ['compat.*'],
+    'variantes' => ['variants.*'],
+  ];
+  $errorTab = null;
+  foreach ($tabErrorFields as $tabKey => $fields) {
+      if ($errors->hasAny($fields)) { $errorTab = $tabKey; break; }
+  }
+@endphp
+
 <div style="display:flex;gap:32px;align-items:flex-start;"
      x-data="{
         specs: {{ collect($product->specs ?? [])->map(fn($v, $k) => ['key' => $k, 'value' => $v])->values()->toJson() }},
@@ -22,21 +49,32 @@
         get componentType() { return (this.categories.find(c => c.id === this.categoryId) || {}).componentType || null; },
         get isPcPiece() { return this.pcBuilderTypes.includes(this.componentType); },
         get activeFields() { return this.componentType ? (this.componentFields[this.componentType] || {}) : {}; },
-        compat: {{ Js::from((object) (old('compat', $product->compat) ?: [])) }}
-     }">
-  <form method="POST" action="{{ $product->exists ? route('admin.productos.update', $product) : route('admin.productos.store') }}" class="admin-form" enctype="multipart/form-data" style="flex:1;min-width:0;">
+        compat: {{ Js::from((object) (old('compat', $product->compat) ?: [])) }},
+        tab: {!! $errorTab ? "'{$errorTab}'" : "localStorage.getItem('cyrexAdminProductTab') || 'general'" !!},
+     }"
+     x-init="$watch('tab', v => localStorage.setItem('cyrexAdminProductTab', v))">
+  <form method="POST" action="{{ $product->exists ? route('admin.productos.update', $product) : route('admin.productos.store') }}" enctype="multipart/form-data" style="flex:1;min-width:0;">
     @csrf
     @if($product->exists) @method('PUT') @endif
     @if($backUrl)
       <input type="hidden" name="back" value="{{ $backUrl }}">
     @endif
 
+    <div class="admin-tabs" style="margin-bottom:22px;">
+      <button type="button" class="admin-tab" :class="{ active: tab === 'general' }" @click="tab = 'general'">General</button>
+      <button type="button" class="admin-tab" :class="{ active: tab === 'imagenes' }" @click="tab = 'imagenes'">Imágenes</button>
+      <button type="button" class="admin-tab" :class="{ active: tab === 'precio' }" @click="tab = 'precio'">Precio y stock</button>
+      <button type="button" class="admin-tab" :class="{ active: tab === 'specs' }" @click="tab = 'specs'">Especificaciones</button>
+      <button type="button" class="admin-tab" :class="{ active: tab === 'variantes' }" @click="tab = 'variantes'">Variantes</button>
+    </div>
+
+    <div class="admin-form" x-show="tab === 'general'" x-cloak>
     <div class="form-section">
       <h3>Información general</h3>
 
       <div class="form-group">
         <label for="name">Nombre</label>
-        <input type="text" id="name" name="name" x-model="name" required
+        <input type="text" id="name" name="name" x-model="name"
                x-on:input="if(!$refs.slug.dataset.touched) $refs.slug.value = window.autoSlugify($event.target.value)">
         <div class="form-hint">Si viene en varios colores/tamaños, no los pongas acá — ej. "Kumara", no "Kumara Negro". El color va abajo, en Variantes, así el cliente elige uno sin salir de la ficha.</div>
         @error('name') <div class="error">{{ $message }}</div> @enderror
@@ -44,7 +82,7 @@
 
       <div class="form-group">
         <label for="slug">Slug (URL)</label>
-        <input type="text" id="slug" name="slug" x-ref="slug" value="{{ old('slug', $product->slug) }}" required
+        <input type="text" id="slug" name="slug" x-ref="slug" value="{{ old('slug', $product->slug) }}"
                x-on:input="$event.target.dataset.touched = true">
         <div class="form-hint">Se usa en la URL: /producto/<span x-text="$refs.slug ? $refs.slug.value : ''"></span></div>
         @error('slug') <div class="error">{{ $message }}</div> @enderror
@@ -52,7 +90,7 @@
 
       <div class="form-group">
         <label for="category_id">Categoría</label>
-        <select id="category_id" name="category_id" x-model="categoryId" required>
+        <select id="category_id" name="category_id" x-model="categoryId">
           <option value="">Selecciona una categoría</option>
           @foreach($categories as $cat)
             <option value="{{ $cat->id }}">
@@ -90,71 +128,82 @@
         <div class="form-hint" style="text-align:right;" x-text="description.length + '/500'"></div>
         <div class="form-hint">Para specs técnicas (socket, RAM, watts, etc.) usa los campos de Compatibilidad más abajo, no esta descripción — se muestran juntos en la página del producto.</div>
       </div>
+    </div>
+    </div>
 
+    <div class="admin-form" x-show="tab === 'imagenes'" x-cloak>
+    <div class="form-section">
+      <h3>Imagen del producto</h3>
       <div class="form-group">
-        <label for="image">Imagen del producto</label>
-        <div style="display:flex;gap:16px;align-items:flex-start;">
-          <div style="width:96px;height:96px;border-radius:12px;background:var(--bg-elevated-2);border:1px solid var(--border);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-            <img :src="preview" x-show="preview" style="width:100%;height:100%;object-fit:cover;" alt="">
-            <span x-show="!preview" style="color:var(--text-muted);font-size:11px;">Sin imagen</span>
+        <div class="file-upload">
+          <div class="file-upload-thumb">
+            <img :src="preview" x-show="preview" alt="">
+            <svg x-show="!preview" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 16l4.5-6 3.5 4.5 2.5-3L20 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/></svg>
           </div>
-          <div style="flex:1;min-width:0;">
-            <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp"
-                   x-on:change="preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : preview">
-            <div class="form-hint">JPG, PNG o WEBP, máx. 4 MB. Opcional si cada variante ya tiene su propia foto (ej. Kumara en negro/blanco) — sin ninguna acá, se usa sola la foto de la primera variante en todos lados (tienda, vista previa de WhatsApp, etc.).</div>
+          <div class="file-upload-info">
+            <div class="file-upload-name" x-text="preview ? 'Imagen cargada' : 'Ningún archivo elegido'"></div>
+            <div class="file-upload-meta">JPG, PNG o WEBP, máx. 4 MB. Opcional si cada variante ya tiene su propia foto — sin ninguna acá, se usa la de la primera variante en todos lados.</div>
+          </div>
+          <div class="file-upload-actions">
+            <button type="button" class="btn btn-sm" @click="$refs.imageInput.click()" x-text="preview ? 'Reemplazar' : 'Subir imagen'"></button>
             @if($product->image)
-              <label style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;color:var(--text-secondary);">
-                <input type="checkbox" name="remove_image" value="1" x-on:change="if($event.target.checked) preview = null">
-                Quitar imagen actual
-              </label>
+              <button type="button" class="btn btn-sm btn-ghost" @click="preview = null; $refs.removeImage.checked = true">Quitar</button>
             @endif
           </div>
+          <input type="file" id="image" name="image" accept="image/png,image/jpeg,image/webp" class="sr-only-file" x-ref="imageInput"
+                 x-on:change="preview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : preview">
         </div>
-        @error('image') <div class="error">{{ $message }}</div> @enderror
-      </div>
-
-      <div class="form-group">
-        <label>Galería de imágenes adicionales</label>
-        <div class="form-hint" style="margin-bottom:10px;">Se muestran en la página del producto además de la imagen principal — el cliente puede pasar entre todas. JPG, PNG o WEBP, máx. 4 MB cada una.</div>
-
-        @if($product->exists && $product->images->isNotEmpty())
-          <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
-            @foreach($product->images as $image)
-              <div style="width:88px;">
-                <div style="width:88px;height:88px;border-radius:10px;background:var(--bg-elevated-2);border:1px solid var(--border);overflow:hidden;">
-                  <img src="{{ $image->url }}" style="width:100%;height:100%;object-fit:cover;" alt="">
-                </div>
-                <label style="display:flex;align-items:center;gap:5px;margin-top:6px;font-size:11.5px;color:var(--text-secondary);">
-                  <input type="checkbox" name="remove_gallery_images[]" value="{{ $image->id }}">
-                  Quitar
-                </label>
-              </div>
-            @endforeach
-          </div>
+        @if($product->image)
+          <input type="checkbox" name="remove_image" value="1" x-ref="removeImage" class="sr-only-file" x-on:change="if($event.target.checked) preview = null">
         @endif
-
-        <div x-data="{ newGalleryPreviews: [] }">
-          <input type="file" name="gallery_images[]" accept="image/png,image/jpeg,image/webp" multiple
-                 x-on:change="newGalleryPreviews = Array.from($event.target.files).map(f => URL.createObjectURL(f))">
-          <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;" x-show="newGalleryPreviews.length" x-cloak>
-            <template x-for="url in newGalleryPreviews" :key="url">
-              <div style="width:88px;height:88px;border-radius:10px;background:var(--bg-elevated-2);border:1px solid var(--gold);overflow:hidden;">
-                <img :src="url" style="width:100%;height:100%;object-fit:cover;">
-              </div>
-            </template>
-          </div>
-        </div>
-        @error('gallery_images.*') <div class="error">{{ $message }}</div> @enderror
+        @error('image') <div class="error">{{ $message }}</div> @enderror
       </div>
     </div>
 
+    <div class="form-section">
+      <h3>Galería de imágenes adicionales</h3>
+      <div class="form-hint" style="margin-bottom:10px;">Se muestran en la página del producto además de la imagen principal — el cliente puede pasar entre todas. JPG, PNG o WEBP, máx. 4 MB cada una.</div>
+
+      @if($product->exists && $product->images->isNotEmpty())
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+          @foreach($product->images as $image)
+            <div style="width:88px;">
+              <div style="width:88px;height:88px;border-radius:10px;background:var(--bg-elevated-2);border:1px solid var(--border);overflow:hidden;">
+                <img src="{{ $image->url }}" style="width:100%;height:100%;object-fit:cover;" alt="">
+              </div>
+              <label style="display:flex;align-items:center;gap:5px;margin-top:6px;font-size:11.5px;color:var(--text-secondary);">
+                <input type="checkbox" name="remove_gallery_images[]" value="{{ $image->id }}">
+                Quitar
+              </label>
+            </div>
+          @endforeach
+        </div>
+      @endif
+
+      <div class="form-group" x-data="{ newGalleryPreviews: [] }">
+        <label for="gallery_images">Agregar imágenes</label>
+        <input type="file" id="gallery_images" name="gallery_images[]" accept="image/png,image/jpeg,image/webp" multiple
+               x-on:change="newGalleryPreviews = Array.from($event.target.files).map(f => URL.createObjectURL(f))">
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;" x-show="newGalleryPreviews.length" x-cloak>
+          <template x-for="url in newGalleryPreviews" :key="url">
+            <div style="width:88px;height:88px;border-radius:10px;background:var(--bg-elevated-2);border:1px solid var(--gold);overflow:hidden;">
+              <img :src="url" style="width:100%;height:100%;object-fit:cover;">
+            </div>
+          </template>
+        </div>
+      </div>
+      @error('gallery_images.*') <div class="error">{{ $message }}</div> @enderror
+    </div>
+    </div>
+
+    <div class="admin-form" x-show="tab === 'precio'" x-cloak>
     <div class="form-section">
       <h3>Precio y estado</h3>
 
       <div class="form-row">
         <div class="form-group">
           <label for="price">Precio</label>
-          <input type="number" step="0.01" min="0" id="price" name="price" x-model="price" required>
+          <input type="number" step="0.01" min="0" id="price" name="price" x-model="price">
           @error('price') <div class="error">{{ $message }}</div> @enderror
         </div>
         <div class="form-group">
@@ -193,7 +242,9 @@
         </div>
       </div>
     </div>
+    </div>
 
+    <div class="admin-form" x-show="tab === 'specs'" x-cloak>
     <div class="form-section">
       <h3>Especificaciones técnicas</h3>
       <template x-for="(spec, i) in specs" :key="i">
@@ -260,7 +311,9 @@
         </div>
       </template>
     </div>
+    </div>
 
+    <div class="admin-form" x-show="tab === 'variantes'" x-cloak>
     <div class="form-section">
       <h3>Variantes</h3>
       <p class="form-hint" style="margin-bottom:14px;">Si el producto viene en más de una opción (ej. color), agrégalas aquí — no crees un producto nuevo por cada variante. La foto y el precio de cada una son opcionales: dejalos vacíos y usan los de arriba. Ej. el Kumara cuesta lo mismo en negro y blanco → dejá el precio vacío en las dos variantes, y ponele a cada una la foto de su color para que el cliente vea cuál está eligiendo.</p>
@@ -283,6 +336,7 @@
         </div>
       </template>
       <button type="button" class="btn btn-sm" x-on:click="variants.push({id: '', variant_type: 'Color', variant_value: '', sku: '', price_override: '', image: null, imagePreview: null, removeImage: false})">+ Agregar variante</button>
+    </div>
     </div>
 
     <div class="form-actions">

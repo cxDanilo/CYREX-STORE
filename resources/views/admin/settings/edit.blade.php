@@ -5,9 +5,28 @@
 
 @section('content')
 
+{{-- Ningún campo de acá lleva el atributo required en su <input>, aun
+     cuando el servidor sí los exige (SettingsController@update) — con
+     pestañas, un required que queda oculto (display:none en otra
+     pestaña que la activa) hace que el navegador bloquee el envío del
+     formulario en silencio, sin mandar el POST ni mostrar ningún
+     error, apenas se intenta guardar desde una pestaña distinta a la
+     suya. La validación real la sigue haciendo el servidor. --}}
+@php
+  $tabErrorFields = [
+    'general' => ['rate', 'currency_mode', 'default_currency', 'show_exchange_rate_badge', 'category_menu_scope', 'auto_promo_category_id'],
+    'apariencia' => ['logo', 'logo_height', 'accent_color', 'reduced_motion', 'new_banner_images.*', 'pcbuilder_hero', 'quote_banner_text', 'quote_banner_color'],
+    'tienda' => ['shop_cta_text', 'whatsapp_btn_text', 'footer_whatsapp_btn_text', 'footer_tagline'],
+    'integraciones' => ['ga4_measurement_id', 'whatsapp_number', 'whatsapp_community_url', 'whatsapp_community_btn_text'],
+  ];
+  $errorTab = null;
+  foreach ($tabErrorFields as $tabKey => $fields) {
+      if ($errors->hasAny($fields)) { $errorTab = $tabKey; break; }
+  }
+@endphp
 <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data"
       x-data="{
-        tab: localStorage.getItem('cyrexAdminSettingsTab') || 'general',
+        tab: {!! $errorTab ? "'{$errorTab}'" : "localStorage.getItem('cyrexAdminSettingsTab') || 'general'" !!},
         dirty: false,
         saving: false,
       }"
@@ -130,7 +149,7 @@
 
       <div class="form-group">
         <label for="logo_height">Alto del logo (px)</label>
-        <input type="number" min="20" max="120" id="logo_height" name="logo_height" value="{{ old('logo_height', $logoHeight) }}" required>
+        <input type="number" min="20" max="120" id="logo_height" name="logo_height" value="{{ old('logo_height', $logoHeight) }}">
         <div class="form-hint">Se aplica al logo del header, footer y menú mobile. Entre 20 y 120px.</div>
         @error('logo_height') <div class="error">{{ $message }}</div> @enderror
       </div>
@@ -143,7 +162,7 @@
         <label for="accent_color">Color de acento</label>
         <div style="display:flex;gap:10px;align-items:center;">
           <input type="color" id="accent_color_picker" value="{{ old('accent_color', $accentColor) }}" style="width:44px;height:38px;padding:2px;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:8px;cursor:pointer;" onchange="document.getElementById('accent_color').value = this.value;">
-          <input type="text" id="accent_color" name="accent_color" value="{{ old('accent_color', $accentColor) }}" style="flex:1;" oninput="document.getElementById('accent_color_picker').value = this.value;" required>
+          <input type="text" id="accent_color" name="accent_color" value="{{ old('accent_color', $accentColor) }}" style="flex:1;" oninput="document.getElementById('accent_color_picker').value = this.value;">
         </div>
         <div class="form-hint">Reemplaza el dorado (#FFD900) en todo el sitio. Usalo con cuidado — es la identidad visual de la marca.</div>
         @error('accent_color') <div class="error">{{ $message }}</div> @enderror
@@ -208,7 +227,7 @@
 
       <div class="form-group">
         <label for="quote_banner_text">Texto del banner</label>
-        <input type="text" id="quote_banner_text" name="quote_banner_text" value="{{ old('quote_banner_text', $quoteBannerText) }}" maxlength="60" required>
+        <input type="text" id="quote_banner_text" name="quote_banner_text" value="{{ old('quote_banner_text', $quoteBannerText) }}" maxlength="60">
         @error('quote_banner_text') <div class="error">{{ $message }}</div> @enderror
       </div>
 
@@ -216,7 +235,7 @@
         <label for="quote_banner_color">Color del banner</label>
         <div style="display:flex;gap:10px;align-items:center;">
           <input type="color" id="quote_banner_color_picker" value="{{ old('quote_banner_color', $quoteBannerColor) }}" style="width:44px;height:38px;padding:2px;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:8px;cursor:pointer;" onchange="document.getElementById('quote_banner_color').value = this.value;">
-          <input type="text" id="quote_banner_color" name="quote_banner_color" value="{{ old('quote_banner_color', $quoteBannerColor) }}" style="flex:1;" oninput="document.getElementById('quote_banner_color_picker').value = this.value;" required>
+          <input type="text" id="quote_banner_color" name="quote_banner_color" value="{{ old('quote_banner_color', $quoteBannerColor) }}" style="flex:1;" oninput="document.getElementById('quote_banner_color_picker').value = this.value;">
         </div>
         @error('quote_banner_color') <div class="error">{{ $message }}</div> @enderror
       </div>
@@ -231,25 +250,25 @@
       <div class="form-row">
         <div class="form-group">
           <label for="shop_cta_text">Texto del botón "Ver tienda" (header)</label>
-          <input type="text" id="shop_cta_text" name="shop_cta_text" value="{{ old('shop_cta_text', $shopCtaText) }}" required>
+          <input type="text" id="shop_cta_text" name="shop_cta_text" value="{{ old('shop_cta_text', $shopCtaText) }}">
           @error('shop_cta_text') <div class="error">{{ $message }}</div> @enderror
         </div>
         <div class="form-group">
           <label for="whatsapp_btn_text">Texto del botón de WhatsApp (header)</label>
-          <input type="text" id="whatsapp_btn_text" name="whatsapp_btn_text" value="{{ old('whatsapp_btn_text', $whatsappBtnText) }}" required>
+          <input type="text" id="whatsapp_btn_text" name="whatsapp_btn_text" value="{{ old('whatsapp_btn_text', $whatsappBtnText) }}">
           @error('whatsapp_btn_text') <div class="error">{{ $message }}</div> @enderror
         </div>
       </div>
 
       <div class="form-group">
         <label for="footer_whatsapp_btn_text">Texto del botón de WhatsApp (footer)</label>
-        <input type="text" id="footer_whatsapp_btn_text" name="footer_whatsapp_btn_text" value="{{ old('footer_whatsapp_btn_text', $footerWhatsappBtnText) }}" required>
+        <input type="text" id="footer_whatsapp_btn_text" name="footer_whatsapp_btn_text" value="{{ old('footer_whatsapp_btn_text', $footerWhatsappBtnText) }}">
         @error('footer_whatsapp_btn_text') <div class="error">{{ $message }}</div> @enderror
       </div>
 
       <div class="form-group">
         <label for="footer_tagline">Frase del footer</label>
-        <input type="text" id="footer_tagline" name="footer_tagline" value="{{ old('footer_tagline', $footerTagline) }}" required>
+        <input type="text" id="footer_tagline" name="footer_tagline" value="{{ old('footer_tagline', $footerTagline) }}">
         @error('footer_tagline') <div class="error">{{ $message }}</div> @enderror
       </div>
     </div>
@@ -273,7 +292,7 @@
 
       <div class="form-group">
         <label for="whatsapp_number">Número de WhatsApp (con código de país, sin +, sin espacios)</label>
-        <input type="text" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number', $whatsappNumber) }}" placeholder="59177947379" required>
+        <input type="text" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number', $whatsappNumber) }}" placeholder="59177947379">
         <div class="form-hint">A este número llega el mensaje de "Finalizar por WhatsApp" del carrito.</div>
         @error('whatsapp_number') <div class="error">{{ $message }}</div> @enderror
       </div>
@@ -287,7 +306,7 @@
 
       <div class="form-group">
         <label for="whatsapp_community_btn_text">Texto del botón de la comunidad</label>
-        <input type="text" id="whatsapp_community_btn_text" name="whatsapp_community_btn_text" value="{{ old('whatsapp_community_btn_text', $whatsappCommunityBtnText) }}" maxlength="60" required>
+        <input type="text" id="whatsapp_community_btn_text" name="whatsapp_community_btn_text" value="{{ old('whatsapp_community_btn_text', $whatsappCommunityBtnText) }}" maxlength="60">
         @error('whatsapp_community_btn_text') <div class="error">{{ $message }}</div> @enderror
       </div>
     </div>
