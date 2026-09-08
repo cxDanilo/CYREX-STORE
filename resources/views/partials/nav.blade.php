@@ -112,6 +112,84 @@ document.addEventListener('alpine:init', () => {
       this.remaining = (d > 0 ? d + 'd ' : '') + this.h + 'h ' + this.m + 'm ' + this.s + 's';
     },
   });
+
+  // Calendario propio para elegir la fecha de fin de una oferta desde
+  // la edición rápida pública — reemplaza el <input type=datetime-local>
+  // nativo (cada navegador/SO lo dibuja distinto y no se puede tematizar)
+  // por un widget hecho a mano. Lee y escribe directamente la propiedad
+  // "editEndsAt" del x-data padre (mismo formato 'YYYY-MM-DDTHH:mm' que
+  // ya espera saveQuickEdit()).
+  Alpine.data('offerDatePicker', () => ({
+    open: false,
+    viewYear: 0,
+    viewMonth: 0,
+    selHour: '00',
+    selMinute: '00',
+    weekdays: ['L', 'M', 'X', 'J', 'V', 'S', 'D'],
+    monthNames: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
+    init() {
+      const base = this.editEndsAt ? new Date(this.editEndsAt) : new Date();
+      this.viewYear = base.getFullYear();
+      this.viewMonth = base.getMonth();
+      if (this.editEndsAt) {
+        this.selHour = String(base.getHours()).padStart(2, '0');
+        this.selMinute = String(Math.round(base.getMinutes() / 5) * 5 % 60).padStart(2, '0');
+      }
+    },
+    get monthLabel() {
+      const name = this.monthNames[this.viewMonth];
+      return name.charAt(0).toUpperCase() + name.slice(1) + ' de ' + this.viewYear;
+    },
+    get displayLabel() {
+      if (!this.editEndsAt) return 'Elegí fecha y hora';
+      const d = new Date(this.editEndsAt);
+      const pad = n => String(n).padStart(2, '0');
+      return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    },
+    get days() {
+      const first = new Date(this.viewYear, this.viewMonth, 1);
+      const startOffset = (first.getDay() + 6) % 7;
+      const daysInMonth = new Date(this.viewYear, this.viewMonth + 1, 0).getDate();
+      const cells = [];
+      for (let i = 0; i < startOffset; i++) cells.push(null);
+      for (let day = 1; day <= daysInMonth; day++) cells.push(day);
+      while (cells.length % 7 !== 0) cells.push(null);
+      return cells;
+    },
+    prevMonth() { this.viewMonth--; if (this.viewMonth < 0) { this.viewMonth = 11; this.viewYear--; } },
+    nextMonth() { this.viewMonth++; if (this.viewMonth > 11) { this.viewMonth = 0; this.viewYear++; } },
+    isSelected(day) {
+      if (!day || !this.editEndsAt) return false;
+      const d = new Date(this.editEndsAt);
+      return d.getFullYear() === this.viewYear && d.getMonth() === this.viewMonth && d.getDate() === day;
+    },
+    isToday(day) {
+      if (!day) return false;
+      const t = new Date();
+      return t.getFullYear() === this.viewYear && t.getMonth() === this.viewMonth && t.getDate() === day;
+    },
+    pickDay(day) {
+      if (!day) return;
+      const pad = n => String(n).padStart(2, '0');
+      this.editEndsAt = `${this.viewYear}-${pad(this.viewMonth + 1)}-${pad(day)}T${this.selHour}:${this.selMinute}`;
+    },
+    applyTime() {
+      if (!this.editEndsAt) return;
+      const d = new Date(this.editEndsAt);
+      const pad = n => String(n).padStart(2, '0');
+      this.editEndsAt = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${this.selHour}:${this.selMinute}`;
+    },
+    setToday() {
+      const t = new Date();
+      this.viewYear = t.getFullYear();
+      this.viewMonth = t.getMonth();
+      const pad = n => String(n).padStart(2, '0');
+      this.selHour = pad(t.getHours());
+      this.selMinute = pad(Math.round(t.getMinutes() / 5) * 5 % 60);
+      this.editEndsAt = `${t.getFullYear()}-${pad(t.getMonth() + 1)}-${pad(t.getDate())}T${this.selHour}:${this.selMinute}`;
+    },
+    clear() { this.editEndsAt = ''; this.open = false; },
+  }));
 });
 </script>
 

@@ -633,6 +633,40 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .admin-edit-offer-hint{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);}
 .admin-edit-error{color:var(--red);font-size:12.5px;margin:-8px 0 14px;}
 
+/* El navegador dibuja las flechitas de un input[type=number] con su
+   propio estilo del sistema operativo, sin importar el tema — nada de
+   controles "por defecto" en el sitio, así que se ocultan y el campo
+   queda como un input de texto común. */
+.admin-edit-input[type=number]{-moz-appearance:textfield;}
+.admin-edit-input[type=number]::-webkit-inner-spin-button,
+.admin-edit-input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+
+/* Selector de fecha/hora propio — reemplaza el <input type=datetime-local>
+   nativo (calendario del sistema operativo, imposible de tematizar) por
+   un calendario armado a mano, mismo criterio que el resto del sitio de
+   no dejar ver ningún control por defecto del navegador. */
+.admin-edit-datepicker{position:relative;}
+.admin-edit-datepicker-trigger{width:210px;text-align:left;cursor:pointer;color:var(--text-primary);font-family:inherit;font-size:14px;}
+.admin-edit-datepicker-trigger.is-placeholder{color:var(--text-muted);}
+.admin-edit-datepicker-panel{position:absolute;z-index:20;top:calc(100% + 8px);left:0;width:248px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.5);padding:14px;}
+.admin-edit-datepicker-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:13px;color:var(--text-primary);}
+.admin-edit-datepicker-nav button{background:none;border:1px solid var(--border);color:var(--text-secondary);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:14px;line-height:1;transition:border-color .15s,color .15s;}
+.admin-edit-datepicker-nav button:hover{border-color:var(--gold);color:var(--gold);}
+.admin-edit-datepicker-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;}
+.admin-edit-datepicker-weekdays span{text-align:center;font-family:var(--font-mono);font-size:10.5px;color:var(--text-muted);}
+.admin-edit-datepicker-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:12px;}
+.admin-edit-datepicker-day{aspect-ratio:1;background:none;border:none;border-radius:6px;color:var(--text-secondary);font-size:12.5px;cursor:pointer;transition:background .15s,color .15s;}
+.admin-edit-datepicker-day:hover:not(:disabled){background:var(--bg-elevated-2);color:var(--text-primary);}
+.admin-edit-datepicker-day.is-empty{visibility:hidden;cursor:default;}
+.admin-edit-datepicker-day.is-today{color:var(--gold);}
+.admin-edit-datepicker-day.is-selected{background:var(--gold);color:#0A0A0B;font-weight:600;}
+.admin-edit-datepicker-time{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px;}
+.admin-edit-datepicker-time select{appearance:none;-webkit-appearance:none;background:var(--bg-elevated-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238E8E93' stroke-width='1.5' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E") no-repeat right 8px center;border:1px solid var(--border);border-radius:6px;color:var(--text-primary);font-family:var(--font-mono);font-size:13px;padding:5px 22px 5px 8px;cursor:pointer;}
+.admin-edit-datepicker-time span{color:var(--text-muted);}
+.admin-edit-datepicker-actions{display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:10px;}
+.admin-edit-datepicker-link{background:none;border:none;color:var(--gold);font-size:12.5px;cursor:pointer;padding:2px;}
+.admin-edit-datepicker-link:hover{text-decoration:underline;}
+
 .spec-table{width:100%;border-collapse:collapse;}
 .spec-table tr{border-bottom:1px solid var(--border);}
 .spec-table td{padding:12px 16px;font-size:14px;}

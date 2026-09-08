@@ -416,7 +416,42 @@
             <span class="admin-edit-offer-hint" x-text="'Termina junto con «' + activeGroupName + '» el ' + activeGroupEndsAtLabel"></span>
           </template>
           <template x-if="!activeGroupName">
-            <input type="datetime-local" x-model="editEndsAt" class="admin-edit-input" style="width:210px;">
+            <div class="admin-edit-datepicker" x-data="offerDatePicker()" @click.outside="open = false">
+              <button type="button" class="admin-edit-input admin-edit-datepicker-trigger" :class="{ 'is-placeholder': !editEndsAt }" @click="open = !open" x-text="displayLabel"></button>
+              <div class="admin-edit-datepicker-panel" x-show="open" x-cloak x-transition>
+                <div class="admin-edit-datepicker-nav">
+                  <button type="button" @click="prevMonth()">‹</button>
+                  <span x-text="monthLabel"></span>
+                  <button type="button" @click="nextMonth()">›</button>
+                </div>
+                <div class="admin-edit-datepicker-weekdays">
+                  <template x-for="w in weekdays" :key="w"><span x-text="w"></span></template>
+                </div>
+                <div class="admin-edit-datepicker-days">
+                  <template x-for="(day, i) in days" :key="i">
+                    <button type="button"
+                      class="admin-edit-datepicker-day"
+                      :class="{ 'is-empty': !day, 'is-selected': isSelected(day), 'is-today': isToday(day) }"
+                      :disabled="!day"
+                      @click="pickDay(day)"
+                      x-text="day || ''"></button>
+                  </template>
+                </div>
+                <div class="admin-edit-datepicker-time">
+                  <select x-model="selHour" @change="applyTime()">
+                    <template x-for="h in 24" :key="h"><option :value="String(h - 1).padStart(2, '0')" x-text="String(h - 1).padStart(2, '0')"></option></template>
+                  </select>
+                  <span>:</span>
+                  <select x-model="selMinute" @change="applyTime()">
+                    <template x-for="m in [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]" :key="m"><option :value="String(m).padStart(2, '0')" x-text="String(m).padStart(2, '0')"></option></template>
+                  </select>
+                </div>
+                <div class="admin-edit-datepicker-actions">
+                  <button type="button" class="admin-edit-datepicker-link" @click="setToday()">Hoy</button>
+                  <button type="button" class="admin-edit-datepicker-link" @click="clear()">Borrar</button>
+                </div>
+              </div>
+            </div>
           </template>
         </div>
         <template x-if="offerError">
