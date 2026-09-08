@@ -47,11 +47,16 @@
       @endif
 
       <div class="form-group">
-        <label for="status">Estado</label>
-        <select id="status" name="status" required>
-          <option value="draft" {{ old('status', $page->status) === 'draft' ? 'selected' : '' }}>Borrador (no visible al público)</option>
-          <option value="published" {{ old('status', $page->status) === 'published' ? 'selected' : '' }}>Publicada</option>
-        </select>
+        <label>Estado</label>
+        <div class="segmented">
+          @foreach(['draft' => 'Borrador', 'published' => 'Publicada'] as $value => $label)
+            <label class="segmented-option">
+              <input type="radio" name="status" value="{{ $value }}" {{ old('status', $page->status) === $value ? 'checked' : '' }}>
+              <span>{{ $label }}</span>
+            </label>
+          @endforeach
+        </div>
+        <div class="form-hint">Borrador no es visible al público.</div>
       </div>
     </div>
 
@@ -73,9 +78,10 @@
       <h3>Navegación</h3>
 
       <div class="form-group">
-        <label style="display:flex;align-items:center;gap:8px;">
+        <label class="switch">
           <input type="checkbox" name="show_in_footer" value="1" {{ old('show_in_footer', $page->show_in_footer) ? 'checked' : '' }}>
-          Mostrar en el footer
+          <span class="switch-track"></span>
+          <span class="switch-label">Mostrar en el footer</span>
         </label>
       </div>
 

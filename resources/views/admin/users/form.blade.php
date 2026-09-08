@@ -33,12 +33,15 @@
       </div>
 
       <div class="form-group">
-        <label for="role">Rol</label>
-        <select id="role" name="role" required>
+        <label>Rol</label>
+        <div class="segmented">
           @foreach(\App\Models\User::ROLES as $value => $label)
-            <option value="{{ $value }}" {{ old('role', $user->role ?? 'editor') === $value ? 'selected' : '' }}>{{ $label }}</option>
+            <label class="segmented-option">
+              <input type="radio" name="role" value="{{ $value }}" {{ old('role', $user->role ?? 'editor') === $value ? 'checked' : '' }}>
+              <span>{{ $label }}</span>
+            </label>
           @endforeach
-        </select>
+        </div>
         <div class="form-hint">Administrador: acceso total, incluida la gestión de usuarios. Editor: todo el resto del panel, sin poder crear/editar/eliminar usuarios.</div>
         @error('role') <div class="error">{{ $message }}</div> @enderror
       </div>

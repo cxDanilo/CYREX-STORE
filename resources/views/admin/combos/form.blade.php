@@ -45,9 +45,10 @@
         @error('description') <div class="error">{{ $message }}</div> @enderror
       </div>
 
-      <label style="display:flex;align-items:center;gap:8px;">
+      <label class="switch">
         <input type="checkbox" name="active" value="1" {{ old('active', $combo->active) ? 'checked' : '' }}>
-        Activo
+        <span class="switch-track"></span>
+        <span class="switch-label">Activo</span>
       </label>
       <div class="form-hint">Apagalo para dejarlo armado sin que se muestre todavía en la home.</div>
     </div>
@@ -61,11 +62,15 @@
           @error('price') <div class="error">{{ $message }}</div> @enderror
         </div>
         <div class="form-group">
-          <label for="currency">Moneda</label>
-          <select id="currency" name="currency" required>
-            <option value="USD" {{ old('currency', $combo->currency) === 'USD' ? 'selected' : '' }}>USD</option>
-            <option value="BOB" {{ old('currency', $combo->currency) === 'BOB' ? 'selected' : '' }}>BOB</option>
-          </select>
+          <label>Moneda</label>
+          <div class="segmented">
+            @foreach(['USD' => 'USD', 'BOB' => 'BOB'] as $value => $optLabel)
+              <label class="segmented-option">
+                <input type="radio" name="currency" value="{{ $value }}" {{ old('currency', $combo->currency) === $value ? 'checked' : '' }}>
+                <span>{{ $optLabel }}</span>
+              </label>
+            @endforeach
+          </div>
           @error('currency') <div class="error">{{ $message }}</div> @enderror
         </div>
       </div>

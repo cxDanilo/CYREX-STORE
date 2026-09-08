@@ -102,14 +102,15 @@
                   $dynamic = is_string($bf['options'] ?? null) && str_starts_with($bf['options'], 'dynamic:');
                   $isFilter = $resolvedFields[$typeKey][$fieldKey]['shop_filter'] ?? false;
                 @endphp
-                <form method="POST" action="{{ route('admin.attribute-fields.toggle-builtin') }}" style="display:flex;align-items:center;gap:8px;">
+                <form method="POST" action="{{ route('admin.attribute-fields.toggle-builtin') }}">
                   @csrf @method('PUT')
                   <input type="hidden" name="type_key" value="{{ $typeKey }}">
                   <input type="hidden" name="field_key" value="{{ $fieldKey }}">
                   <input type="hidden" name="enabled" value="0">
-                  <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--text-secondary);">
-                    <input type="checkbox" name="enabled" value="1" {{ $isFilter ? 'checked' : '' }} onchange="this.form.requestSubmit()" style="flex-shrink:0;margin-top:3px;">
-                    <span>
+                  <label class="switch">
+                    <input type="checkbox" name="enabled" value="1" {{ $isFilter ? 'checked' : '' }} onchange="this.form.requestSubmit()">
+                    <span class="switch-track"></span>
+                    <span class="switch-label">
                       {{ $bf['label'] }}
                       @if($dynamic) <span class="mono" style="color:var(--text-muted);">(opciones en Compatibilidad)</span> @endif
                       — usar como filtro en la tienda
@@ -157,9 +158,10 @@
                         </template>
                         <button type="button" class="btn btn-sm" x-on:click="options.push({key: '', label: ''})">+ Agregar opción</button>
                       @endif
-                      <label style="display:flex;align-items:center;gap:6px;font-size:13px;">
+                      <label class="switch">
                         <input type="checkbox" name="shop_filter" value="1" {{ $field->shop_filter ? 'checked' : '' }}>
-                        Usar como filtro en la tienda
+                        <span class="switch-track"></span>
+                        <span class="switch-label">Usar como filtro en la tienda</span>
                       </label>
                       <div style="display:flex;gap:8px;">
                         <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
@@ -200,11 +202,14 @@
             </div>
             <div class="form-group" style="margin:0;">
               <label>Tipo de campo</label>
-              <select name="field_type" x-model="newFieldType">
-                <option value="select">Lista de opciones (una sola)</option>
-                <option value="checkboxes">Lista de opciones (varias a la vez)</option>
-                <option value="number">Número</option>
-              </select>
+              <div class="segmented">
+                @foreach(['select' => 'Lista (una)', 'checkboxes' => 'Lista (varias)', 'number' => 'Número'] as $value => $label)
+                  <label class="segmented-option">
+                    <input type="radio" name="field_type" value="{{ $value }}" x-model="newFieldType">
+                    <span>{{ $label }}</span>
+                  </label>
+                @endforeach
+              </div>
             </div>
             <div x-show="newFieldType === 'select' || newFieldType === 'checkboxes'" x-cloak style="display:flex;flex-direction:column;gap:8px;">
               <label style="font-size:12.5px;color:var(--text-secondary);">Opciones para elegir</label>
@@ -261,11 +266,14 @@
           </div>
           <div class="form-group" style="margin:0;">
             <label>Tipo de campo</label>
-            <select name="field_type" x-model="newFieldType">
-              <option value="select">Lista de opciones (una sola)</option>
-              <option value="checkboxes">Lista de opciones (varias a la vez)</option>
-              <option value="number">Número</option>
-            </select>
+            <div class="segmented">
+              @foreach(['select' => 'Lista (una)', 'checkboxes' => 'Lista (varias)', 'number' => 'Número'] as $value => $label)
+                <label class="segmented-option">
+                  <input type="radio" name="field_type" value="{{ $value }}" x-model="newFieldType">
+                  <span>{{ $label }}</span>
+                </label>
+              @endforeach
+            </div>
           </div>
           <div x-show="newFieldType === 'select' || newFieldType === 'checkboxes'" x-cloak style="display:flex;flex-direction:column;gap:8px;">
             <label style="font-size:12.5px;color:var(--text-secondary);">Opciones para elegir</label>
@@ -278,9 +286,10 @@
             </template>
             <button type="button" class="btn btn-sm" x-on:click="options.push({key: '', label: ''})" style="align-self:flex-start;">+ Agregar opción</button>
           </div>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;">
+          <label class="switch">
             <input type="checkbox" name="shop_filter" value="1">
-            Usar como filtro en la tienda
+            <span class="switch-track"></span>
+            <span class="switch-label">Usar como filtro en la tienda</span>
           </label>
         </div>
 
