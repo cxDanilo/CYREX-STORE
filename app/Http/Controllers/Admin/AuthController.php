@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 use App\Support\ReferralRouter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,7 +34,10 @@ class AuthController extends Controller
             }
         }
 
-        return view('admin.auth.login', ['lockoutSeconds' => $lockoutSeconds]);
+        return view('admin.auth.login', [
+            'lockoutSeconds' => $lockoutSeconds,
+            'logoUrl' => Setting::logoUrl(),
+        ]);
     }
 
     /**

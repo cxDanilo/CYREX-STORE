@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class Setting extends Model
 {
@@ -20,5 +21,17 @@ class Setting extends Model
     {
         static::updateOrCreate(['key' => $key], ['value' => $value]);
         Cache::forget("setting.{$key}");
+    }
+
+    /**
+     * El logo subido en Ajustes → Marca, o el default del repo si nadie
+     * cargó uno todavía. Un solo lugar para esta lógica — la usan tanto
+     * el sitio público (AppServiceProvider) como el login de admin.
+     */
+    public static function logoUrl(): string
+    {
+        $path = static::get('logo_path');
+
+        return $path ? Storage::disk('uploads')->url($path) : asset('images/logo-horizontal.png');
     }
 }

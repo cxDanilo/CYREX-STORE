@@ -12,7 +12,6 @@ use App\Models\SocialLink;
 use App\Support\Cart;
 use App\Support\ReferralRouter;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -140,9 +139,7 @@ class AppServiceProvider extends ServiceProvider
 
     private function resolveLogoUrl(): string
     {
-        $path = Setting::get('logo_path');
-
-        return $path ? Storage::disk('uploads')->url($path) : asset('images/logo-horizontal.png');
+        return Setting::logoUrl();
     }
 
     /**
