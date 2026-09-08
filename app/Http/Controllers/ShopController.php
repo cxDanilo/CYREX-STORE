@@ -147,15 +147,20 @@ class ShopController extends Controller
             ->limit(6)
             ->get();
 
+        $forceBob = AdminCurrencyPref::forceBob();
+        $rate = $forceBob ? ExchangeRate::current() : null;
+
         return response()->json([
             'results' => $products->map(fn ($p) => [
                 'name' => $p->name,
                 'category' => $p->category->name,
                 'url' => route('product.show', $p->slug),
                 'image' => $p->image_url,
-                'price' => $p->currency === 'USD'
-                    ? '$'.number_format($p->price, 2)
-                    : 'Bs '.number_format($p->price, 2),
+                'price' => $forceBob
+                    ? 'Bs '.number_format($p->effectivePriceInBob($rate), 2)
+                    : ($p->currency === 'USD'
+                        ? '$'.number_format($p->effectivePrice(), 2)
+                        : 'Bs '.number_format($p->effectivePrice(), 2)),
             ]),
         ]);
     }
