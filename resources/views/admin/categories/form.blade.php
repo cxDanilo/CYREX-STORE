@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', $category->exists ? 'Editar categoría' : 'Nueva categoría')
+@section('page-description', 'Nombre, ícono, banner y tipo de atributos de la categoría.')
 
 @section('content')
 
@@ -58,32 +59,28 @@
       </div>
 
       <div class="form-group" x-show="parentId === ''" x-cloak>
-        <label for="icon_image">Ícono personalizado</label>
-        @if($category->icon_image_url)
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-            <img src="{{ $category->icon_image_url }}" alt="" style="width:36px;height:36px;object-fit:contain;background:var(--bg);border-radius:8px;padding:4px;">
-            <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary);">
-              <input type="checkbox" name="remove_icon_image" value="1"> Quitar imagen personalizada
-            </label>
-          </div>
-        @endif
-        <input type="file" id="icon_image" name="icon_image" accept="image/png,image/jpeg,image/webp,image/svg+xml">
-        <div class="form-hint">Reemplaza el ícono predefinido en el menú flotante y el listado. PNG/JPG/WEBP/SVG, máx 1MB.</div>
+        <label>Ícono personalizado</label>
+        @include('partials.admin-file-upload', [
+          'name' => 'icon_image',
+          'accept' => 'image/png,image/jpeg,image/webp,image/svg+xml',
+          'currentUrl' => $category->icon_image_url,
+          'currentLabel' => 'Ícono actual',
+          'hint' => 'Reemplaza el ícono predefinido. PNG/JPG/WEBP/SVG, máx 1MB.',
+          'removeName' => $category->icon_image_url ? 'remove_icon_image' : null,
+        ])
         @error('icon_image') <div class="error">{{ $message }}</div> @enderror
       </div>
 
       <div class="form-group">
-        <label for="banner_image">Banner de la tienda</label>
-        @if($category->banner_image_url)
-          <div style="margin-bottom:10px;">
-            <img src="{{ $category->banner_image_url }}" alt="" style="width:100%;max-width:320px;aspect-ratio:16/5;object-fit:cover;border-radius:10px;display:block;margin-bottom:8px;">
-            <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary);">
-              <input type="checkbox" name="remove_banner_image" value="1"> Quitar banner (vuelve a usar uno genérico al azar)
-            </label>
-          </div>
-        @endif
-        <input type="file" id="banner_image" name="banner_image" accept="image/png,image/jpeg,image/webp">
-        <div class="form-hint">Fondo del encabezado en /tienda cuando esta categoría está seleccionada. Si no subes uno, se usa al azar entre los genéricos de Admin → Ajustes. PNG/JPG/WEBP, máx 4MB.</div>
+        <label>Banner de la tienda</label>
+        @include('partials.admin-file-upload', [
+          'name' => 'banner_image',
+          'accept' => 'image/png,image/jpeg,image/webp',
+          'currentUrl' => $category->banner_image_url,
+          'currentLabel' => 'Banner actual',
+          'hint' => 'Fondo del encabezado en /tienda para esta categoría. Sin uno propio, se usa uno genérico al azar. Máx 4MB.',
+          'removeName' => $category->banner_image_url ? 'remove_banner_image' : null,
+        ])
         @error('banner_image') <div class="error">{{ $message }}</div> @enderror
       </div>
 

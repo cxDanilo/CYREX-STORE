@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Productos')
+@section('page-description', 'Gestiona el catálogo: precios, stock, ofertas y visibilidad de cada producto.')
 
 @section('topbar-actions')
   <a href="{{ route('admin.productos.create') }}" class="btn btn-primary">+ Nuevo producto</a>
@@ -85,14 +86,16 @@
                 @csrf
                 @method('PATCH')
 
-                <label style="display:flex;align-items:center;gap:8px;font-size:13px;">
+                <label class="switch">
                   <input type="checkbox" name="is_sold_out" value="1" {{ $product->is_sold_out ? 'checked' : '' }}>
-                  Agotado
+                  <span class="switch-track"></span>
+                  <span class="switch-label">Agotado</span>
                 </label>
 
-                <label style="display:flex;align-items:center;gap:8px;font-size:13px;">
+                <label class="switch">
                   <input type="checkbox" name="offer_selected" value="1" x-model="onOffer">
-                  En oferta
+                  <span class="switch-track"></span>
+                  <span class="switch-label">En oferta</span>
                 </label>
 
                 <div x-show="onOffer" x-cloak style="display:flex;flex-direction:column;gap:10px;padding-left:24px;">

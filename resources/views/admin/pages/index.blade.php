@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Páginas')
+@section('page-description', 'Páginas de contenido publicadas en el sitio.')
 
 @section('topbar-actions')
   <a href="{{ route('admin.paginas.create') }}" class="btn btn-primary">+ Nueva página</a>

@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Importar de WooCommerce')
+@section('page-description', 'Sube un CSV exportado de WooCommerce para traer productos al catálogo.')
 
 @section('content')
 

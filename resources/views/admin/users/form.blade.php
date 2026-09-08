@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', $user->exists ? 'Editar usuario' : 'Nuevo usuario')
+@section('page-description', 'Datos de acceso y rol del usuario.')
 
 @section('content')
 

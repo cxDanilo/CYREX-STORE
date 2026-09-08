@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Menús')
+@section('page-description', 'Enlaces del menú del header del sitio.')
 
 @section('topbar-actions')
   <a href="{{ route('admin.menus.create') }}" class="btn btn-primary">+ Nuevo menú</a>

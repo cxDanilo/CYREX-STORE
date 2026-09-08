@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', $socialLink->exists ? 'Editar red social' : 'Nueva red social')
+@section('page-description', 'Plataforma, link e ícono de la red social.')
 
 @section('content')
 

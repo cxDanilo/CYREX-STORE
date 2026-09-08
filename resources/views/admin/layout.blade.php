@@ -14,6 +14,8 @@
 <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script src="{{ asset('js/admin-autoslug.js') }}?v={{ filemtime(public_path('js/admin-autoslug.js')) }}"></script>
+<script src="{{ asset('js/admin-toast.js') }}?v={{ filemtime(public_path('js/admin-toast.js')) }}"></script>
+<script src="{{ asset('js/admin-file-upload.js') }}?v={{ filemtime(public_path('js/admin-file-upload.js')) }}"></script>
 @yield('styles')
 </head>
 <body>
@@ -129,25 +131,29 @@
 
   <div class="admin-main">
     <div class="admin-topbar">
-      <button type="button" class="admin-hamburger" aria-label="Abrir menú" x-on:click="navOpen = true">
-        <span></span><span></span><span></span>
-      </button>
-      <h1>@yield('title', 'Panel')</h1>
-      @hasSection('topbar-actions')
-        <div>@yield('topbar-actions')</div>
-      @endif
+      <div class="admin-topbar-inner">
+        <button type="button" class="admin-hamburger" aria-label="Abrir menú" x-on:click="navOpen = true">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="admin-topbar-heading">
+          <h1>@yield('title', 'Panel')</h1>
+          @hasSection('page-description')
+            <div class="admin-topbar-description">@yield('page-description')</div>
+          @endif
+        </div>
+        @hasSection('topbar-actions')
+          <div>@yield('topbar-actions')</div>
+        @endif
+      </div>
     </div>
     <div class="admin-content">
-      @if(session('status'))
-        <div class="admin-flash">{{ session('status') }}</div>
-      @endif
-      @if(session('error'))
-        <div class="admin-flash admin-flash-error">{{ session('error') }}</div>
-      @endif
       @yield('content')
     </div>
   </div>
 </div>
+
+<div id="admin-toast-data" data-status="{{ session('status') }}" data-error="{{ session('error') }}" hidden></div>
+<div class="toast-stack" id="admin-toast-stack"></div>
 
 @yield('scripts')
 </body>

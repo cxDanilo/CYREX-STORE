@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Historial de versiones')
+@section('page-description', 'Cada despliegue del sitio, en orden.')
 
 @section('content')
 

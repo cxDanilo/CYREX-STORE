@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Historial de cambios')
+@section('page-description', 'Quién cambió qué y cuándo, producto por producto.')
 
 @section('content')
 

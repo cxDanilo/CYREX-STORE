@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Usuarios')
+@section('page-description', 'Quién tiene acceso al panel de administración.')
 
 @section('topbar-actions')
   @if(auth()->user()->isAdmin())

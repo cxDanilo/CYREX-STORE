@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Compatibilidad y atributos')
+@section('page-description', 'Listas de valores y campos personalizados por tipo de producto.')
 
 @section('content')
 

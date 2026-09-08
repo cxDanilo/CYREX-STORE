@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', $page->exists ? 'Editar página' : 'Nueva página')
+@section('page-description', 'Título, slug y visibilidad de la página.')
 
 @section('content')
 

@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Resultado de la importación')
+@section('page-description', 'Resumen de qué se importó y qué quedó pendiente.')
 
 @section('content')
 

@@ -1,6 +1,7 @@
 ﻿@extends('admin.layout')
 
 @section('title', $product->exists ? 'Editar producto' : 'Nuevo producto')
+@section('page-description', $product->exists ? 'Actualiza los datos, precio, imágenes y variantes de este producto.' : 'Completa los datos para publicar un producto nuevo en la tienda.')
 
 @section('content')
 
@@ -179,9 +180,10 @@
       </div>
 
       <div class="form-group">
-        <label style="display:flex;align-items:center;gap:8px;">
+        <label class="switch">
           <input type="checkbox" name="is_sold_out" value="1" {{ old('is_sold_out', $product->is_sold_out ?? false) ? 'checked' : '' }}>
-          Marcar como agotado
+          <span class="switch-track"></span>
+          <span class="switch-label">Marcar como agotado</span>
         </label>
         <div class="form-hint">
           El producto se ve "Agotado" en el sitio (imagen en blanco y negro, no se puede agregar al carrito) y a los 7 días de marcarlo se pone en Privado solo.

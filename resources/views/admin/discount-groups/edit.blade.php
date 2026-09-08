@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Descuentos')
+@section('page-description', 'Campañas de oferta con fecha de fin — se autolimpian solas al vencer.')
 
 @section('content')
 

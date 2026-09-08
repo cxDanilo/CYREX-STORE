@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Redes sociales')
+@section('page-description', 'Íconos y links de redes sociales en el footer.')
 
 @section('topbar-actions')
   <a href="{{ route('admin.redes.create') }}" class="btn btn-primary">+ Nueva red</a>

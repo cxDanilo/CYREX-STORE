@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Analítica')
+@section('page-description', 'Visitas, búsquedas y productos más vistos.')
 
 @section('content')
 

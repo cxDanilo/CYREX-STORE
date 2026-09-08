@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', $promotion->exists ? 'Editar promoción' : 'Nueva promoción')
+@section('page-description', 'Banner estacional con fecha, textos y efecto visual propios.')
 
 @section('content')
 
@@ -40,9 +41,10 @@
         <div class="form-hint">Si la eliges, todos los productos de esa categoría entran en la promo automáticamente.</div>
       </div>
 
-      <label style="display:flex;align-items:center;gap:8px;">
+      <label class="switch">
         <input type="checkbox" name="active" value="1" {{ old('active', $promotion->active) ? 'checked' : '' }}>
-        Activa
+        <span class="switch-track"></span>
+        <span class="switch-label">Activa</span>
       </label>
       <div class="form-hint">Apagala para dejarla lista sin que se muestre todavía en el sitio.</div>
     </div>
@@ -94,9 +96,10 @@
         </div>
       </div>
 
-      <label style="display:flex;align-items:center;gap:8px;">
+      <label class="switch">
         <input type="checkbox" name="is_recurring" value="1" x-model="isRecurring">
-        Se repite todos los años (Navidad, Día de la Madre, etc.)
+        <span class="switch-track"></span>
+        <span class="switch-label">Se repite todos los años (Navidad, Día de la Madre, etc.)</span>
       </label>
       <div class="form-hint">Si la marcas, las fechas de arriba solo definen cuántos días dura — el día del evento de abajo se reproyecta cada año solo.</div>
 
@@ -117,9 +120,10 @@
 
     <div class="form-section">
       <h3>Modal (nivel 3)</h3>
-      <label style="display:flex;align-items:center;gap:8px;">
+      <label class="switch">
         <input type="checkbox" name="show_as_modal" value="1" {{ old('show_as_modal', $promotion->show_as_modal) ? 'checked' : '' }}>
-        Mostrar también como modal en la home
+        <span class="switch-track"></span>
+        <span class="switch-label">Mostrar también como modal en la home</span>
       </label>
       <div class="form-hint">Reservado para 1-2 fechas grandes al año. Aparece una sola vez por sesión, nunca junto con la barra de anuncio.</div>
     </div>

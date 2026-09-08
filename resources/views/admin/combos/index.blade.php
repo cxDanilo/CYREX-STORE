@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Combos')
+@section('page-description', 'Paquetes de productos a precio fijo, listos para vender juntos.')
 
 @section('topbar-actions')
   <a href="{{ route('admin.combos.create') }}" class="btn btn-primary">+ Nuevo combo</a>

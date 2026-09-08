@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', $combo->exists ? 'Editar combo' : 'Nuevo combo')
+@section('page-description', 'Elige los productos incluidos y el precio final del paquete.')
 
 @section('content')
 

@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Promociones')
+@section('page-description', 'Banners estacionales de la home — Navidad, Año Nuevo, fechas especiales.')
 
 @section('topbar-actions')
   <a href="{{ route('admin.promociones.create') }}" class="btn btn-primary">+ Nueva promoción</a>

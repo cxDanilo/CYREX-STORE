@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', $template->exists ? 'Editar plantilla' : 'Nueva plantilla')
+@section('page-description', 'Contenido reutilizable en el editor visual de páginas.')
 
 @section('content')
 

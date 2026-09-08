@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Categorías')
+@section('page-description', 'Organiza el árbol de categorías y su orden en la tienda.')
 
 @section('topbar-actions')
   <a href="{{ route('admin.categorias.create') }}" class="btn btn-primary">+ Nueva categoría</a>

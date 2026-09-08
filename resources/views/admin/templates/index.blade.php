@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Plantillas')
+@section('page-description', 'Bloques de contenido reutilizables para el editor de páginas.')
 
 @section('topbar-actions')
   <a href="{{ route('admin.plantillas.create') }}" class="btn btn-primary">+ Nueva plantilla</a>

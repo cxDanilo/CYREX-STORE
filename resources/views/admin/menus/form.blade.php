@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', $menu->exists ? 'Editar menú' : 'Nuevo menú')
+@section('page-description', 'Arma el menú con páginas del sitio o links propios.')
 
 @section('content')
 

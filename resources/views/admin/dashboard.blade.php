@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Dashboard')
+@section('page-description', 'Un vistazo rápido al estado de la tienda.')
 
 @section('content')
 
@@ -28,22 +29,22 @@
 </div>
 
 <div class="admin-dashboard-grid">
-  <div class="cms-editor-panel" style="grid-column:1/-1;">
-    <h4>Productos agotados</h4>
+  <div class="admin-panel" style="grid-column:1/-1;">
+    <h3>Productos agotados</h3>
     @if($agotados->isEmpty())
       <p class="form-hint">Ningún producto activo está marcado como agotado ahora mismo.</p>
     @else
       @foreach($agotados as $product)
         <div class="admin-dashboard-row">
           <a href="{{ route('admin.productos.edit', $product) }}">{{ $product->name }}</a>
-          <span class="mono" style="color:var(--red);">Agotado</span>
+          <span class="status-badge inactive">Agotado</span>
         </div>
       @endforeach
     @endif
   </div>
 
-  <div class="cms-editor-panel" style="grid-column:1/-1;">
-    <h4>Actividad reciente</h4>
+  <div class="admin-panel" style="grid-column:1/-1;">
+    <h3>Actividad reciente</h3>
     @if($actividadReciente->isEmpty())
       <p class="form-hint">Todavía no hay cambios registrados.</p>
     @else

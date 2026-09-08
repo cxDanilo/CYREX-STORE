@@ -1,6 +1,7 @@
 @extends('admin.layout')
 
 @section('title', 'Medios')
+@section('page-description', 'Biblioteca de imágenes reutilizables en todo el sitio.')
 
 @section('content')
 
