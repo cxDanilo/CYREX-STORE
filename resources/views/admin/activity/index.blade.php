@@ -48,14 +48,20 @@
               @if(empty($log->changes))
                 <span style="color:var(--text-muted);">—</span>
               @else
-                <div style="display:flex;flex-direction:column;gap:4px;">
+                <div style="display:flex;flex-direction:column;gap:6px;">
                   @foreach($log->changes as $field => $change)
-                    <div style="font-size:12.5px;">
-                      <span class="mono" style="color:var(--text-muted);">{{ $field }}:</span>
-                      <span style="color:var(--red);text-decoration:line-through;">{{ \Illuminate\Support\Str::limit((string) ($change['antes'] ?? '—'), 40) }}</span>
-                      →
-                      <span style="color:var(--green);">{{ \Illuminate\Support\Str::limit((string) ($change['despues'] ?? '—'), 40) }}</span>
-                    </div>
+                    @foreach(\App\Models\ProductActivityLog::describeChange($change['antes'] ?? null, $change['despues'] ?? null, $field) as $row)
+                      <div style="font-size:12.5px;">
+                        <span style="color:var(--text-secondary);font-weight:600;">{{ \App\Models\ProductActivityLog::fieldLabel($field) }}{{ $row['label'] ? " ({$row['label']})" : '' }}:</span>
+                        @if($row['before'] === null)
+                          <span style="color:var(--text-muted);">sin cambios visibles</span>
+                        @else
+                          <span style="color:var(--red);text-decoration:line-through;">{{ $row['before'] }}</span>
+                          →
+                          <span style="color:var(--green);">{{ $row['after'] }}</span>
+                        @endif
+                      </div>
+                    @endforeach
                   @endforeach
                 </div>
               @endif
