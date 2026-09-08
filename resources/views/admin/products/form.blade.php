@@ -104,20 +104,26 @@
       @php
         $selectedCategoryIds = old('category_ids', $product->exists ? $product->categories->pluck('id')->all() : []);
       @endphp
-      <div class="form-group">
+      <div class="form-group" x-data="{ open: {{ count($selectedCategoryIds) ? 'true' : 'false' }} }">
         <label>Categorías adicionales (opcional)</label>
         <div class="form-hint" style="margin-bottom:8px;">Además de su categoría de arriba, este producto también se va a listar en las que marques acá — por ejemplo, para que aparezca en una categoría "Promociones" sin dejar de ser lo que es.</div>
-        <div style="max-height:260px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:14px;">
-          @foreach($categories as $cat)
-            @continue($cat->id === $product->category_id)
-            <label class="combo-product-row">
-              <input type="checkbox" name="category_ids[]" value="{{ $cat->id }}"
-                     {{ in_array($cat->id, $selectedCategoryIds) ? 'checked' : '' }}>
-              <span class="combo-product-row-info">
-                <span class="combo-product-row-name">{{ $cat->parent_id ? '— ' : '' }}{{ $cat->name }}</span>
-              </span>
-            </label>
-          @endforeach
+
+        <button type="button" class="btn btn-sm" x-show="!open" @click="open = true">+ Agregar categorías adicionales</button>
+
+        <div x-show="open" x-cloak>
+          <div style="max-height:260px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:14px;">
+            @foreach($categories as $cat)
+              @continue($cat->id === $product->category_id)
+              <label class="combo-product-row">
+                <input type="checkbox" name="category_ids[]" value="{{ $cat->id }}"
+                       {{ in_array($cat->id, $selectedCategoryIds) ? 'checked' : '' }}>
+                <span class="combo-product-row-info">
+                  <span class="combo-product-row-name">{{ $cat->parent_id ? '— ' : '' }}{{ $cat->name }}</span>
+                </span>
+              </label>
+            @endforeach
+          </div>
+          <button type="button" class="btn btn-sm btn-ghost" style="margin-top:8px;" @click="open = false">Cerrar</button>
         </div>
         @error('category_ids') <div class="error">{{ $message }}</div> @enderror
       </div>
