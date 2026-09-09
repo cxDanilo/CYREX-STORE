@@ -349,6 +349,7 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 .card-name{font-size:13.5px;font-weight:500;margin-bottom:8px;line-height:1.4;min-height:38px;}
 .card-price{font-family:var(--font-mono);font-size:15px;color:var(--gold);}
 .card-price small{font-size:10px;color:var(--text-muted);}
+.card-price-from{font-family:var(--font-body);font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;margin-right:4px;}
 .card-price-original{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);text-decoration:line-through;margin-bottom:1px;}
 /* Antes era una línea de texto gris, chica, fácil de pasar por alto —
    pedido explícito del usuario: "mucho más llamativo". Rojo (mismo

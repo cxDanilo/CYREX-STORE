@@ -583,10 +583,11 @@
             </div>
           @endif
           <div class="card-price">
+            @if($r->hasVariantPriceRange())<span class="card-price-from">Desde</span>@endif
             @if($r->currency === 'USD')
-              ${{ number_format($r->effectivePrice(), 2) }}
+              ${{ number_format($r->displayPrice(), 2) }}
             @else
-              Bs {{ number_format($r->effectivePrice(), 2) }}
+              Bs {{ number_format($r->displayPrice(), 2) }}
             @endif
           </div>
           @if($r->hasActiveOffer())

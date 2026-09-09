@@ -178,7 +178,7 @@ class ShopController extends Controller
 
         $products = Product::where('status', 'active')
             ->where('name', 'like', '%'.$term.'%')
-            ->with('category')
+            ->with(['category', 'variants'])
             ->orderByDesc('created_at')
             ->limit(6)
             ->get();
@@ -192,11 +192,11 @@ class ShopController extends Controller
                 'category' => $p->category->name,
                 'url' => route('product.show', $p->slug),
                 'image' => $p->image_url,
-                'price' => $forceBob
-                    ? 'Bs '.number_format($p->effectivePriceInBob($rate), 2)
+                'price' => ($p->hasVariantPriceRange() ? 'Desde ' : '').($forceBob
+                    ? 'Bs '.number_format($p->displayPriceInBob($rate), 2)
                     : ($p->currency === 'USD'
-                        ? '$'.number_format($p->effectivePrice(), 2)
-                        : 'Bs '.number_format($p->effectivePrice(), 2)),
+                        ? '$'.number_format($p->displayPrice(), 2)
+                        : 'Bs '.number_format($p->displayPrice(), 2))),
             ]),
         ]);
     }

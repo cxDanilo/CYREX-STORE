@@ -251,4 +251,48 @@ class Product extends Model
 
         return (int) round((1 - ((float) $this->offer_price / (float) $this->price)) * 100);
     }
+
+    /**
+     * true si el producto tiene variantes con AL MENOS dos precios
+     * efectivos distintos entre sí (una variante sin precio propio
+     * cuenta con el precio del producto, igual que hace la ficha
+     * pública) — ahí es cuando tiene sentido mostrar "Desde $X" en vez
+     * del precio a secas, porque ese único número no representa lo que
+     * termina costando cada variante.
+     */
+    public function hasVariantPriceRange(): bool
+    {
+        if (! $this->has_variants || $this->variants->isEmpty()) {
+            return false;
+        }
+
+        return $this->variants
+            ->map(fn (ProductVariant $v) => (float) ($v->price_override ?? $this->effectivePrice()))
+            ->unique()
+            ->count() > 1;
+    }
+
+    /**
+     * Precio para tarjetas/listados (tienda, relacionados, buscador):
+     * con rango de precios entre variantes, el más barato — es el que
+     * de verdad se puede pagar por este producto, ninguna variante
+     * cuesta menos. Sin rango (sin variantes, o todas al mismo precio),
+     * el de siempre. Ver hasVariantPriceRange() para cuándo antepone
+     * "Desde" en la vista.
+     */
+    public function displayPrice(): float
+    {
+        if (! $this->hasVariantPriceRange()) {
+            return $this->effectivePrice();
+        }
+
+        return $this->variants
+            ->map(fn (ProductVariant $v) => (float) ($v->price_override ?? $this->effectivePrice()))
+            ->min();
+    }
+
+    public function displayPriceInBob(float $rate): float
+    {
+        return $this->currency === 'BOB' ? $this->displayPrice() : $this->displayPrice() * $rate;
+    }
 }

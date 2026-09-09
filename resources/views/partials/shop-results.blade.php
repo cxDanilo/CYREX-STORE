@@ -117,12 +117,13 @@
           </div>
         @endif
         <div class="card-price">
+          @if($product->hasVariantPriceRange())<span class="card-price-from">Desde</span>@endif
           @if(!empty($forceBob))
-            Bs {{ number_format($product->effectivePriceInBob($rate), 2) }} <small>BOB</small>
+            Bs {{ number_format($product->displayPriceInBob($rate), 2) }} <small>BOB</small>
           @elseif($product->currency === 'USD')
-            ${{ number_format($product->effectivePrice(), 2) }} <small>USD</small>
+            ${{ number_format($product->displayPrice(), 2) }} <small>USD</small>
           @else
-            Bs {{ number_format($product->effectivePrice(), 2) }} <small>BOB</small>
+            Bs {{ number_format($product->displayPrice(), 2) }} <small>BOB</small>
           @endif
         </div>
         @if($product->hasActiveOffer())
