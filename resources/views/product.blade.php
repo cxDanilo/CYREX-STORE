@@ -522,7 +522,7 @@
          (listas de specs, etc.) — mismo criterio que el bloque html_libre del CMS,
          contenido cargado por el admin, no por un usuario del sitio.
          x-html la mantiene actualizada en vivo tras guardar una edición rápida. --}}
-    <div class="product-description" x-show="!editing && editDescription" x-html="editDescription">@if($product->description){!! $product->description !!}@endif</div>
+    <div class="product-description" data-reveal x-show="!editing && editDescription" x-html="editDescription">@if($product->description){!! $product->description !!}@endif</div>
     <template x-if="isAdmin">
       <div x-show="editing" x-cloak x-transition>
         <textarea x-model="editDescription" class="admin-edit-input admin-edit-textarea" placeholder="Descripción (se puede usar HTML)"></textarea>
@@ -534,7 +534,7 @@
     </template>
 
     @if($displaySpecs)
-      <table class="spec-table">
+      <table class="spec-table" data-reveal>
         @foreach($displaySpecs as $key => $value)
           <tr><td>{{ $key }}</td><td>{{ $value }}</td></tr>
         @endforeach
@@ -543,14 +543,14 @@
   </div>
 </div>
 
-<div class="wrap">
+<div class="wrap" data-reveal>
   @include('partials.trust-badges')
 </div>
 
 @if($related->count())
 <div class="wrap related">
-  <h2>También te puede interesar</h2>
-  <div class="product-grid">
+  <h2 data-reveal>También te puede interesar</h2>
+  <div class="product-grid" data-reveal-group>
     @foreach($related as $r)
       <a class="card" href="{{ route('product.show', $r->slug) }}" style="display:block;">
         <div class="card-media">
@@ -603,4 +603,5 @@
 
 @section('scripts')
 <script src="{{ asset('js/page-nav.js') }}?v={{ filemtime(public_path('js/page-nav.js')) }}"></script>
+<script src="{{ asset('js/scroll-reveal.js') }}?v={{ filemtime(public_path('js/scroll-reveal.js')) }}"></script>
 @endsection

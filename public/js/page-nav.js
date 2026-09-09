@@ -139,6 +139,12 @@ window.addEventListener('DOMContentLoaded', function () {
     }, 1150);
     fadeInImages(main);
 
+    // scroll-reveal.js no siempre está cargado (solo tienda/producto lo
+    // incluyen) — sin este chequeo, navegar suave hacia una página que
+    // no lo cargó (ej. llegar a /tienda desde afuera de este mismo par)
+    // tiraría error acá.
+    if (window.initScrollReveal) window.initScrollReveal(main);
+
     // El menú flotante de categorías vive en partials/nav.blade.php,
     // FUERA de <main> — su visibilidad ("solo en /tienda" o "en todo
     // el sitio") se decide una sola vez, en el request real que

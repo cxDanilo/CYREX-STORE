@@ -23,4 +23,8 @@
 @section('scripts')
 <script src="{{ asset('js/shop-ajax.js') }}?v={{ filemtime(public_path('js/shop-ajax.js')) }}"></script>
 <script src="{{ asset('js/page-nav.js') }}?v={{ filemtime(public_path('js/page-nav.js')) }}"></script>
+{{-- Esta página no tiene ningún [data-reveal] propio — se carga igual
+     para que window.initScrollReveal ya exista si desde acá se navega
+     (suave, vía page-nav.js) hacia un producto, que sí los tiene. --}}
+<script src="{{ asset('js/scroll-reveal.js') }}?v={{ filemtime(public_path('js/scroll-reveal.js')) }}"></script>
 @endsection

@@ -686,6 +686,16 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .related{padding-bottom:100px;}
 .related h2{font-family:var(--font-display);font-weight:600;font-size:22px;margin-bottom:22px;}
 
+/* Aparición al scrollear (public/js/scroll-reveal.js pone .is-revealed
+   vía IntersectionObserver) — [data-reveal-group] arma el stagger de
+   sus hijos directos sola, ver ese script. */
+[data-reveal]{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease;}
+[data-reveal].is-revealed{opacity:1;transform:none;}
+@media (prefers-reduced-motion:reduce){
+  [data-reveal]{opacity:1;transform:none;transition:none;}
+}
+.motion-reduced [data-reveal]{opacity:1;transform:none;transition:none;}
+
 @media (max-width:960px){
   .product-hero{grid-template-columns:1fr;}
   .gallery{position:static;top:auto;}
