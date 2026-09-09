@@ -25,7 +25,7 @@
 
   <aside class="admin-sidebar" :class="{ 'is-open': navOpen }">
     <div class="admin-logo-row">
-      <div class="admin-logo"><a href="{{ route('admin.dashboard') }}" style="color:inherit;">CYREX<span>.</span> ADMIN</a></div>
+      <div class="admin-logo" data-tour="logo"><a href="{{ route('admin.dashboard') }}" style="color:inherit;">CYREX<span>.</span> ADMIN</a></div>
       <button type="button" class="admin-nav-close" aria-label="Cerrar menú" x-on:click="navOpen = false">
         @include('partials.admin-icon', ['name' => 'cerrar'])
       </button>
@@ -59,7 +59,7 @@
       @endif
 
       {{-- Catálogo --}}
-      <button type="button" class="admin-nav-group-toggle" :class="{ 'is-open': openGroup === 'catalogo' }" @click="openGroup = openGroup === 'catalogo' ? null : 'catalogo'">
+      <button type="button" class="admin-nav-group-toggle" data-tour="nav-catalogo" :class="{ 'is-open': openGroup === 'catalogo' }" @click="openGroup = openGroup === 'catalogo' ? null : 'catalogo'">
         Catálogo
         @include('partials.admin-icon', ['name' => 'chevron'])
       </button>
@@ -78,7 +78,7 @@
       </div>
 
       {{-- Contenido --}}
-      <button type="button" class="admin-nav-group-toggle" :class="{ 'is-open': openGroup === 'contenido' }" @click="openGroup = openGroup === 'contenido' ? null : 'contenido'">
+      <button type="button" class="admin-nav-group-toggle" data-tour="nav-contenido" :class="{ 'is-open': openGroup === 'contenido' }" @click="openGroup = openGroup === 'contenido' ? null : 'contenido'">
         Contenido
         @include('partials.admin-icon', ['name' => 'chevron'])
       </button>
@@ -119,7 +119,7 @@
       @if($adminVersion)
         <div class="mono" style="padding:2px 12px 10px;color:var(--text-muted);font-size:11px;letter-spacing:.03em;">v{{ $adminVersion }}</div>
       @endif
-      <a href="{{ route('home') }}" target="_blank">@include('partials.admin-icon', ['name' => 'ver-sitio']) Ver sitio ↗</a>
+      <a href="{{ route('home') }}" target="_blank" data-tour="ver-sitio">@include('partials.admin-icon', ['name' => 'ver-sitio']) Ver sitio ↗</a>
       @if(auth()->user()->isAdmin())
         <form method="POST" action="{{ route('admin.cache.purge') }}">
           @csrf
@@ -162,6 +162,10 @@
 
 <div id="admin-toast-data" data-status="{{ session('status') }}" data-error="{{ session('error') }}" hidden></div>
 <div class="toast-stack" id="admin-toast-stack"></div>
+
+@if($startTour ?? false)
+  @include('partials.admin-tour')
+@endif
 
 @yield('scripts')
 </body>

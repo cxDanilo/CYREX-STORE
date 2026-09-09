@@ -5,7 +5,7 @@
 
 @section('content')
 
-<div class="admin-stat-grid">
+<div class="admin-stat-grid" data-tour="stats">
   <div class="admin-stat-card">
     <div class="admin-stat-value">{{ $stats['productos_activos'] }}</div>
     <div class="admin-stat-label">Productos activos</div>
@@ -43,7 +43,7 @@
     @endif
   </div>
 
-  <div class="admin-panel" style="grid-column:1/-1;">
+  <div class="admin-panel" style="grid-column:1/-1;" data-tour="actividad">
     <h3>Actividad reciente</h3>
     @if($actividadReciente->isEmpty())
       <p class="form-hint">Todavía no hay cambios registrados.</p>

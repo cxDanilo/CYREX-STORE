@@ -250,6 +250,24 @@ label.switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;}
 .modal-body{color:var(--text-secondary);font-size:13.5px;line-height:1.5;margin-bottom:20px;}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;}
 
+/* Recorrido guiado de bienvenida (primer login de un usuario nuevo,
+   ver Admin\TourController + partials/admin-tour.blade.php).
+   .admin-tour-backdrop es un capturador de clicks invisible (bloquea
+   interactuar con la página real mientras el recorrido está activo);
+   el oscurecido en sí lo hace .admin-tour-highlight con un
+   box-shadow gigante alrededor de su propio recuadro — el "agujero"
+   transparente que deja es lo que se ve resaltado a full brillo,
+   sin necesitar recortar la capa de fondo con un mask. */
+.admin-tour-backdrop{position:fixed;inset:0;z-index:449;background:transparent;}
+.admin-tour-highlight{position:fixed;z-index:450;border-radius:var(--radius-md);box-shadow:0 0 0 9999px rgba(5,5,5,.72),0 0 0 2px var(--gold),0 0 24px 2px rgba(255,217,0,.35);pointer-events:none;transition:top .3s ease,left .3s ease,width .3s ease,height .3s ease;}
+.admin-tour-card{position:fixed;z-index:460;width:100%;max-width:320px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow-lg);transition:top .3s ease,left .3s ease;}
+.admin-tour-card.is-centered{position:fixed;top:50%!important;left:50%!important;transform:translate(-50%,-50%);max-width:360px;text-align:center;}
+.admin-tour-step{font-family:var(--font-display);color:var(--gold);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
+.admin-tour-title{font-family:var(--font-display);font-size:16px;font-weight:600;margin-bottom:6px;}
+.admin-tour-text{color:var(--text-secondary);font-size:13.5px;line-height:1.5;margin-bottom:16px;}
+.admin-tour-actions{display:flex;align-items:center;gap:8px;justify-content:flex-end;}
+.admin-tour-skip{margin-right:auto;}
+
 /* Checklist de productos del combo — antes cada fila era un <label>
    con display:flex nomás, sin separador ni tope de ancho para el
    nombre: con nombres largos (típico en piezas de PC, con socket/RAM/

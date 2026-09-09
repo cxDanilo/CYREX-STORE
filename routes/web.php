@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\MenuController as AdminMenuController;
 use App\Http\Controllers\Admin\SocialLinkController as AdminSocialLinkController;
 use App\Http\Controllers\Admin\ProductActivityLogController as AdminProductActivityLogController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\TourController as AdminTourController;
 use App\Http\Controllers\Admin\WooCommerceImportController as AdminWooCommerceImportController;
 use App\Http\Controllers\Admin\CacheController as AdminCacheController;
 use App\Http\Controllers\Admin\BackupController as AdminBackupController;
@@ -70,6 +71,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::redirect('/', '/admin/dashboard');
 
         Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::post('tour/visto', [AdminTourController::class, 'dismiss'])->name('tour.dismiss');
 
         Route::get('historial', [AdminProductActivityLogController::class, 'index'])->name('historial.index');
         Route::get('novedades', [AdminChangelogController::class, 'index'])->name('changelog.index');

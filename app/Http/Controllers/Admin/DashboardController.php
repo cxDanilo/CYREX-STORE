@@ -24,6 +24,11 @@ class DashboardController extends Controller
         $agotados = Product::where('status', 'active')->where('is_sold_out', true)->orderBy('name')->limit(8)->get();
         $actividadReciente = ProductActivityLog::orderByDesc('created_at')->limit(10)->get();
 
-        return view('admin.dashboard', compact('stats', 'agotados', 'actividadReciente'));
+        // Solo la primera vez que un usuario nuevo entra al panel —
+        // tour_seen_at se marca al terminarlo o saltarlo (ver
+        // Admin\TourController), así que no vuelve a aparecer después.
+        $startTour = auth()->user()->tour_seen_at === null;
+
+        return view('admin.dashboard', compact('stats', 'agotados', 'actividadReciente', 'startTour'));
     }
 }
