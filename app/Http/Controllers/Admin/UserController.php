@@ -30,7 +30,7 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', Password::min(8)],
+            'password' => ['required', Password::min(10)->uncompromised()],
             'role' => ['required', Rule::in(array_keys(User::ROLES))],
             'whatsapp_number' => ['nullable', 'regex:/^[0-9]{6,15}$/'],
         ]);
@@ -78,7 +78,7 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
-            'password' => ['nullable', Password::min(8)],
+            'password' => ['nullable', Password::min(10)->uncompromised()],
             'role' => ['required', Rule::in(array_keys(User::ROLES))],
             'whatsapp_number' => ['nullable', 'regex:/^[0-9]{6,15}$/'],
         ]);

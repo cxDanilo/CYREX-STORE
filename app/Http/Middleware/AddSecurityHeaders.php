@@ -23,6 +23,15 @@ class AddSecurityHeaders
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
+        // El sitio no usa ninguno de estos permisos de navegador (sin
+        // cámara/micrófono/geolocalización en ningún lado) — de-opt
+        // explícito, no cambia nada visible. Ver auditoría de
+        // seguridad, hallazgo H6.
+        $response->headers->set(
+            'Permissions-Policy',
+            'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()'
+        );
+
         return $response;
     }
 }
