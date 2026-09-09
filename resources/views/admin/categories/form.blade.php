@@ -50,8 +50,20 @@
         <label for="icon">Ícono predefinido</label>
         <select id="icon" name="icon">
           <option value="">Genérico</option>
+          @php
+            $iconLabels = [
+              'i-cpu' => 'Chip / procesador',
+              'i-mouse' => 'Mouse',
+              'i-chair' => 'Silla',
+              'i-monitor' => 'Monitor',
+              'i-plug' => 'Enchufe / accesorio',
+              'i-shield-bolt' => 'Escudo con rayo (energía/protección)',
+              'i-tools' => 'Herramienta',
+              'i-tag' => 'Etiqueta (promoción)',
+            ];
+          @endphp
           @foreach($icons as $icon)
-            <option value="{{ $icon }}" {{ old('icon', $category->icon) === $icon ? 'selected' : '' }}>{{ $icon }}</option>
+            <option value="{{ $icon }}" {{ old('icon', $category->icon) === $icon ? 'selected' : '' }}>{{ $iconLabels[$icon] ?? $icon }}</option>
           @endforeach
         </select>
         <div class="form-hint">Se usa solo si no subes una imagen propia abajo.</div>

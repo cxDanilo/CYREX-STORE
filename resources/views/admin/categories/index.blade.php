@@ -30,7 +30,7 @@
         @foreach($categories as $parent)
           <tr draggable="true" data-id="{{ $parent->id }}" class="cat-row">
             <td class="cat-drag-handle" title="Arrastrar para reordenar">⋮⋮</td>
-            <td style="width:32px;color:var(--gold);">@include('partials.category-icon', ['icon' => $parent->icon, 'iconImage' => $parent->icon_image_url])</td>
+            <td class="cat-row-icon">@include('partials.category-icon', ['icon' => $parent->icon, 'iconImage' => $parent->icon_image_url])</td>
             <td class="admin-table-title"><strong>{{ $parent->name }}</strong></td>
             <td class="mono" style="color:var(--text-secondary);" data-label="Slug">{{ $parent->slug }}</td>
             <td class="mono" data-label="Productos">{{ $parent->products_count }}</td>

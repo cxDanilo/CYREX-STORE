@@ -12,7 +12,7 @@ use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
-    private const ICONS = ['i-cpu', 'i-mouse', 'i-chair'];
+    private const ICONS = ['i-cpu', 'i-mouse', 'i-chair', 'i-monitor', 'i-plug', 'i-shield-bolt', 'i-tools', 'i-tag'];
 
     public function index()
     {

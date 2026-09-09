@@ -101,6 +101,11 @@ input[type=file]::file-selector-button:hover{border-color:var(--gold);background
 .admin-table .cell-actions{display:flex;gap:8px;justify-content:flex-end;}
 .cat-drag-handle{cursor:grab;color:var(--text-muted);text-align:center;width:28px;letter-spacing:-1px;}
 .cat-row.is-dragging{opacity:.35;}
+/* Sin ancho/alto explícito, un <svg> vacío no ocupa espacio y el ícono
+   de la categoría queda invisible en la lista — mismo criterio que
+   .mega-icon en el sitio público. */
+.cat-row-icon{width:32px;color:var(--gold);}
+.cat-row-icon svg,.cat-row-icon img{display:block;width:18px;height:18px;}
 
 .status-badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;padding:4px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:0.03em;}
 .status-badge.active{background:rgba(61,220,132,0.12);color:var(--green);}
