@@ -40,7 +40,12 @@ class UserController extends Controller
         // no hay forma de que dos vendedores terminen con el mismo.
         $data['ref_code'] = self::generateRefCode($data['name']);
 
-        User::create($data);
+        // 'role' no es mass assignable (ver User::$fillable) — se asigna
+        // a mano acá, el único lugar (junto con update() abajo) donde
+        // este controller decide el rol de una cuenta.
+        $user = new User($data);
+        $user->role = $data['role'];
+        $user->save();
 
         return redirect()->route('admin.usuarios.index')->with('status', 'Usuario creado.');
     }
@@ -96,7 +101,11 @@ class UserController extends Controller
             unset($data['password']);
         }
 
-        $user->update($data);
+        // 'role' no es mass assignable (ver User::$fillable) — se asigna
+        // a mano acá.
+        $user->fill($data);
+        $user->role = $data['role'];
+        $user->save();
 
         return redirect()->route('admin.usuarios.index')->with('status', 'Usuario actualizado.');
     }

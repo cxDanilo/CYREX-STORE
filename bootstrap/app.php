@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo('/admin/dashboard');
         $middleware->alias(['admin' => \App\Http\Middleware\EnsureUserIsAdmin::class]);
         $middleware->web(append: [\App\Http\Middleware\TrackVisit::class, \App\Http\Middleware\CaptureReferral::class, \App\Http\Middleware\PropagateOwnReferral::class]);
+        $middleware->append(\App\Http\Middleware\AddSecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Página de error con la identidad visual del admin (CYREX ADMIN)

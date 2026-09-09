@@ -28,10 +28,7 @@ class AuthController extends Controller
         $email = $request->session()->get('login_throttle_email');
 
         if ($email) {
-            $throttleKey = $this->throttleKey($request, $email);
-            if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
-                $lockoutSeconds = RateLimiter::availableIn($throttleKey);
-            }
+            $lockoutSeconds = $this->currentLockout($request, $email);
         }
 
         return view('admin.auth.login', [
@@ -45,6 +42,12 @@ class AuthController extends Controller
      * bloquear temporalmente — evita fuerza bruta contra el login de
      * admin. Se cuenta por email+IP (no solo IP) para que probar
      * muchos emails distintos desde la misma IP también se frene.
+     *
+     * Además, un segundo límite SOLO por email (sin IP), con un umbral
+     * más alto — el de arriba no frena a un atacante que rota de IP en
+     * cada intento (botnet/proxies), ya que cada IP nueva le da 5
+     * intentos frescos contra el mismo email. Ver auditoría de
+     * seguridad, hallazgo F5.
      */
     public function login(Request $request)
     {
@@ -54,25 +57,24 @@ class AuthController extends Controller
         ]);
 
         $request->session()->put('login_throttle_email', $credentials['email']);
-        $throttleKey = $this->throttleKey($request, $credentials['email']);
 
-        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
-            $seconds = RateLimiter::availableIn($throttleKey);
-
+        if ($seconds = $this->currentLockout($request, $credentials['email'])) {
             return back()->withErrors([
                 'email' => "Demasiados intentos. Prueba de nuevo en {$seconds} segundos.",
             ])->onlyInput('email');
         }
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
-            RateLimiter::hit($throttleKey, 60);
+            RateLimiter::hit($this->throttleKey($request, $credentials['email']), 60);
+            RateLimiter::hit($this->emailOnlyThrottleKey($credentials['email']), 3600);
 
             return back()->withErrors([
                 'email' => 'Esas credenciales no coinciden con ningún usuario.',
             ])->onlyInput('email');
         }
 
-        RateLimiter::clear($throttleKey);
+        RateLimiter::clear($this->throttleKey($request, $credentials['email']));
+        RateLimiter::clear($this->emailOnlyThrottleKey($credentials['email']));
         $request->session()->forget('login_throttle_email');
         $request->session()->regenerate();
 
@@ -94,6 +96,31 @@ class AuthController extends Controller
     private function throttleKey(Request $request, string $email): string
     {
         return Str::transliterate(Str::lower($email)).'|'.$request->ip();
+    }
+
+    private function emailOnlyThrottleKey(string $email): string
+    {
+        return 'login-email-only|'.Str::transliterate(Str::lower($email));
+    }
+
+    /**
+     * Segundos de bloqueo restantes, el mayor entre los dos límites
+     * (email+IP de 5 intentos, o email-solo de 20) — null si ninguno
+     * está activo ahora mismo.
+     */
+    private function currentLockout(Request $request, string $email): ?int
+    {
+        $seconds = null;
+
+        if (RateLimiter::tooManyAttempts($this->throttleKey($request, $email), 5)) {
+            $seconds = RateLimiter::availableIn($this->throttleKey($request, $email));
+        }
+
+        if (RateLimiter::tooManyAttempts($this->emailOnlyThrottleKey($email), 20)) {
+            $seconds = max($seconds ?? 0, RateLimiter::availableIn($this->emailOnlyThrottleKey($email)));
+        }
+
+        return $seconds;
     }
 
     public function logout(Request $request)

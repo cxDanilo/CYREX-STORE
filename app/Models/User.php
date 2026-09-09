@@ -18,11 +18,15 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+    // 'role' queda AFUERA a propósito (se asigna a mano en
+    // Admin\UserController, nunca por mass assignment) — es el único
+    // campo del modelo que decide permisos de admin, así que un futuro
+    // User::create($request->all()) en cualquier otro lado no podría
+    // colarlo. Ver auditoría de seguridad, hallazgo H4.
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role',
         'ref_code',
         'whatsapp_number',
     ];
