@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
+@if(app()->environment('local'))
+  {{-- Antes que se pinte nada, para que no haya un flash oscuro→claro
+       al recargar con la preferencia ya guardada. --}}
+  <script>
+    if (localStorage.getItem('cyrexThemePreview') === 'light') {
+      document.documentElement.setAttribute('data-preview-theme', 'light');
+    }
+  </script>
+@endif
 @include('partials.favicon')
 @if(!empty($ga4MeasurementId))
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ $ga4MeasurementId }}"></script>
@@ -177,6 +186,27 @@ setInterval(() => {
   }
 }, 60000);
 </script>
+@if(app()->environment('local'))
+  {{-- Botón de exploración "versión blanca" — nunca se renderiza fuera
+       de local (igual que dev/liquid-preview), así que no hay forma de
+       que aparezca en el sitio en vivo por accidente. --}}
+  <button type="button" class="theme-preview-toggle" id="theme-preview-toggle" onclick="
+    const root = document.documentElement;
+    const isLight = root.getAttribute('data-preview-theme') === 'light';
+    root.setAttribute('data-preview-theme', isLight ? 'dark' : 'light');
+    localStorage.setItem('cyrexThemePreview', isLight ? 'dark' : 'light');
+    this.querySelector('span:last-child').textContent = isLight ? 'Ver en blanco' : 'Ver en oscuro';
+  ">
+    <span class="theme-preview-toggle-dot"></span>
+    <span>Ver en blanco</span>
+  </button>
+  <script>
+    if (document.documentElement.getAttribute('data-preview-theme') === 'light') {
+      document.getElementById('theme-preview-toggle').querySelector('span:last-child').textContent = 'Ver en oscuro';
+    }
+  </script>
+@endif
+
 @yield('scripts')
 </body>
 </html>

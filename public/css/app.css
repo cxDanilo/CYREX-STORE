@@ -15,6 +15,36 @@
   --intel:#0082dc;--intel-dim:rgba(0,130,220,.14);
   --font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;
 }
+
+/* PREVIEW "versión blanca" — SOLO herramienta de exploración en local
+   (ver el botón flotante .theme-preview-toggle, que ni siquiera se
+   renderiza fuera de local). Redefine las mismas variables de arriba
+   así todo el sitio (público Y admin, que reutiliza estas mismas
+   variables) se relee en tonos claros sin tocar ninguna regla — nunca
+   se activa sola ni afecta al público. */
+:root[data-preview-theme="light"]{
+  --bg:#F7F6F3;--bg-elevated:#FFFFFF;--bg-elevated-2:#EFEEEA;
+  --gold-dim:#FFF3B0;
+  --text-primary:#17171A;--text-secondary:#55555C;--text-muted:#8B8B92;
+  --border:rgba(0,0,0,0.10);--border-strong:rgba(0,0,0,0.18);
+}
+:root[data-preview-theme="light"] body,
+:root[data-preview-theme="light"] .admin-body{transition:background-color .25s ease,color .25s ease;}
+/* nav/.nav-hero-mode usan rgba(10,10,11,...) a mano (no la variable
+   --bg) para el blur del header — sin este par, el header se quedaría
+   negro encima de un sitio ya vuelto blanco. */
+:root[data-preview-theme="light"] nav{background:rgba(255,255,255,.85);}
+:root[data-preview-theme="light"] .nav-hero-mode{background:rgba(255,255,255,calc(var(--nav-progress, 0) * .85));}
+:root[data-preview-theme="light"] .nav-hero-mode .nav-search{background:rgba(255,255,255,calc(.4 + var(--nav-progress, 0) * .45));}
+.theme-preview-toggle{
+  position:fixed;bottom:20px;right:20px;z-index:500;
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--bg-elevated);border:1px solid var(--gold);color:var(--text-primary);
+  font-family:var(--font-mono);font-size:12px;padding:10px 16px;border-radius:100px;
+  cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.35);transition:transform .15s;
+}
+.theme-preview-toggle:hover{transform:translateY(-2px);}
+.theme-preview-toggle-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;}
 *{margin:0;padding:0;box-sizing:border-box;scrollbar-width:thin;scrollbar-color:var(--border-strong) transparent;}
 html{background:var(--bg);min-height:100%;}
 *::-webkit-scrollbar{width:8px;height:8px;}
