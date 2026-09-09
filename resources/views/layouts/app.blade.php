@@ -159,7 +159,9 @@
 <script src="{{ asset('js/marcas-mosaico.js') }}?v={{ filemtime(public_path('js/marcas-mosaico.js')) }}"></script>
 <script src="{{ asset('js/hero-title-decode.js') }}?v={{ filemtime(public_path('js/hero-title-decode.js')) }}"></script>
 <script src="{{ asset('js/product-image-zoom.js') }}?v={{ filemtime(public_path('js/product-image-zoom.js')) }}"></script>
-<script src="{{ asset('js/scroll-reveal.js') }}?v={{ filemtime(public_path('js/scroll-reveal.js')) }}"></script>@if($promoEffect ?? null)
+<script src="{{ asset('js/scroll-reveal.js') }}?v={{ filemtime(public_path('js/scroll-reveal.js')) }}"></script>
+<script src="{{ asset('js/page-nav.js') }}?v={{ filemtime(public_path('js/page-nav.js')) }}"></script>
+@if($promoEffect ?? null)
   <script src="{{ asset('js/promo-effects.js') }}?v={{ filemtime(public_path('js/promo-effects.js')) }}"></script>
 @endif
 <script>
