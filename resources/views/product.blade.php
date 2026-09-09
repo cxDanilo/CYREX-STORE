@@ -351,7 +351,7 @@
         </label>
       </template>
     </div>
-    <div class="gallery-thumbs" x-show="galleryImages.length > 1">
+    <div class="gallery-thumbs" x-show="galleryImages.length > 1" x-cloak>
       <template x-for="url in galleryImages" :key="url">
         <button type="button" class="gallery-thumb" :class="mainImage === url && 'active'" @click="galleryActive = url">
           <img :src="url" alt="">
@@ -493,7 +493,7 @@
       </div>
     </div>
 
-    <div class="stock-pill out-of-stock" x-show="!editing && !inStock">✕ Agotado</div>
+    <div class="stock-pill out-of-stock" x-show="!editing && !inStock" x-cloak>✕ Agotado</div>
 
     <div class="btn-cta-row">
       <button type="button" class="btn-cta"
