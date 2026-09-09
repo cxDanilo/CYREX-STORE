@@ -55,8 +55,6 @@
 </head>
 <body class="{{ ($reducedMotion ?? 'off') === 'on' ? 'motion-reduced' : '' }} {{ auth()->check() ? 'has-admin-bar' : '' }}" @if($promoEffect ?? null) data-promo-effect="{{ $promoEffect }}" @endif>
 
-<div class="scroll-progress-bar" id="scroll-progress-bar"></div>
-
 @include('partials.promo-bar')
 
 @auth
@@ -161,9 +159,7 @@
 <script src="{{ asset('js/marcas-mosaico.js') }}?v={{ filemtime(public_path('js/marcas-mosaico.js')) }}"></script>
 <script src="{{ asset('js/hero-title-decode.js') }}?v={{ filemtime(public_path('js/hero-title-decode.js')) }}"></script>
 <script src="{{ asset('js/product-image-zoom.js') }}?v={{ filemtime(public_path('js/product-image-zoom.js')) }}"></script>
-<script src="{{ asset('js/scroll-reveal.js') }}?v={{ filemtime(public_path('js/scroll-reveal.js')) }}"></script>
-<script src="{{ asset('js/scroll-progress.js') }}?v={{ filemtime(public_path('js/scroll-progress.js')) }}"></script>
-@if($promoEffect ?? null)
+<script src="{{ asset('js/scroll-reveal.js') }}?v={{ filemtime(public_path('js/scroll-reveal.js')) }}"></script>@if($promoEffect ?? null)
   <script src="{{ asset('js/promo-effects.js') }}?v={{ filemtime(public_path('js/promo-effects.js')) }}"></script>
 @endif
 <script>

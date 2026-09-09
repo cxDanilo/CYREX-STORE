@@ -63,13 +63,6 @@ button,input,select{font-family:inherit;}
 .promo-modal-title{font-family:var(--font-display);font-size:26px;line-height:1.25;margin-bottom:26px;}
 .promo-modal-cta{display:inline-flex;}
 
-/* Barra fina de progreso de scroll, pegada arriba de todo (encima
-   incluso de la barra de admin) — public/js/scroll-progress.js le pone
-   el width en cada scroll. */
-.scroll-progress-bar{position:fixed;top:0;left:0;height:3px;width:0%;background:var(--gold);z-index:500;transition:width .1s linear;pointer-events:none;}
-@media (prefers-reduced-motion:reduce){.scroll-progress-bar{transition:none;}}
-.motion-reduced .scroll-progress-bar{transition:none;}
-
 /* PROMO EFFECTS — nieve/confeti/brillo/niebla mientras la promo está activa (public/js/promo-effects.js). */
 .promo-effect-canvas{position:fixed;inset:0;z-index:350;pointer-events:none;}
 .motion-reduced .promo-modal-overlay-enter,.motion-reduced .promo-modal-overlay-leave,.motion-reduced .promo-modal-enter{transition:opacity .12s ease;}
