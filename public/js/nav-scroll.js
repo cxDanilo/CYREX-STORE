@@ -99,8 +99,7 @@ window.addEventListener('DOMContentLoaded', function () {
     // bien arriba, 0 = centrado en el viewport.
     var progress = (mid - (rect.top + rect.height / 2)) / (mid + rect.height / 2);
     progress = Math.min(1, Math.max(-1, progress));
-    pageHead.style.setProperty('--banner-parallax', (progress * 40).toFixed(1) + 'px');
-    pageHead.style.setProperty('--banner-parallax-scale', (1 + Math.abs(progress) * 0.06).toFixed(3));
+    pageHead.style.setProperty('--banner-parallax', (progress * 30).toFixed(1) + 'px');
   }
 
   function onScroll() {
