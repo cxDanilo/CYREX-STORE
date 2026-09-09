@@ -63,6 +63,13 @@ button,input,select{font-family:inherit;}
 .promo-modal-title{font-family:var(--font-display);font-size:26px;line-height:1.25;margin-bottom:26px;}
 .promo-modal-cta{display:inline-flex;}
 
+/* Barra fina de progreso de scroll, pegada arriba de todo (encima
+   incluso de la barra de admin) — public/js/scroll-progress.js le pone
+   el width en cada scroll. */
+.scroll-progress-bar{position:fixed;top:0;left:0;height:3px;width:0%;background:var(--gold);z-index:500;transition:width .1s linear;pointer-events:none;}
+@media (prefers-reduced-motion:reduce){.scroll-progress-bar{transition:none;}}
+.motion-reduced .scroll-progress-bar{transition:none;}
+
 /* PROMO EFFECTS — nieve/confeti/brillo/niebla mientras la promo está activa (public/js/promo-effects.js). */
 .promo-effect-canvas{position:fixed;inset:0;z-index:350;pointer-events:none;}
 .motion-reduced .promo-modal-overlay-enter,.motion-reduced .promo-modal-overlay-leave,.motion-reduced .promo-modal-enter{transition:opacity .12s ease;}
@@ -788,6 +795,15 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .cms-hero-video-title .glyph.is-settled{opacity:1;transform:translateY(0);color:#fff;text-shadow:none;}
 .cms-hero-video-buttons{display:flex;gap:14px;flex-wrap:wrap;}
 .cms-hero-video-buttons .btn,.cms-hero-video-buttons .btn-outline-gold{padding:14px 26px;font-size:14.5px;}
+/* Entran justo después de que el título termina de "decodificarse"
+   (hero-title-decode.js) — un delay fijo en vez de esperar ese script
+   (el tiempo real depende del largo del título, que el admin edita) es
+   más simple y ya se siente bien para cualquier título razonable. */
+.cms-hero-video-buttons a{opacity:0;transform:translateY(14px);animation:cms-hero-btn-in .5s ease forwards;animation-delay:.65s;}
+.cms-hero-video-buttons a:nth-child(2){animation-delay:.8s;}
+@keyframes cms-hero-btn-in{to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion: reduce){.cms-hero-video-buttons a{animation:none;opacity:1;transform:none;}}
+.motion-reduced .cms-hero-video-buttons a{animation:none;opacity:1;transform:none;}
 
 .cms-hero-scroll-hint{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11.5px;color:rgba(255,255,255,.75);letter-spacing:.03em;text-shadow:0 1px 4px rgba(0,0,0,.6);pointer-events:none;transition:opacity .2s ease;}
 .cms-hero-scroll-hint svg{animation:cms-scroll-bob 1.6s ease-in-out infinite;}

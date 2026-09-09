@@ -5,9 +5,9 @@
 @if($pages->isNotEmpty())
 <div class="wrap cms-block">
   @if(!empty($data['titulo']))
-    <h2 class="cms-titulo cms-titulo-mediano" style="text-align:center;margin-bottom:28px;">{{ $data['titulo'] }}</h2>
+    <h2 class="cms-titulo cms-titulo-mediano" style="text-align:center;margin-bottom:28px;" data-reveal>{{ $data['titulo'] }}</h2>
   @endif
-  <div class="cms-social-rotator" data-interval="5000">
+  <div class="cms-social-rotator" data-interval="5000" data-reveal>
     @foreach($pages as $i => $page)
       <div class="cms-social-page @if($i === 0) is-active @endif">
         @foreach($page as $item)

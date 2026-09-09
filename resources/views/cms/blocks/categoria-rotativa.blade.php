@@ -46,7 +46,7 @@
 @endphp
 @if($categoria && $productos->isNotEmpty())
 <div class="wrap cms-block">
-  <div class="cms-catrot-head">
+  <div class="cms-catrot-head" data-reveal>
     <div>
       @if(!empty($data['etiqueta']))
         <div class="cms-catrot-badge">{{ $data['etiqueta'] }}</div>
@@ -55,7 +55,7 @@
     </div>
     <a href="{{ route('shop', ['category' => $categoria->slug]) }}" class="cms-catrot-vermas">Ver más →</a>
   </div>
-  <div class="product-grid">
+  <div class="product-grid" data-reveal-group>
     @foreach($productos as $product)
       <a class="card" href="{{ route('product.show', $product->slug) }}" style="display:block;">
         <div class="card-media">

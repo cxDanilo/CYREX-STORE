@@ -36,7 +36,7 @@
 @endphp
 <div class="wrap cms-block">
   @if(!empty($data['eyebrow']) || !empty($data['subtitulo']))
-    <div class="cms-productos-head">
+    <div class="cms-productos-head" data-reveal>
       @if(!empty($data['eyebrow']))
         <div class="cms-productos-eyebrow">{{ $data['eyebrow'] }}</div>
       @endif
@@ -48,9 +48,9 @@
       @endif
     </div>
   @elseif(!empty($data['titulo']))
-    <h2 class="cms-titulo cms-titulo-mediano" style="margin-bottom:20px;">{{ $data['titulo'] }}@if(!empty($data['titulo_destacado'])) <em class="cms-hero-em">{{ $data['titulo_destacado'] }}</em>@endif</h2>
+    <h2 class="cms-titulo cms-titulo-mediano" style="margin-bottom:20px;" data-reveal>{{ $data['titulo'] }}@if(!empty($data['titulo_destacado'])) <em class="cms-hero-em">{{ $data['titulo_destacado'] }}</em>@endif</h2>
   @endif
-  <div class="product-grid">
+  <div class="product-grid" data-reveal-group>
     @foreach($productos as $product)
       <a class="card" href="{{ route('product.show', $product->slug) }}" style="display:block;">
         <div class="card-media">
