@@ -145,6 +145,12 @@ window.addEventListener('DOMContentLoaded', function () {
     // tiraría error acá.
     if (window.initScrollReveal) window.initScrollReveal(main);
 
+    // El <nav> vive fuera de <main> y nunca se vuelve a tocar en esta
+    // navegación suave — sin esto, la clase nav-hero-mode (transparente
+    // sobre el video) que puso el servidor en la carga real de ORIGEN se
+    // queda pegada para siempre, aunque la página nueva no tenga hero.
+    if (window.updateNavHeroMode) window.updateNavHeroMode();
+
     // El menú flotante de categorías vive en partials/nav.blade.php,
     // FUERA de <main> — su visibilidad ("solo en /tienda" o "en todo
     // el sitio") se decide una sola vez, en el request real que
