@@ -62,15 +62,15 @@
     @endif
 
     <div class="admin-tabs" style="margin-bottom:22px;">
-      <button type="button" class="admin-tab" :class="{ active: tab === 'general' }" @click="tab = 'general'">General</button>
-      <button type="button" class="admin-tab" :class="{ active: tab === 'imagenes' }" @click="tab = 'imagenes'">Imágenes</button>
-      <button type="button" class="admin-tab" :class="{ active: tab === 'precio' }" @click="tab = 'precio'">Precio y stock</button>
+      <button type="button" class="admin-tab" data-tour="tab-general" :class="{ active: tab === 'general' }" @click="tab = 'general'">General</button>
+      <button type="button" class="admin-tab" data-tour="tab-imagenes" :class="{ active: tab === 'imagenes' }" @click="tab = 'imagenes'">Imágenes</button>
+      <button type="button" class="admin-tab" data-tour="tab-precio" :class="{ active: tab === 'precio' }" @click="tab = 'precio'">Precio y stock</button>
       <button type="button" class="admin-tab" :class="{ active: tab === 'specs' }" @click="tab = 'specs'">Especificaciones</button>
       <button type="button" class="admin-tab" :class="{ active: tab === 'variantes' }" @click="tab = 'variantes'">Variantes</button>
     </div>
 
     <div class="admin-form" x-show="tab === 'general'" x-cloak>
-    <div class="form-section">
+    <div class="form-section" data-tour="form-general">
       <h3>Información general</h3>
 
       <div class="form-group">
@@ -151,7 +151,7 @@
     </div>
 
     <div class="admin-form" x-show="tab === 'imagenes'" x-cloak>
-    <div class="form-section">
+    <div class="form-section" data-tour="form-imagen">
       <h3>Imagen del producto <span class="required-mark">*</span></h3>
       <div class="form-group">
         <div class="file-upload">
@@ -216,7 +216,7 @@
     </div>
 
     <div class="admin-form" x-show="tab === 'precio'" x-cloak>
-    <div class="form-section">
+    <div class="form-section" data-tour="form-precio">
       <h3>Precio y estado</h3>
 
       <div class="form-row">
@@ -361,7 +361,7 @@
     </div>
     </div>
 
-    <div class="form-actions">
+    <div class="form-actions" data-tour="form-actions">
       <a href="{{ $backUrl ?? route('admin.productos.index') }}" class="btn">Cancelar</a>
       <button type="submit" class="btn btn-primary">Guardar producto</button>
     </div>

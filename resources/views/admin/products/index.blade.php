@@ -4,7 +4,7 @@
 @section('page-description', 'Gestiona el catálogo: precios, stock, ofertas y visibilidad de cada producto.')
 
 @section('topbar-actions')
-  <a href="{{ route('admin.productos.create') }}" class="btn btn-primary">+ Nuevo producto</a>
+  <a href="{{ route('admin.productos.create') }}" class="btn btn-primary" data-tour="producto-nuevo-btn">+ Nuevo producto</a>
 @endsection
 
 @section('content')
@@ -70,7 +70,7 @@
                 </form>
                 <button type="button" class="btn btn-sm" x-show="editing !== {{ $product->id }}" @click="editing = {{ $product->id }}">Edición rápida</button>
                 <button type="button" class="btn btn-sm" x-show="editing === {{ $product->id }}" x-cloak @click="editing = null">Cerrar</button>
-                <a href="{{ route('admin.productos.edit', $product) }}" class="btn btn-sm">Editar</a>
+                <a href="{{ route('admin.productos.edit', $product) }}" class="btn btn-sm" data-tour="producto-editar-link">Editar</a>
                 <form method="POST" action="{{ route('admin.productos.destroy', $product) }}" onsubmit="return confirm('¿Eliminar {{ $product->name }}? Esta acción no se puede deshacer.');">
                   @csrf @method('DELETE')
                   <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>

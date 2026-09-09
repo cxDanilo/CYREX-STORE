@@ -163,9 +163,18 @@
 <div id="admin-toast-data" data-status="{{ session('status') }}" data-error="{{ session('error') }}" hidden></div>
 <div class="toast-stack" id="admin-toast-stack"></div>
 
-@if($startTour ?? false)
-  @include('partials.admin-tour')
-@endif
+{{-- El recorrido guiado cruza varias páginas (Dashboard -> Productos
+     -> Nuevo -> Editar), así que este script se carga en TODO el
+     admin, no solo donde arranca — ver public/js/admin-tour.js, que
+     no hace nada si no hay un recorrido en curso guardado. Solo
+     DashboardController manda data-start="1" (cuando el usuario
+     todavía no lo vio, User::tour_seen_at null). --}}
+<div id="admin-tour-root"
+     data-dismiss-url="{{ route('admin.tour.dismiss') }}"
+     data-csrf="{{ csrf_token() }}"
+     data-start="{{ ($startTour ?? false) ? '1' : '0' }}"
+     hidden></div>
+<script src="{{ asset('js/admin-tour.js') }}?v={{ filemtime(public_path('js/admin-tour.js')) }}"></script>
 
 @yield('scripts')
 </body>
