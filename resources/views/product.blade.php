@@ -468,10 +468,10 @@
           <button type="button" @click="toggled = true; showBob = true" :class="showBob && 'active'">BOB</button>
         </div>
       @endif
-      <div x-show="hasOffer && !variantHasOverride" style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div x-show="hasOffer && !variantHasOverride" x-cloak style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
         <span class="card-badge-promo">-{{ $product->offerDiscountPercent() }}% OFERTA</span>
       </div>
-      <div class="price-original" x-show="hasOffer && !variantHasOverride"
+      <div class="price-original" x-show="hasOffer && !variantHasOverride" x-cloak
            x-effect="syncPrice($el, showBob ? realPriceUsd * rate : realPriceUsd, showBob ? 'Bs ' : '$', '')"><span class="price-text">{{ $originalPriceMainInitial }}</span></div>
       <div class="price-main"
            x-effect="syncPrice($el, showBob ? basePrice * rate : basePrice, showBob ? 'Bs ' : '$', '')"><span class="price-text">{{ $priceMainInitial }}</span></div>
@@ -479,7 +479,7 @@
         <div class="price-alt"
              x-effect="syncPrice($el, showBob ? basePrice : basePrice * rate, showBob ? '≈ $' : '≈ Bs ', showBob ? ' USD' : '')"><span class="price-text">{{ $priceAltInitial }}</span></div>
       @endif
-      <div class="offer-countdown" x-show="hasOffer && !variantHasOverride">
+      <div class="offer-countdown" x-show="hasOffer && !variantHasOverride" x-cloak>
         <span class="offer-countdown-label">⏳ Termina en</span>
         <div class="offer-countdown-digits">
           <div class="offer-countdown-seg"><span x-text="$store.offer.d"></span><small>días</small></div>
