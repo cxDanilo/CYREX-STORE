@@ -54,7 +54,9 @@
     @endphp
     <nav class="admin-nav" x-data="{ openGroup: @js($activeGroupKey) }" x-on:click="$event.target.closest('a') && (navOpen = false)">
       <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'dashboard']) Dashboard</a>
-      <a href="{{ route('admin.analitica.index') }}" class="{{ request()->routeIs('admin.analitica.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'analitica']) Analítica</a>
+      @if(auth()->user()->isAdmin())
+        <a href="{{ route('admin.analitica.index') }}" class="{{ request()->routeIs('admin.analitica.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'analitica']) Analítica</a>
+      @endif
 
       {{-- Catálogo --}}
       <button type="button" class="admin-nav-group-toggle" :class="{ 'is-open': openGroup === 'catalogo' }" @click="openGroup = openGroup === 'catalogo' ? null : 'catalogo'">
@@ -64,10 +66,12 @@
       <div class="admin-nav-group" x-show="openGroup === 'catalogo'" x-collapse x-cloak>
         <a href="{{ route('admin.productos.index') }}" class="{{ request()->routeIs('admin.productos.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'productos']) Productos</a>
         <a href="{{ route('admin.categorias.index') }}" class="{{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'categorias']) Categorías</a>
-        <a href="{{ route('admin.promociones.index') }}" class="{{ request()->routeIs('admin.promociones.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'promociones']) Promociones</a>
-        <a href="{{ route('admin.combos.index') }}" class="{{ request()->routeIs('admin.combos.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'combos']) Combos</a>
-        <a href="{{ route('admin.descuentos.index') }}" class="{{ request()->routeIs('admin.descuentos.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'ofertas']) Descuentos</a>
         @if(auth()->user()->isAdmin())
+          <a href="{{ route('admin.promociones.index') }}" class="{{ request()->routeIs('admin.promociones.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'promociones']) Promociones</a>
+        @endif
+        <a href="{{ route('admin.combos.index') }}" class="{{ request()->routeIs('admin.combos.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'combos']) Combos</a>
+        @if(auth()->user()->isAdmin())
+          <a href="{{ route('admin.descuentos.index') }}" class="{{ request()->routeIs('admin.descuentos.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'ofertas']) Descuentos</a>
           <a href="{{ route('admin.woocommerce.create') }}" class="{{ request()->routeIs('admin.woocommerce.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'importar']) Importar WooCommerce</a>
         @endif
         <a href="{{ route('admin.attribute-fields.index') }}" class="{{ request()->routeIs('admin.attribute-fields.*') || request()->routeIs('admin.pc-builder-options.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'atributos']) Compatibilidad y atributos</a>
@@ -79,8 +83,10 @@
         @include('partials.admin-icon', ['name' => 'chevron'])
       </button>
       <div class="admin-nav-group" x-show="openGroup === 'contenido'" x-collapse x-cloak>
-        <a href="{{ route('admin.paginas.index') }}" class="{{ request()->routeIs('admin.paginas.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'paginas']) Páginas</a>
-        <a href="{{ route('admin.plantillas.index') }}" class="{{ request()->routeIs('admin.plantillas.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'plantillas']) Plantillas</a>
+        @if(auth()->user()->isAdmin())
+          <a href="{{ route('admin.paginas.index') }}" class="{{ request()->routeIs('admin.paginas.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'paginas']) Páginas</a>
+          <a href="{{ route('admin.plantillas.index') }}" class="{{ request()->routeIs('admin.plantillas.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'plantillas']) Plantillas</a>
+        @endif
         <a href="{{ route('admin.medios.index') }}" class="{{ request()->routeIs('admin.medios.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'medios']) Medios</a>
         <a href="{{ route('admin.menus.index') }}" class="{{ request()->routeIs('admin.menus.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'menus']) Menús</a>
         <a href="{{ route('admin.redes.index') }}" class="{{ request()->routeIs('admin.redes.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'redes']) Redes sociales</a>
@@ -103,7 +109,9 @@
       </button>
       <div class="admin-nav-group" x-show="openGroup === 'cuenta'" x-collapse x-cloak>
         <a href="{{ route('admin.usuarios.index') }}" class="{{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'usuarios']) Usuarios</a>
-        <a href="{{ route('admin.settings.edit') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'ajustes']) Ajustes</a>
+        @if(auth()->user()->isAdmin())
+          <a href="{{ route('admin.settings.edit') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'ajustes']) Ajustes</a>
+        @endif
       </div>
     </nav>
     <div class="admin-nav-foot">

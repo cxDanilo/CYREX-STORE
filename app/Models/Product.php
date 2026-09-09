@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Support\HtmlSanitizer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,6 +23,22 @@ class Product extends Model
         'is_sold_out', 'sold_out_at', 'promotion_id', 'offer_price', 'offer_selected',
         'discount_group_id',
     ];
+
+    // Se sanitiza al GUARDAR (no en cada lectura) — se imprime sin escapar
+    // en la ficha pública ({!! $product->description !!}) y también la
+    // lee directo el x-html de Alpine, así que sanitizar solo en el Blade
+    // no alcanzaba: había que limpiarla en el origen, para que CUALQUIER
+    // lugar que la lea (la ficha, el JSON de edición rápida, el propio
+    // form de edición) ya reciba el valor limpio. Cubre tanto el form de
+    // admin como el importador de WooCommerce (ambos hacen
+    // $product->description = ..., no un insert crudo). Ver auditoría de
+    // seguridad, hallazgo F2 — a diferencia del bloque CMS "html_libre",
+    // que es intencionalmente HTML crudo sin sanitizar (ver
+    // config/cms_blocks.php) y ahora solo lo puede tocar un admin (F1).
+    public function setDescriptionAttribute(?string $value): void
+    {
+        $this->attributes['description'] = HtmlSanitizer::description($value);
+    }
 
     protected $casts = [
         'specs' => 'array',

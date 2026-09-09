@@ -81,7 +81,17 @@ class PromotionController extends Controller
             'category_id' => ['nullable', 'exists:categories,id'],
             'active' => ['nullable', 'boolean'],
             'effect' => ['required', Rule::in(array_keys(Promotion::EFFECTS))],
-            'custom_css' => ['nullable', 'string', 'max:5000'],
+            // Se imprime tal cual dentro de un <style> en el layout público
+            // (Promotion::custom_css) — un "<" ahí adentro alcanza para
+            // cerrar el </style> y abrir <script> de verdad, sin que la
+            // sintaxis CSS en sí importe nada. El CSS real nunca necesita
+            // un "<" literal, así que se rechaza entero en vez de tratar
+            // de sanitizar CSS (mucho más difícil de hacer bien que
+            // simplemente no dejarlo escapar del tag). Ver auditoría de
+            // seguridad, hallazgo F2.
+            'custom_css' => ['nullable', 'string', 'max:5000', 'regex:/^[^<]*$/'],
+        ], [
+            'custom_css.regex' => 'El CSS no puede contener el carácter "<".',
         ]);
 
         $data['is_recurring'] = $request->boolean('is_recurring');

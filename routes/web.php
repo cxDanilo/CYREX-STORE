@@ -102,13 +102,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('categorias/{category}', [AdminCategoryController::class, 'update'])->name('categorias.update');
         Route::delete('categorias/{category}', [AdminCategoryController::class, 'destroy'])->name('categorias.destroy');
 
-        Route::get('promociones', [AdminPromotionController::class, 'index'])->name('promociones.index');
-        Route::get('promociones/nueva', [AdminPromotionController::class, 'create'])->name('promociones.create');
-        Route::post('promociones', [AdminPromotionController::class, 'store'])->name('promociones.store');
-        Route::get('promociones/{promotion}/editar', [AdminPromotionController::class, 'edit'])->name('promociones.edit');
-        Route::put('promociones/{promotion}', [AdminPromotionController::class, 'update'])->name('promociones.update');
-        Route::delete('promociones/{promotion}', [AdminPromotionController::class, 'destroy'])->name('promociones.destroy');
-        Route::patch('promociones/{promotion}/estado', [AdminPromotionController::class, 'toggleActive'])->name('promociones.toggle-active');
+        // Promociones/Descuentos tocan precios/campañas de todo el sitio (y
+        // Promociones además guarda custom_css que se imprime sin escapar
+        // en el layout público) — se restringen a admin, no alcanza con
+        // estar logueado. Ver auditoría de seguridad, hallazgo F1.
+        Route::middleware('admin')->group(function () {
+            Route::get('promociones', [AdminPromotionController::class, 'index'])->name('promociones.index');
+            Route::get('promociones/nueva', [AdminPromotionController::class, 'create'])->name('promociones.create');
+            Route::post('promociones', [AdminPromotionController::class, 'store'])->name('promociones.store');
+            Route::get('promociones/{promotion}/editar', [AdminPromotionController::class, 'edit'])->name('promociones.edit');
+            Route::put('promociones/{promotion}', [AdminPromotionController::class, 'update'])->name('promociones.update');
+            Route::delete('promociones/{promotion}', [AdminPromotionController::class, 'destroy'])->name('promociones.destroy');
+            Route::patch('promociones/{promotion}/estado', [AdminPromotionController::class, 'toggleActive'])->name('promociones.toggle-active');
+
+            Route::get('descuentos', [AdminDiscountGroupController::class, 'index'])->name('descuentos.index');
+            Route::post('descuentos', [AdminDiscountGroupController::class, 'store'])->name('descuentos.store');
+            Route::put('descuentos/{discountGroup}', [AdminDiscountGroupController::class, 'update'])->name('descuentos.update');
+            Route::delete('descuentos/{discountGroup}', [AdminDiscountGroupController::class, 'destroy'])->name('descuentos.destroy');
+        });
 
         Route::get('combos', [AdminComboController::class, 'index'])->name('combos.index');
         Route::get('combos/nuevo', [AdminComboController::class, 'create'])->name('combos.create');
@@ -118,13 +129,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('combos/{combo}', [AdminComboController::class, 'destroy'])->name('combos.destroy');
         Route::patch('combos/{combo}/estado', [AdminComboController::class, 'toggleActive'])->name('combos.toggle-active');
 
-        Route::get('descuentos', [AdminDiscountGroupController::class, 'index'])->name('descuentos.index');
-        Route::post('descuentos', [AdminDiscountGroupController::class, 'store'])->name('descuentos.store');
-        Route::put('descuentos/{discountGroup}', [AdminDiscountGroupController::class, 'update'])->name('descuentos.update');
-        Route::delete('descuentos/{discountGroup}', [AdminDiscountGroupController::class, 'destroy'])->name('descuentos.destroy');
-
-        Route::get('analitica', [AdminAnalyticsController::class, 'index'])->name('analitica.index');
-        Route::get('analitica/datos', [AdminAnalyticsController::class, 'refresh'])->name('analitica.refresh');
+        // Datos de negocio (visitas, búsquedas, referentes) — no todo
+        // logueado debería poder verlos. Ver auditoría, hallazgo F1.
+        Route::middleware('admin')->group(function () {
+            Route::get('analitica', [AdminAnalyticsController::class, 'index'])->name('analitica.index');
+            Route::get('analitica/datos', [AdminAnalyticsController::class, 'refresh'])->name('analitica.refresh');
+        });
 
         Route::get('usuarios', [AdminUserController::class, 'index'])->name('usuarios.index');
 
@@ -145,27 +155,37 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('importar-woocommerce', [AdminWooCommerceImportController::class, 'store'])->name('woocommerce.store');
         });
 
-        Route::get('ajustes', [AdminSettingsController::class, 'edit'])->name('settings.edit');
-        Route::put('ajustes', [AdminSettingsController::class, 'update'])->name('settings.update');
+        // Configuración global del sitio entero — no algo que un editor
+        // deba poder tocar. Ver auditoría, hallazgo F1.
+        Route::middleware('admin')->group(function () {
+            Route::get('ajustes', [AdminSettingsController::class, 'edit'])->name('settings.edit');
+            Route::put('ajustes', [AdminSettingsController::class, 'update'])->name('settings.update');
+        });
 
         // --- Infraestructura CMS (sin lógica todavía, ver CMS_ARCHITECTURE.md) ---
-        Route::get('paginas', [AdminPageController::class, 'index'])->name('paginas.index');
-        Route::get('paginas/nueva', [AdminPageController::class, 'create'])->name('paginas.create');
-        Route::post('paginas', [AdminPageController::class, 'store'])->name('paginas.store');
-        Route::get('paginas/{page}/editar', [AdminPageController::class, 'edit'])->name('paginas.edit');
-        Route::put('paginas/{page}', [AdminPageController::class, 'update'])->name('paginas.update');
-        Route::delete('paginas/{page}', [AdminPageController::class, 'destroy'])->name('paginas.destroy');
-        Route::get('paginas/{page}/contenido', [AdminPageController::class, 'content'])->name('paginas.content');
-        Route::get('paginas/{page}/bloques', [AdminPageBlockController::class, 'index'])->name('paginas.bloques.index');
-        Route::put('paginas/{page}/bloques', [AdminPageBlockController::class, 'store'])->name('paginas.bloques.store');
-        Route::post('paginas/{page}/bloques/preview', [AdminPageBlockController::class, 'preview'])->name('paginas.bloques.preview');
+        // El bloque "HTML libre" (paginas.bloques.store) guarda HTML sin
+        // sanitizar que se imprime tal cual en páginas públicas — se
+        // restringe todo el editor de páginas/plantillas a admin. Ver
+        // auditoría, hallazgos F1 y F2.
+        Route::middleware('admin')->group(function () {
+            Route::get('paginas', [AdminPageController::class, 'index'])->name('paginas.index');
+            Route::get('paginas/nueva', [AdminPageController::class, 'create'])->name('paginas.create');
+            Route::post('paginas', [AdminPageController::class, 'store'])->name('paginas.store');
+            Route::get('paginas/{page}/editar', [AdminPageController::class, 'edit'])->name('paginas.edit');
+            Route::put('paginas/{page}', [AdminPageController::class, 'update'])->name('paginas.update');
+            Route::delete('paginas/{page}', [AdminPageController::class, 'destroy'])->name('paginas.destroy');
+            Route::get('paginas/{page}/contenido', [AdminPageController::class, 'content'])->name('paginas.content');
+            Route::get('paginas/{page}/bloques', [AdminPageBlockController::class, 'index'])->name('paginas.bloques.index');
+            Route::put('paginas/{page}/bloques', [AdminPageBlockController::class, 'store'])->name('paginas.bloques.store');
+            Route::post('paginas/{page}/bloques/preview', [AdminPageBlockController::class, 'preview'])->name('paginas.bloques.preview');
 
-        Route::get('plantillas', [AdminTemplateController::class, 'index'])->name('plantillas.index');
-        Route::get('plantillas/nueva', [AdminTemplateController::class, 'create'])->name('plantillas.create');
-        Route::post('plantillas', [AdminTemplateController::class, 'store'])->name('plantillas.store');
-        Route::get('plantillas/{template}/editar', [AdminTemplateController::class, 'edit'])->name('plantillas.edit');
-        Route::put('plantillas/{template}', [AdminTemplateController::class, 'update'])->name('plantillas.update');
-        Route::delete('plantillas/{template}', [AdminTemplateController::class, 'destroy'])->name('plantillas.destroy');
+            Route::get('plantillas', [AdminTemplateController::class, 'index'])->name('plantillas.index');
+            Route::get('plantillas/nueva', [AdminTemplateController::class, 'create'])->name('plantillas.create');
+            Route::post('plantillas', [AdminTemplateController::class, 'store'])->name('plantillas.store');
+            Route::get('plantillas/{template}/editar', [AdminTemplateController::class, 'edit'])->name('plantillas.edit');
+            Route::put('plantillas/{template}', [AdminTemplateController::class, 'update'])->name('plantillas.update');
+            Route::delete('plantillas/{template}', [AdminTemplateController::class, 'destroy'])->name('plantillas.destroy');
+        });
 
         Route::get('medios', [AdminMediaController::class, 'index'])->name('medios.index');
         Route::post('medios', [AdminMediaController::class, 'store'])->name('medios.store');
