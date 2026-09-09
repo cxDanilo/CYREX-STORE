@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @include('partials.favicon')
-@if(!empty($ga4MeasurementId))
+@if(!empty($ga4MeasurementId) && !\App\Support\DemoMode::active(request()))
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ $ga4MeasurementId }}"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -164,6 +164,7 @@
 @if($promoEffect ?? null)
   <script src="{{ asset('js/promo-effects.js') }}?v={{ filemtime(public_path('js/promo-effects.js')) }}"></script>
 @endif
+@unless(\App\Support\DemoMode::active(request()))
 <script>
 // Sin esto, alguien que se queda leyendo una sola página sin hacer clic
 // "desaparece" de Conectados ahora en Admin > Analítica a los 5 minutos
@@ -179,6 +180,8 @@ setInterval(() => {
   }
 }, 60000);
 </script>
+@endunless
+<script src="{{ asset('js/demo-mode.js') }}?v={{ filemtime(public_path('js/demo-mode.js')) }}"></script>
 @yield('scripts')
 </body>
 </html>

@@ -6,6 +6,7 @@ use App\Models\AnalyticsPageView;
 use App\Models\AnalyticsSearch;
 use App\Models\AnalyticsVisit;
 use App\Models\Product;
+use App\Support\DemoMode;
 use App\Support\PageLabelResolver;
 use Closure;
 use Illuminate\Database\QueryException;
@@ -22,6 +23,8 @@ class TrackVisit
 
     public function handle(Request $request, Closure $next): Response
     {
+        DemoMode::syncCookie($request);
+
         return $next($request);
     }
 
@@ -37,6 +40,12 @@ class TrackVisit
     private function track(Request $request, Response $response): void
     {
         if (! $request->isMethod('GET')) {
+            return;
+        }
+
+        // Pantalla en modo demo/kiosco navegando sola en loop — no es una
+        // visita real, no debe sumar a las estadísticas.
+        if (DemoMode::active($request)) {
             return;
         }
 
