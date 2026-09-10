@@ -429,6 +429,13 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 
 .page-nav-enter .breadcrumb{opacity:0;animation:page-nav-section-in .4s ease-out forwards;}
 .page-nav-enter .gallery{opacity:0;animation:page-nav-section-in .45s ease-out forwards;animation-delay:.05s;}
+/* En celular la galería es el elemento más grande y prominente de la
+   pantalla -- el mismo deslizamiento de 14px que se ve sutil en el
+   resto de las secciones ahí se nota mucho más ("salta"). Aparece
+   directo, sin la animación de entrada. */
+@media (max-width:680px){
+  .page-nav-enter .gallery{opacity:1;animation:none;}
+}
 
 .page-nav-enter .product-info > *{opacity:0;animation:page-nav-section-in .4s ease-out forwards;}
 .page-nav-enter .product-info > *:nth-child(1){animation-delay:.10s;}
