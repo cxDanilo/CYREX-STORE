@@ -348,7 +348,15 @@
       <p class="form-hint" style="margin-bottom:14px;">Si el producto viene en más de una opción (ej. color), agrégalas aquí — no crees un producto nuevo por cada variante. La foto y el precio de cada una son opcionales: dejalos vacíos y usan los de arriba. Ej. el Kumara cuesta lo mismo en negro y blanco → dejá el precio vacío en las dos variantes, y ponele a cada una la foto de su color para que el cliente vea cuál está eligiendo.</p>
       <template x-for="(variant, i) in variants" :key="i">
         <div class="repeater-row" style="grid-template-columns:auto 1fr 1fr 1fr auto auto;align-items:center;">
-          <div class="variant-thumb" @click="$event.target.closest('.variant-thumb').querySelector('input[type=file]').click()" title="Foto de esta variante (opcional)">
+          {{-- No es un <button> porque adentro ya hay uno real (variant-thumb-clear)
+               y HTML no permite anidar botones — se resuelve con role="button" +
+               tabindex + el @keydown para Enter/Espacio, así queda operable por
+               teclado igual que el botón de la imagen principal de arriba. --}}
+          <div class="variant-thumb" role="button" tabindex="0"
+               @click="$event.target.closest('.variant-thumb').querySelector('input[type=file]').click()"
+               @keydown.enter.prevent="$event.target.closest('.variant-thumb').querySelector('input[type=file]').click()"
+               @keydown.space.prevent="$event.target.closest('.variant-thumb').querySelector('input[type=file]').click()"
+               title="Foto de esta variante (opcional)" aria-label="Foto de esta variante (opcional)">
             <img :src="variant.imagePreview || variant.image" x-show="variant.imagePreview || variant.image" alt="">
             <span x-show="!variant.imagePreview && !variant.image" class="variant-thumb-empty">+</span>
             <button type="button" x-show="variant.imagePreview || variant.image" @click.stop="variant.imagePreview = null; variant.image = null; variant.removeImage = true" class="variant-thumb-clear" aria-label="Sacar imagen de la variante">×</button>
