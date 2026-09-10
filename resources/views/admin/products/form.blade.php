@@ -51,9 +51,16 @@
         get activeFields() { return this.componentType ? (this.componentFields[this.componentType] || {}) : {}; },
         compat: {{ Js::from((object) (old('compat', $product->compat) ?: [])) }},
         compatErrors: @js(collect($errors->messages())->filter(fn ($v, $k) => str_starts_with($k, 'compat.'))->mapWithKeys(fn ($v, $k) => [substr($k, strlen('compat.')) => $v[0]])),
-        tab: {!! $errorTab ? "'{$errorTab}'" : "localStorage.getItem('cyrexAdminProductTab') || 'general'" !!},
-     }"
-     x-init="$watch('tab', v => localStorage.setItem('cyrexAdminProductTab', v))">
+        // Antes se recordaba la última pestaña vista en localStorage,
+        // mismo tratamiento que Ajustes -- pero Ajustes es una sola
+        // pantalla (tiene sentido recordar dónde la dejaste), mientras
+        // que este form se abre una vez por CADA producto: si mirabas
+        // Especificaciones en otro producto, todo producto nuevo o
+        // editado arrancaba ahí también, en vez de en General. Ahora
+        // siempre empieza en General, salvo que el servidor haya
+        // rechazado el guardado por un campo de otra pestaña.
+        tab: {!! $errorTab ? "'{$errorTab}'" : "'general'" !!},
+     }">
   <form method="POST" action="{{ $product->exists ? route('admin.productos.update', $product) : route('admin.productos.store') }}" enctype="multipart/form-data" style="flex:1;min-width:0;">
     @csrf
     @if($product->exists) @method('PUT') @endif
