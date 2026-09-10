@@ -475,8 +475,6 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .product-hero{display:grid;grid-template-columns:1fr 1fr;gap:56px;padding-top:8px;padding-bottom:60px;align-items:start;}
 .gallery{position:sticky;top:90px;}
 .gallery-main{position:relative;aspect-ratio:1/1;background:var(--bg-elevated);border:1px solid var(--border);border-radius:20px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:zoom-in;}
-.gallery-main img{transition:transform .2s ease;}
-.gallery-main:hover img{transform:scale(1.8);}
 /* Al cambiar de variante (o de miniatura, o la imagen de una edición
    rápida del admin), la foto principal se reemplaza de golpe — sin
    esto se siente como un salto brusco. No es un crossfade real
@@ -493,8 +491,14 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
    pasar a la nueva. Con una transición simple de opacidad en vez de
    una animación por keyframes, no hace falta ningún truco de reinicio
    — y como el cambio de src ocurre recién cuando ya está en 0, nunca
-   hay un frame con la foto vieja a opacidad completa. */
-.gallery-main-img{transition:opacity .18s ease;}
+   hay un frame con la foto vieja a opacidad completa.
+   Los dos transition van en la MISMA regla a propósito: .gallery-main
+   img (elemento+clase) tiene más especificidad que un .gallery-main-img
+   suelto (una sola clase) — tenerlos separados hacía que esta regla
+   pisara ENTERA la de opacidad de abajo (transition es shorthand, no
+   se combinan) y el fade nunca se veía, cambiaba de golpe igual. */
+.gallery-main img{transition:transform .2s ease,opacity .18s ease;}
+.gallery-main:hover img{transform:scale(1.8);}
 .gallery-main-img.img-fading{opacity:0;}
 @media (prefers-reduced-motion: reduce){
   .gallery-main img{transition:none;}
