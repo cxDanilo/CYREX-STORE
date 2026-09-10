@@ -13,6 +13,7 @@
   <h1>Arma tu equipo pieza por pieza</h1>
   <p style="color:var(--text-secondary);font-size:14.5px;max-width:640px;margin-top:10px;line-height:1.6;">
     Te vamos guiando paso a paso — elige una pieza a la vez y te mostramos solo lo que es compatible con lo que ya elegiste.
+    Al final podés <a href="{{ route('saved-builds.index') }}">ver armados de otros clientes</a> o publicar el tuyo.
   </p>
 </div>
 
@@ -55,6 +56,8 @@
         // abajo), false = se lleva las piezas sueltas.
         wantsAssembly: null,
         assemblyFee: 10,
+        showPublish: false,
+        publishName: '',
         // Estos dos pasos se pueden saltar sin elegir nada — no todos los
         // armados necesitan una tarjeta dedicada (CPU con gráficos
         // integrados) ni un cooler aparte (CPU que ya incluye uno de stock).
@@ -327,6 +330,35 @@
           document.body.appendChild(form);
           form.submit();
           form.remove();
+        },
+
+        // Mismo patrón que downloadQuotePdf(): se manda todo como POST
+        // normal (no fetch) para que el navegador siga el redirect del
+        // servidor solo y termine mostrando la página del armado ya
+        // publicado, sin JS extra de por medio.
+        publishBuild() {
+          if (!this.publishName.trim()) return;
+          const items = Object.entries(this.selected).map(([type, p]) => ({ type, id: p.id }));
+          if (!items.length) return;
+
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = '{{ route('saved-builds.store') }}';
+          form.style.display = 'none';
+
+          form.appendChild(Object.assign(document.createElement('input'), { name: '_token', value: '{{ csrf_token() }}' }));
+          form.appendChild(Object.assign(document.createElement('input'), { name: 'visitor_name', value: this.publishName.trim() }));
+          items.forEach((item, i) => {
+            form.appendChild(Object.assign(document.createElement('input'), { name: `items[${i}][type]`, value: item.type }));
+            form.appendChild(Object.assign(document.createElement('input'), { name: `items[${i}][id]`, value: item.id }));
+          });
+          form.appendChild(Object.assign(document.createElement('input'), { name: 'ram_qty', value: this.ramQty }));
+          if (this.wantsAssembly) {
+            form.appendChild(Object.assign(document.createElement('input'), { name: 'wants_assembly', value: '1' }));
+          }
+
+          document.body.appendChild(form);
+          form.submit();
         }
      }"
      x-effect="prefetchIncompatibleImages()">
@@ -636,6 +668,15 @@
          target="_blank" rel="noopener" class="btn-cta-whatsapp" style="width:100%;margin-top:10px;text-decoration:none;" x-show="Object.keys(selected).length">
         Consultar por WhatsApp
       </a>
+
+      <button type="button" class="btn" style="width:100%;margin-top:10px;" x-show="Object.keys(selected).length && !showPublish" @click="showPublish = true">
+        Publicar mi armado en la galería
+      </button>
+      <div class="build-publish-form" x-show="showPublish" x-cloak x-transition.opacity.duration.150ms>
+        <label style="font-size:13px;color:var(--text-secondary);">¿Con qué nombre querés que aparezca en <a href="{{ route('saved-builds.index') }}" target="_blank">la galería pública</a>?</label>
+        <input type="text" x-model="publishName" maxlength="60" placeholder="Ej. Juan, o 'Setup gamer 2026'" @keydown.enter.prevent="publishBuild()">
+        <button type="button" class="btn-cta" style="width:100%;" :disabled="!publishName.trim()" @click="publishBuild()">Publicar</button>
+      </div>
     </div>
   </div>
 

@@ -70,6 +70,7 @@
           <a href="{{ route('admin.promociones.index') }}" class="{{ request()->routeIs('admin.promociones.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'promociones']) Promociones</a>
         @endif
         <a href="{{ route('admin.combos.index') }}" class="{{ request()->routeIs('admin.combos.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'combos']) Combos</a>
+        <a href="{{ route('admin.saved-builds.index') }}" class="{{ request()->routeIs('admin.saved-builds.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'armados']) Armados publicados</a>
         @if(auth()->user()->isAdmin())
           <a href="{{ route('admin.descuentos.index') }}" class="{{ request()->routeIs('admin.descuentos.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'ofertas']) Descuentos</a>
           <a href="{{ route('admin.woocommerce.create') }}" class="{{ request()->routeIs('admin.woocommerce.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'importar']) Importar WooCommerce</a>

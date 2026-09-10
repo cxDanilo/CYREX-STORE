@@ -1318,3 +1318,26 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 @media (max-width:768px){
   .page-head.has-banner{padding:44px 22px 28px;border-radius:16px;}
 }
+
+/* ARMADOS DE LA COMUNIDAD (galería pública de "Arma tu PC") */
+.build-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
+.build-card{display:block;background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:18px;text-decoration:none;color:var(--text-primary);transition:border-color .2s,transform .2s;}
+.build-card:hover{border-color:var(--gold);transform:translateY(-2px);}
+.build-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;}
+.build-card-name{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.build-card-platform{font-size:11px;font-family:var(--font-mono);color:var(--text-muted);border:1px solid var(--border);border-radius:100px;padding:2px 8px;flex-shrink:0;}
+.build-card-meta{color:var(--text-secondary);font-size:13px;margin-bottom:10px;}
+.build-card-price{font-family:var(--font-mono);font-size:20px;color:var(--gold);margin-bottom:8px;}
+.build-card-foot{color:var(--text-muted);font-size:12px;}
+
+.build-detail-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.build-detail-item:last-of-type{border-bottom:none;}
+.build-detail-media{width:48px;height:48px;border-radius:10px;background:var(--bg-elevated-2);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.build-detail-media img{width:100%;height:100%;object-fit:cover;}
+.build-detail-name{flex:1;min-width:0;}
+.build-detail-type{color:var(--text-muted);font-size:12px;}
+.build-detail-price{font-family:var(--font-mono);color:var(--text-secondary);flex-shrink:0;}
+
+.build-publish-form{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:16px;}
+.build-publish-form input[type=text]{width:100%;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text-primary);font-size:14px;outline:none;transition:border-color .15s;margin:10px 0 14px;}
+.build-publish-form input[type=text]:focus{border-color:var(--gold);}

@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\PcBuilderOptionController as AdminPcBuilderOption
 use App\Http\Controllers\Admin\AttributeFieldController as AdminAttributeFieldController;
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\Admin\ComboController as AdminComboController;
+use App\Http\Controllers\Admin\SavedBuildController as AdminSavedBuildController;
 use App\Http\Controllers\Admin\DiscountGroupController as AdminDiscountGroupController;
 use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
 use App\Http\Controllers\VisitHeartbeatController;
@@ -38,6 +39,9 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap')
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/arma-tu-pc', [App\Http\Controllers\PcBuilderController::class, 'index'])->name('pc-builder');
 Route::post('/arma-tu-pc/cotizacion', [App\Http\Controllers\PcBuilderQuoteController::class, 'download'])->middleware('throttle:6,1')->name('pc-builder.quote');
+Route::get('/armados', [App\Http\Controllers\SavedBuildController::class, 'index'])->name('saved-builds.index');
+Route::get('/armados/{savedBuild:slug}', [App\Http\Controllers\SavedBuildController::class, 'show'])->name('saved-builds.show');
+Route::post('/armados', [App\Http\Controllers\SavedBuildController::class, 'store'])->middleware('throttle:6,1')->name('saved-builds.store');
 Route::get('/tienda', [ShopController::class, 'index'])->name('shop');
 Route::get('/producto/{slug}', [ShopController::class, 'show'])->name('product.show');
 Route::get('/combo/{slug}', [ComboController::class, 'show'])->name('combo.show');
@@ -130,6 +134,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('combos/{combo}', [AdminComboController::class, 'update'])->name('combos.update');
         Route::delete('combos/{combo}', [AdminComboController::class, 'destroy'])->name('combos.destroy');
         Route::patch('combos/{combo}/estado', [AdminComboController::class, 'toggleActive'])->name('combos.toggle-active');
+
+        Route::get('armados', [AdminSavedBuildController::class, 'index'])->name('saved-builds.index');
+        Route::get('armados/{savedBuild:id}', [AdminSavedBuildController::class, 'show'])->name('saved-builds.show');
+        Route::patch('armados/{savedBuild:id}/aprobar', [AdminSavedBuildController::class, 'approve'])->name('saved-builds.approve');
+        Route::patch('armados/{savedBuild:id}/rechazar', [AdminSavedBuildController::class, 'reject'])->name('saved-builds.reject');
+        Route::delete('armados/{savedBuild:id}', [AdminSavedBuildController::class, 'destroy'])->name('saved-builds.destroy');
 
         // Datos de negocio (visitas, búsquedas, referentes) — no todo
         // logueado debería poder verlos. Ver auditoría, hallazgo F1.
