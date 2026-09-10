@@ -596,6 +596,7 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 
 .stock-pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:12.5px;font-weight:600;padding:6px 14px;border-radius:100px;margin-bottom:16px;}
 .stock-pill.out-of-stock{background:rgba(226,75,74,.1);color:var(--red);border:1px solid rgba(226,75,74,.25);}
+.stock-pill.is-hidden{display:none;}
 
 .btn-cta-row{display:flex;gap:10px;margin-bottom:24px;}
 .btn-cta-row .btn-cta{margin-bottom:0;flex:1;min-width:0;}

@@ -11,7 +11,11 @@ class ProductVariant extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_id', 'variant_type', 'variant_value', 'sku', 'price_override', 'image',
+        'product_id', 'variant_type', 'variant_value', 'sku', 'price_override', 'image', 'is_sold_out',
+    ];
+
+    protected $casts = [
+        'is_sold_out' => 'boolean',
     ];
 
     public function product(): BelongsTo

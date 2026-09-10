@@ -62,7 +62,7 @@
        x-data="{
          showVariants: false,
          hasVariants: {{ $product->has_variants ? 'true' : 'false' }},
-         variants: {{ $product->variants->map(fn ($v) => ['id' => $v->id, 'name' => $v->variant_value])->toJson() }},
+         variants: {{ $product->variants->map(fn ($v) => ['id' => $v->id, 'name' => $v->variant_value, 'is_sold_out' => $v->is_sold_out])->toJson() }},
          inStock: {{ $product->is_sold_out ? 'false' : 'true' }},
          quickAdd() {
            if (!this.inStock) return;
@@ -96,7 +96,9 @@
             <div class="card-variant-picker-title">Elige una opción</div>
             <div class="card-variant-picker-options">
               <template x-for="v in variants" :key="v.id">
-                <button type="button" class="card-variant-chip" @click.stop.prevent="$store.cart.add({{ $product->id }}, v.id); showVariants = false" x-text="v.name"></button>
+                <button type="button" class="card-variant-chip" :class="{ 'out-of-stock': v.is_sold_out }" :disabled="v.is_sold_out"
+                        @click.stop.prevent="$store.cart.add({{ $product->id }}, v.id); showVariants = false"
+                        x-text="v.is_sold_out ? v.name + ' (Agotado)' : v.name"></button>
               </template>
             </div>
           </div>

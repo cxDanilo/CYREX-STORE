@@ -506,6 +506,7 @@ class ProductController extends Controller
                 'variant_value' => $variant['variant_value'],
                 'sku' => $variant['sku'] ?? null,
                 'price_override' => ($variant['price_override'] ?? '') !== '' ? $variant['price_override'] : null,
+                'is_sold_out' => $request->boolean("variants.$i.is_sold_out"),
                 'image_file' => $request->file("variants.$i.image"),
                 'remove_image' => $request->boolean("variants.$i.remove_image"),
             ];

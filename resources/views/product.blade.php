@@ -88,8 +88,29 @@
           const v = this.variants.find(v => v.id === this.variant);
           return !!(v && v.price_override !== null && v.price_override !== undefined);
         },
-        variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'name' => $v->variant_value, 'price_override' => $v->price_override !== null ? (float) $v->price_override : null, 'image' => $v->image_url])->toJson() }},
-        inStock: {{ $product->is_sold_out ? 'false' : 'true' }},
+        variants: {{ $product->variants->map(fn($v) => ['id' => $v->id, 'name' => $v->variant_value, 'price_override' => $v->price_override !== null ? (float) $v->price_override : null, 'image' => $v->image_url, 'is_sold_out' => $v->is_sold_out])->toJson() }},
+        productSoldOut: {{ $product->is_sold_out ? 'true' : 'false' }},
+        // Agotado si el producto entero lo está, O si la variante
+        // elegida puntualmente lo está (ej. Rojo agotado pero Negro
+        // todavía disponible) — antes era un valor fijo que nunca
+        // reaccionaba a cuál variante estuviera elegida.
+        //
+        // Iba a ser un getter (como mainImage/basePrice de acá arriba)
+        // pero el x-show del pill de Agotado no reaccionaba a él (sí
+        // reaccionaban :disabled y el texto del botón, que dependen del
+        // mismo getter) — un plain property actualizado a mano en cada
+        // cambio de variante, en cambio, sí funciona en todos lados,
+        // así que se deja así. [Nota: nunca escribas el caracter de
+        // comilla doble suelto en un comentario acá adentro — x-data
+        // va dentro de un atributo HTML delimitado con ese mismo
+        // caracter, así que uno solo de más corta el atributo a la
+        // mitad. Usá comillas simples o directamente ninguna.]
+        inStock: {{ ($product->is_sold_out || ($product->variants->first()?->is_sold_out ?? false)) ? 'false' : 'true' }},
+        updateInStock() {
+          if (this.productSoldOut) { this.inStock = false; return; }
+          const v = this.variants.find(v => v.id === this.variant);
+          this.inStock = !(v && v.is_sold_out);
+        },
         flashPrice() {
           this.$root.querySelectorAll('.price-main, .price-alt').forEach(el => {
             el.classList.remove('price-flash');
@@ -240,7 +261,7 @@
         // se vea sin tener que tocar nada más.
         get mainImage() { return this.editImagePreview || this.galleryActive || this.selectedVariantImage || this.editImageUrl || this.galleryImages[0] || null; },
         init() {
-          this.$watch('variant', () => { this.galleryActive = null; });
+          this.$watch('variant', () => { this.galleryActive = null; this.updateInStock(); });
         },
         originalName: {{ Js::from($product->name) }},
         originalPrice: {{ (float) $product->price }},
@@ -386,9 +407,10 @@
     @if($product->has_variants && $product->variants->count())
       <div class="variant-options">
         @foreach($product->variants as $v)
-          <div class="variant-swatch"
+          <div class="variant-swatch{{ $v->is_sold_out ? ' out-of-stock' : '' }}"
                :class="{ selected: variant === {{ $v->id }} }"
-               @click="variant = {{ $v->id }}; flashPrice()">
+               @if(!$v->is_sold_out) @click="variant = {{ $v->id }}; flashPrice()" @endif
+               title="{{ $v->is_sold_out ? 'Agotada' : '' }}">
             {{ $v->variant_value }}
           </div>
         @endforeach
@@ -493,7 +515,12 @@
       </div>
     </div>
 
-    <div class="stock-pill out-of-stock" x-show="!editing && !inStock" x-cloak>✕ Agotado</div>
+    {{-- :class en vez de x-show -- x-show (con x-cloak) no reaccionaba
+         acá al cambiar de variante (sí reaccionaban :disabled y el
+         texto del botón de más abajo, atados al mismo inStock) --
+         :class usa el mismo mecanismo de binding que :disabled, que sí
+         funciona bien. --}}
+    <div class="stock-pill out-of-stock" :class="{ 'is-hidden': editing || inStock }" x-cloak>✕ Agotado</div>
 
     <div class="btn-cta-row">
       <button type="button" class="btn-cta"
