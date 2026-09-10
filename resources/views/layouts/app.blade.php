@@ -17,7 +17,17 @@
 // anima nada (se ve como que la foto aparece de golpe). Con dos
 // requestAnimationFrame de por medio, el opacity:0 ya se pintó al menos
 // una vez antes de agregar la clase, así que ahí sí el fade corre.
+//
+// El offsetWidth de acá abajo fuerza ese cálculo de estilo/layout de
+// forma SINCRÓNICA (en vez de solo confiar en que dos rAF alcancen para
+// que el navegador pinte solo) — en Safari/iOS se vio que a veces
+// encimaba los dos requestAnimationFrame en el mismo frame (sobre todo
+// con la imagen ya en caché de memoria, carga casi instantánea) y el
+// fade se volvía a saltar. Forzar el reflow antes de encadenar los rAF
+// deja el opacity:0 ya calculado pase lo que pase con el timing de los
+// frames.
 window.markCardImageLoaded = function (img) {
+  void img.offsetWidth;
   requestAnimationFrame(function () {
     requestAnimationFrame(function () { img.classList.add('is-loaded'); });
   });
