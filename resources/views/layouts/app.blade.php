@@ -4,6 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
+<script>
+// Usado por el onload/onerror de toda foto de card (tienda, relacionados,
+// CMS, armador) para el fade-in de .card-media img. Va accá arriba, antes
+// que cualquier otro script, para que esté definido pase lo que pase,
+// sin importar qué tan rápido termine de cargar una imagen chica.
+//
+// Si la imagen ya estaba en caché del navegador, agregar la clase
+// is-loaded EN EL MISMO INSTANTE en que el elemento se creó/insertó no
+// le da tiempo al navegador de pintar el opacity:0 inicial antes de
+// saltar a 1 — la transición de CSS no tiene de dónde "arrancar" y no
+// anima nada (se ve como que la foto aparece de golpe). Con dos
+// requestAnimationFrame de por medio, el opacity:0 ya se pintó al menos
+// una vez antes de agregar la clase, así que ahí sí el fade corre.
+window.markCardImageLoaded = function (img) {
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () { img.classList.add('is-loaded'); });
+  });
+};
+</script>
 @include('partials.favicon')
 @if(!empty($ga4MeasurementId) && !\App\Support\DemoMode::active(request()))
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ $ga4MeasurementId }}"></script>

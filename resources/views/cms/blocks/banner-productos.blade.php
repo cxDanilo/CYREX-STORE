@@ -55,7 +55,7 @@
             <div class="card-media">
               @if($product->image_thumb_url)
                 <img src="{{ $product->image_thumb_url }}" alt="{{ $product->name }}" loading="lazy" style="{{ $product->is_sold_out ? 'filter:grayscale(1);' : '' }}"
-                     onload="this.classList.add('is-loaded')" onerror="this.classList.add('is-loaded')">
+                     onload="markCardImageLoaded(this)" onerror="markCardImageLoaded(this)">
               @endif
               <div class="card-badges">
                 @if($product->is_sold_out)

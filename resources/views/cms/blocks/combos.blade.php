@@ -43,7 +43,7 @@
             <div class="card-media">
               @if($combo->image_thumb_url)
                 <img src="{{ $combo->image_thumb_url }}" alt="{{ $combo->name }}" loading="lazy"
-                     onload="this.classList.add('is-loaded')" onerror="this.classList.add('is-loaded')">
+                     onload="markCardImageLoaded(this)" onerror="markCardImageLoaded(this)">
               @endif
               <div class="card-badges">
                 <span class="card-badge-promo">Combo</span>

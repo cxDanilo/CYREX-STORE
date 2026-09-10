@@ -100,12 +100,8 @@ window.addEventListener('DOMContentLoaded', function () {
   function fadeInImages(container) {
     container.querySelectorAll('.card-media img').forEach(function (img) {
       if (img.complete) {
-        // Ver shop-ajax.js, mismo fix: agregar la clase en el mismo
-        // tick en que se insertó el HTML no deja pintar el opacity:0
-        // inicial antes de saltar a 1 -- la transición nunca anima.
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () { img.classList.add('is-loaded'); });
-        });
+        // Ver window.markCardImageLoaded (layouts/app.blade.php).
+        window.markCardImageLoaded(img);
       } else {
         img.addEventListener('load', function () { img.classList.add('is-loaded'); });
         img.addEventListener('error', function () { img.classList.add('is-loaded'); });

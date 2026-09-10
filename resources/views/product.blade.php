@@ -583,7 +583,7 @@
         <div class="card-media">
           @if($r->image_thumb_url)
             <img src="{{ $r->image_thumb_url }}" alt="{{ $r->name }}" loading="lazy" style="{{ $r->is_sold_out ? 'filter:grayscale(1);' : '' }}"
-                 onload="this.classList.add('is-loaded')" onerror="this.classList.add('is-loaded')">
+                 onload="markCardImageLoaded(this)" onerror="markCardImageLoaded(this)">
           @endif
           <div class="card-badges">
             @if($r->is_sold_out)

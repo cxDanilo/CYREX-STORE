@@ -46,16 +46,10 @@ window.addEventListener('DOMContentLoaded', function () {
   function fadeInImages(container) {
     container.querySelectorAll('.card-media img').forEach(function (img) {
       if (img.complete) {
-        // Si ya estaba en caché, agregar la clase YA MISMO (mismo tick
-        // que recién se insertó el HTML) no deja tiempo a que el
-        // navegador pinte el opacity:0 inicial antes de saltar a 1 —
-        // la transición nunca llega a animar, se ve como que "aparece
-        // de golpe" (justo lo que se quiere evitar). Con un frame de
-        // por medio, el opacity:0 ya quedó pintado una vez, y ahí sí
-        // el cambio a is-loaded anima el fade normal.
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () { img.classList.add('is-loaded'); });
-        });
+        // Ver window.markCardImageLoaded (layouts/app.blade.php) —
+        // mismo helper que usa el onload inline de todas las demás
+        // cards, así el fix del fade con caché vive en un solo lugar.
+        window.markCardImageLoaded(img);
       } else {
         img.addEventListener('load', function () { img.classList.add('is-loaded'); });
         img.addEventListener('error', function () { img.classList.add('is-loaded'); });

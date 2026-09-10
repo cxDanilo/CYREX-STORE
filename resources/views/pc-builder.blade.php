@@ -502,7 +502,7 @@
                   <div class="pcb-picker-card-media">
                     <img :src="opt.product.image_url" x-show="opt.product.image_url" loading="lazy" width="140" height="140"
                          style="width:100%;height:100%;object-fit:cover;"
-                         onload="this.classList.add('is-loaded')" onerror="this.classList.add('is-loaded')">
+                         onload="markCardImageLoaded(this)" onerror="markCardImageLoaded(this)">
                   </div>
                   <div class="opt-name" x-text="opt.product.name"></div>
                   <div class="opt-price" x-text="'$' + opt.product.price_usd.toFixed(2)"></div>
@@ -578,7 +578,7 @@
                   <div class="card-media">
                     @if($product->image_thumb_url)
                       <img src="{{ $product->image_thumb_url }}" alt="{{ $product->name }}" loading="lazy"
-                           onload="this.classList.add('is-loaded')" onerror="this.classList.add('is-loaded')">
+                           onload="markCardImageLoaded(this)" onerror="markCardImageLoaded(this)">
                     @endif
                   </div>
                   <div class="card-body">
