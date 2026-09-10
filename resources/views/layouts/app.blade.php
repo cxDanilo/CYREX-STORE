@@ -179,6 +179,14 @@ window.markCardImageLoaded = function (img) {
 <script src="{{ asset('js/hero-title-decode.js') }}?v={{ filemtime(public_path('js/hero-title-decode.js')) }}"></script>
 <script src="{{ asset('js/product-image-zoom.js') }}?v={{ filemtime(public_path('js/product-image-zoom.js')) }}"></script>
 <script src="{{ asset('js/scroll-reveal.js') }}?v={{ filemtime(public_path('js/scroll-reveal.js')) }}"></script>
+{{-- Global (no @section('scripts') en shop.blade.php): shop-ajax.js escucha
+     clicks delegados en document y busca .shop-main en cada uno, así que es
+     inofensivo en páginas sin tienda. Cargarlo solo desde shop.blade.php
+     hacía que nunca se cargara al llegar a /tienda por navegación suave
+     (page-nav.js solo reemplaza <main>, nunca vuelve a pedir la página
+     completa) — el listener de orden/filtro/paginación simplemente no
+     existía hasta un F5 real. --}}
+<script src="{{ asset('js/shop-ajax.js') }}?v={{ filemtime(public_path('js/shop-ajax.js')) }}"></script>
 <script src="{{ asset('js/page-nav.js') }}?v={{ filemtime(public_path('js/page-nav.js')) }}"></script>
 @if($promoEffect ?? null)
   <script src="{{ asset('js/promo-effects.js') }}?v={{ filemtime(public_path('js/promo-effects.js')) }}"></script>

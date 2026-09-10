@@ -52,48 +52,7 @@
   @endif
   <div class="product-grid" data-reveal-group>
     @foreach($productos as $product)
-      <a class="card" href="{{ route('product.show', $product->slug) }}" style="display:block;">
-        <div class="card-media">
-          @if($product->image_thumb_url)
-            <img src="{{ $product->image_thumb_url }}" alt="{{ $product->name }}" loading="lazy" style="{{ $product->is_sold_out ? 'filter:grayscale(1);' : '' }}"
-                 onload="markCardImageLoaded(this)" onerror="markCardImageLoaded(this)">
-          @endif
-          <div class="card-badges">
-            @if($product->is_sold_out)
-              <span class="card-badge-agotado">Agotado</span>
-            @endif
-            @if($promo = $product->activePromotion($cardActivePromotion ?? null))
-              <span class="card-badge-promo">{{ $promo->discount_label ?: 'Oferta' }}</span>
-            @endif
-            @if($product->hasActiveOffer())
-              <span class="card-badge-promo">-{{ $product->offerDiscountPercent() }}%</span>
-            @endif
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="card-cat">{{ $product->category->name }}</div>
-          <div class="card-name">{{ $product->name }}</div>
-          @if($product->hasActiveOffer())
-            <div class="card-price-original">
-              @if($product->currency === 'USD')
-                ${{ number_format($product->price, 2) }}
-              @else
-                Bs {{ number_format($product->price, 2) }}
-              @endif
-            </div>
-          @endif
-          <div class="card-price">
-            @if($product->currency === 'USD')
-              ${{ number_format($product->effectivePrice(), 2) }} <small>USD</small>
-            @else
-              Bs {{ number_format($product->effectivePrice(), 2) }} <small>BOB</small>
-            @endif
-          </div>
-          @if($product->hasActiveOffer())
-            <div class="card-offer-countdown" x-text="$store.offer.remaining"></div>
-          @endif
-        </div>
-      </a>
+      @include('partials.product-card', ['product' => $product])
     @endforeach
   </div>
 </div>

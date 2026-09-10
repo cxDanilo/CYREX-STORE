@@ -9,7 +9,13 @@ window.addEventListener('DOMContentLoaded', function () {
     var interval = parseInt(rotator.dataset.interval || '5000', 10);
     var current = 0;
 
-    setInterval(function () {
+    // Si esta página se abandona por una navegación suave (page-nav.js
+    // reemplaza <main> con innerHTML), este setInterval nunca se
+    // enteraba y seguía corriendo para siempre sobre nodos ya
+    // desconectados del documento. Se corta solo apenas nota que
+    // "rotator" ya no está en el documento.
+    var timerId = setInterval(function () {
+      if (!rotator.isConnected) { clearInterval(timerId); return; }
       var next = (current + 1) % pages.length;
       pages[current].classList.remove('is-active');
       pages[next].classList.add('is-active');

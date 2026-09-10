@@ -19,7 +19,3 @@
 </div>
 
 @endsection
-
-@section('scripts')
-<script src="{{ asset('js/shop-ajax.js') }}?v={{ filemtime(public_path('js/shop-ajax.js')) }}"></script>
-@endsection

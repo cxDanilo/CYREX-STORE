@@ -26,7 +26,14 @@ window.addEventListener('DOMContentLoaded', function () {
     function resetTimer() {
       if (timer) clearInterval(timer);
       if (!reduced && interval > 0) {
-        timer = setInterval(function () { goTo(current + 1); }, interval);
+        // Mismo motivo que en social-rotator.js: sin este chequeo, salir
+        // de esta página por navegación suave (page-nav.js reemplaza
+        // <main>) dejaba el timer corriendo para siempre sobre un "root"
+        // ya desconectado del documento.
+        timer = setInterval(function () {
+          if (!root.isConnected) { clearInterval(timer); return; }
+          goTo(current + 1);
+        }, interval);
       }
     }
 
