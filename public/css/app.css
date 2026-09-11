@@ -822,7 +822,7 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .cms-cat-chip:hover{border-color:var(--gold);color:var(--gold);}
 
 .cms-hero-video{position:relative;min-height:100dvh;display:flex;align-items:flex-end;overflow:hidden;background:#0A0A0B;border-bottom:1px solid var(--border);}
-.cms-hero-video-media{position:absolute;inset:0;overflow:hidden;}
+.cms-hero-video-media{position:absolute;inset:0;overflow:hidden;will-change:transform;}
 .cms-hero-video-iframe{position:absolute;top:50%;left:50%;width:177.78dvh;height:56.25vw;min-width:100%;min-height:100%;transform:translate(-50%,-50%);border:0;pointer-events:none;}
 .cms-hero-video-native{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .cms-hero-video-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
