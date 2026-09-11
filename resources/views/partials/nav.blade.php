@@ -210,11 +210,6 @@ document.addEventListener('alpine:init', () => {
     @include('partials.search-box')
 
     <div class="nav-actions">
-      <a href="https://wa.me/{{ $whatsappNumber }}" target="_blank" class="nav-whatsapp-btn">
-        @include('partials.whatsapp-icon')
-        <span>{{ $whatsappBtnText }}</span>
-      </a>
-      <span class="nav-status"><i></i> En línea</span>
       <button type="button" class="cart-icon-btn" x-on:click="$store.cart.open = true" aria-label="Ver carrito">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
           <path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h7.2a2 2 0 0 0 2-1.6L20 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
