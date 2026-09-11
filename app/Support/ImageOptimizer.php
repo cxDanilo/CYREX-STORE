@@ -58,15 +58,22 @@ class ImageOptimizer
         $webpAbsolute = self::withExtension($absolutePath, 'webp');
         $webpOk = @imagewebp($image, $webpAbsolute, self::QUALITY);
 
-        $thumbAbsolute = self::withPrefix($absolutePath, 'thumb_');
+        // La miniatura SIEMPRE se guarda en WebP, sea cual sea el formato
+        // subido — antes se guardaba en el mismo formato que el original
+        // (típicamente PNG, por venir de renders/capturas de fabricante),
+        // y un PNG de foto de producto pesa varias veces más que el mismo
+        // recorte en WebP a la misma calidad (una miniatura de 400px
+        // llegaba a pesar 100-250KB en vez de 10-15KB) — exactamente lo
+        // que hacía sentir "pesadas" las fotos del armador y la tienda.
+        $thumbAbsolute = self::withPrefix(self::withExtension($absolutePath, 'webp'), 'thumb_');
         $thumb = self::resize($image, self::THUMB_DIMENSION);
-        $thumbOk = self::save($thumb, $thumbAbsolute, $mimeType);
+        $thumbOk = @imagewebp($thumb, $thumbAbsolute, self::QUALITY);
         imagedestroy($thumb);
         imagedestroy($image);
 
         return [
             'webp' => $webpOk ? self::withExtension($relativePath, 'webp') : null,
-            'thumb' => $thumbOk ? self::withPrefix($relativePath, 'thumb_') : null,
+            'thumb' => $thumbOk ? self::withPrefix(self::withExtension($relativePath, 'webp'), 'thumb_') : null,
         ];
     }
 

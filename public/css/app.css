@@ -1213,7 +1213,12 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .cms-combos .cms-social-page{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));}
 .pcb-complete-setup .card{max-width:240px;}
 
-.pcb-step-nav{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:20px;}
+/* sticky al fondo: en pasos con muchas opciones (ej. 20+ tarjetas de
+   GPU) el botón "Siguiente" quedaba pegado al final de esa grilla larga,
+   obligando a scrollear toda la lista para encontrarlo — con sticky se
+   queda pegado abajo de la pantalla apenas se llega a su altura, sin
+   tener que llegar hasta el final del todo. */
+.pcb-step-nav{display:flex;align-items:center;gap:10px;margin-top:auto;padding:16px 0 4px;position:sticky;bottom:0;background:var(--bg-elevated);z-index:5;box-shadow:0 -12px 16px -6px var(--bg-elevated);}
 
 .pcb-review{display:flex;flex-direction:column;align-items:flex-start;gap:6px;}
 .pcb-review-check{width:44px;height:44px;border-radius:50%;background:rgba(62,207,110,.12);color:#6fe497;border:1px solid rgba(62,207,110,.3);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:8px;animation:pcb-check-pop .4s cubic-bezier(.34,1.56,.64,1);}

@@ -162,8 +162,11 @@ class Product extends Model
             return $this->image_url;
         }
 
+        // La miniatura siempre se guarda en .webp (ver ImageOptimizer),
+        // sea cual sea la extensión del original.
         $dir = dirname($this->image);
-        $thumbPath = ($dir === '.' ? '' : $dir.'/').'thumb_'.basename($this->image);
+        $nameWithoutExt = pathinfo($this->image, PATHINFO_FILENAME);
+        $thumbPath = ($dir === '.' ? '' : $dir.'/').'thumb_'.$nameWithoutExt.'.webp';
 
         return Storage::disk('uploads')->exists($thumbPath)
             ? asset('uploads/'.$thumbPath)
