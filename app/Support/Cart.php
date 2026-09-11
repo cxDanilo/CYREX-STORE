@@ -116,18 +116,23 @@ class Cart
         })->filter()->values();
     }
 
-    public static function total(float $rate, string $currency = 'USD'): float
+    // $items opcional: quien ya llamó a self::items() antes (ej.
+    // CartController::cartResponse(), el composer de partials/nav) puede
+    // pasarlo acá para no volver a consultar productos/variantes/combos
+    // de nuevo — items() ya hace 3 queries por su cuenta, y total()/
+    // whatsappMessage() se llaman siempre en la misma request.
+    public static function total(float $rate, string $currency = 'USD', ?Collection $items = null): float
     {
-        return self::items()->sum(function ($item) use ($rate, $currency) {
+        return ($items ?? self::items())->sum(function ($item) use ($rate, $currency) {
             $priceUsd = $item->currency === 'USD' ? $item->price : $item->price / $rate;
 
             return $currency === 'USD' ? $priceUsd : $priceUsd * $rate;
         });
     }
 
-    public static function whatsappMessage(string $number, float $rate, string $currency = 'USD'): string
+    public static function whatsappMessage(string $number, float $rate, string $currency = 'USD', ?Collection $items = null): string
     {
-        $items = self::items();
+        $items = $items ?? self::items();
 
         if ($items->isEmpty()) {
             return '';
@@ -157,8 +162,8 @@ class Cart
         }
 
         $totalLabel = $currency === 'USD'
-            ? '$'.number_format(self::total($rate, $currency), 2)
-            : 'Bs '.number_format(self::total($rate, $currency), 2);
+            ? '$'.number_format(self::total($rate, $currency, $items), 2)
+            : 'Bs '.number_format(self::total($rate, $currency, $items), 2);
 
         $lines[] = '';
         $lines[] = "Total aproximado: {$totalLabel}";

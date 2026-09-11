@@ -62,8 +62,8 @@ class CartController extends Controller
         $html = view('partials.cart-drawer-content', [
             'cartItems' => $items,
             'cartCurrency' => $currency,
-            'cartTotal' => Cart::total($rate, $currency),
-            'cartWhatsappUrl' => Cart::whatsappMessage($whatsappNumber, $rate, $currency),
+            'cartTotal' => Cart::total($rate, $currency, $items),
+            'cartWhatsappUrl' => Cart::whatsappMessage($whatsappNumber, $rate, $currency, $items),
         ])->render();
 
         return response()->json([

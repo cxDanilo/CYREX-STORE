@@ -46,15 +46,17 @@ class AppServiceProvider extends ServiceProvider
             $currency = Setting::get('default_currency', 'USD');
             $whatsappNumber = ReferralRouter::whatsappNumber();
 
+            $cartItems = Cart::items();
+
             $view->with([
                 'navCategories' => $this->resolveNavCategories(),
                 'categoryMenuScope' => Setting::get('category_menu_scope', 'shop'),
                 'whatsappNumber' => $whatsappNumber,
-                'cartItems' => Cart::items(),
+                'cartItems' => $cartItems,
                 'cartCount' => Cart::count(),
                 'cartCurrency' => $currency,
-                'cartTotal' => Cart::total($rate, $currency),
-                'cartWhatsappUrl' => Cart::whatsappMessage($whatsappNumber, $rate, $currency),
+                'cartTotal' => Cart::total($rate, $currency, $cartItems),
+                'cartWhatsappUrl' => Cart::whatsappMessage($whatsappNumber, $rate, $currency, $cartItems),
                 'logoHeight' => Setting::get('logo_height', '60'),
                 'logoUrl' => $this->resolveLogoUrl(),
                 'whatsappBtnText' => Setting::get('whatsapp_btn_text', 'Escríbenos'),
