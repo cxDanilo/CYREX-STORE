@@ -9,8 +9,21 @@
   $allProducts = $categorizedProducts->flatten();
   $selectedIds = old('product_ids', $group ? $group->products->pluck('id')->all() : []);
   $priceMap = [];
+  $offerPriceErrors = [];
+  $productsForSearch = [];
   foreach ($allProducts as $p) {
       $priceMap[$p->id] = old('offer_price.'.$p->id, $p->offer_price);
+      if ($errors->has('offer_price.'.$p->id)) {
+          $offerPriceErrors[$p->id] = $errors->first('offer_price.'.$p->id);
+      }
+      $productsForSearch[] = [
+          'id' => $p->id,
+          'name' => $p->name,
+          'category' => $p->category->name ?? 'Sin categoría',
+          'price' => (float) $p->price,
+          'currency' => $p->currency,
+          'has_variant_override' => $p->has_variants && $p->variants->contains(fn ($v) => $v->price_override !== null),
+      ];
   }
   $endsAtLocal = $group ? $group->ends_at->timezone('America/La_Paz')->format('Y-m-d\TH:i') : '';
 @endphp
@@ -29,8 +42,37 @@
 
 <div x-data="{
       q: '',
+      allProducts: @js($productsForSearch),
       selected: @js(collect($selectedIds)->map(fn ($id) => (string) $id)->all()),
       prices: @js(collect($priceMap)->mapWithKeys(fn ($v, $k) => [(string) $k => $v])->all()),
+      errors: @js(collect($offerPriceErrors)->mapWithKeys(fn ($v, $k) => [(string) $k => $v])->all()),
+
+      get searchResults() {
+        const term = this.q.trim().toLowerCase();
+        if (!term) return [];
+        return this.allProducts
+          .filter(p => !this.selected.includes(String(p.id)) && p.name.toLowerCase().includes(term))
+          .slice(0, 8);
+      },
+
+      get selectedProducts() {
+        return this.selected
+          .map(id => this.allProducts.find(p => String(p.id) === String(id)))
+          .filter(Boolean);
+      },
+
+      addProduct(id) {
+        id = String(id);
+        if (!this.selected.includes(id)) this.selected.push(id);
+        this.q = '';
+      },
+
+      // No borra prices[id] a propósito — si el producto se vuelve a
+      // agregar más tarde, aparece de nuevo con el mismo precio de
+      // oferta en vez de tener que escribirlo de cero.
+      removeProduct(id) {
+        this.selected = this.selected.filter(x => x !== String(id));
+      },
     }" style="max-width:760px;">
   <form method="POST" action="{{ $group ? route('admin.descuentos.update', $group) : route('admin.descuentos.store') }}" class="admin-form">
     @csrf
@@ -57,52 +99,47 @@
 
     <div class="form-section">
       <h3>Productos en la campaña</h3>
-      <div class="form-hint" style="margin-bottom:10px;">Desmarcar un producto lo saca de esta campaña (no borra el precio que le pusiste, por si lo volvés a sumar).</div>
+      <div class="form-hint" style="margin-bottom:10px;">Buscá un producto por nombre para agregarlo — sacarlo de acá no borra el precio de oferta que le pusiste, por si lo volvés a sumar.</div>
 
-      <input type="text" x-model="q" placeholder="Buscar producto..." class="admin-product-search">
-
-      <div style="max-height:480px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:14px;">
-        @foreach($categorizedProducts as $categoryName => $products)
-          <div>
-            <div style="font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);margin:14px 0 6px;">{{ $categoryName }}</div>
-            @foreach($products as $product)
-              @php
-                $hasVariantOverride = $product->has_variants && $product->variants->contains(fn ($v) => $v->price_override !== null);
-              @endphp
-              <label class="combo-product-row offer-product-row"
-                     x-show="!q || '{{ \Illuminate\Support\Str::lower($product->name) }}'.includes(q.toLowerCase())">
-                <input type="checkbox" name="product_ids[]" value="{{ $product->id }}"
-                       x-model="selected"
-                       {{ in_array($product->id, $selectedIds) ? 'checked' : '' }}>
-                <span class="combo-product-row-info">
-                  <span class="combo-product-row-name">
-                    {{ $product->name }}
-                    @if($hasVariantOverride)
-                      <span title="Tiene variantes con precio propio — esa variante sigue cobrando su propio precio, no el de oferta.">⚠️</span>
-                    @endif
-                  </span>
-                  <span class="combo-product-row-price mono">
-                    @if($product->currency === 'USD')
-                      ${{ number_format($product->price, 2) }}
-                    @else
-                      Bs {{ number_format($product->price, 2) }}
-                    @endif
-                  </span>
-                </span>
-                <input type="number" step="0.01" min="0.01" class="offer-price-input mono"
-                       name="offer_price[{{ $product->id }}]"
-                       x-show="selected.includes('{{ $product->id }}')"
-                       x-model="prices['{{ $product->id }}']"
-                       placeholder="Precio oferta"
-                       @click.stop>
-                @error('offer_price.'.$product->id)
-                  <div class="error" style="width:100%;order:99;">{{ $message }}</div>
-                @enderror
-              </label>
-            @endforeach
-          </div>
-        @endforeach
+      <div style="position:relative;" @click.outside="q = ''">
+        <input type="text" x-model="q" placeholder="Buscar producto..." class="admin-product-search" autocomplete="off">
+        <div class="admin-search-results" x-show="searchResults.length" x-cloak>
+          <template x-for="p in searchResults" :key="p.id">
+            <button type="button" class="admin-search-result-row" @click="addProduct(p.id)">
+              <span class="combo-product-row-name" x-text="p.name"></span>
+              <span class="admin-search-result-price mono" x-text="(p.currency === 'USD' ? '$' : 'Bs ') + p.price.toFixed(2)"></span>
+              <span class="admin-search-result-add">+ Agregar</span>
+            </button>
+          </template>
+        </div>
+        <div class="form-hint" style="margin-top:8px;" x-show="q.trim() && !searchResults.length" x-cloak>Ningún producto activo coincide con "<span x-text="q"></span>".</div>
       </div>
+
+      <div style="margin-top:16px;" x-show="selectedProducts.length" x-cloak>
+        <template x-for="p in selectedProducts" :key="p.id">
+          <div class="combo-product-row offer-product-row" style="cursor:default;">
+            <button type="button" class="admin-remove-btn" @click="removeProduct(p.id)" aria-label="Quitar de la campaña" title="Quitar de la campaña">×</button>
+            <span class="combo-product-row-info">
+              <span class="combo-product-row-name">
+                <span x-text="p.name"></span>
+                <span x-show="p.has_variant_override" title="Tiene variantes con precio propio — esa variante sigue cobrando su propio precio, no el de oferta.">⚠️</span>
+              </span>
+              <span class="combo-product-row-price mono" x-text="(p.currency === 'USD' ? '$' : 'Bs ') + p.price.toFixed(2)"></span>
+            </span>
+            <input type="number" step="0.01" min="0.01" class="offer-price-input mono"
+                   :name="'offer_price[' + p.id + ']'"
+                   x-model="prices[p.id]"
+                   placeholder="Precio oferta">
+            <div class="error" style="width:100%;order:99;" x-show="errors[p.id]" x-text="errors[p.id]" x-cloak></div>
+          </div>
+        </template>
+      </div>
+      <p class="form-hint" x-show="!selectedProducts.length" x-cloak>Todavía no agregaste ningún producto — buscalo arriba.</p>
+
+      <template x-for="id in selected" :key="'hidden-'+id">
+        <input type="hidden" name="product_ids[]" :value="id">
+      </template>
+
       <div class="form-hint" style="margin-top:10px;"><span x-text="selected.length"></span> producto(s) en la campaña.</div>
     </div>
 

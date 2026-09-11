@@ -289,6 +289,18 @@ label.switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;}
 .offer-product-row{flex-wrap:wrap;}
 .offer-price-input{flex-shrink:0;width:110px;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text-primary);font-size:12.5px;}
 .offer-price-input:focus{border-color:var(--gold);outline:none;}
+
+/* Buscador de producto de Ofertas: dropdown de resultados debajo del
+   input (mismo mecanismo que .search-suggestions del sitio público,
+   con los tokens del admin) — a propósito no muestra nada hasta que se
+   escribe algo, en vez del catálogo entero de una. */
+.admin-search-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:10px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.4);z-index:30;max-height:280px;overflow-y:auto;}
+.admin-search-result-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;background:none;border:none;border-radius:8px;padding:9px 10px;color:var(--text-primary);font-size:13px;cursor:pointer;}
+.admin-search-result-row:hover{background:var(--bg-elevated);}
+.admin-search-result-price{color:var(--text-muted);font-size:12px;flex-shrink:0;margin-left:auto;}
+.admin-search-result-add{color:var(--gold);font-size:12px;font-weight:600;flex-shrink:0;}
+.admin-remove-btn{flex-shrink:0;width:22px;height:22px;margin-top:2px;border-radius:50%;background:var(--bg-elevated-2);border:1px solid var(--border);color:var(--text-secondary);font-size:14px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:border-color .15s,color .15s;}
+.admin-remove-btn:hover{border-color:var(--red);color:var(--red);}
 .admin-body select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238E8E93' stroke-width='1.5' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px;}
 .form-group .error{color:var(--red);font-size:12px;margin-top:5px;}
 .form-hint{font-size:12px;color:var(--text-muted);margin-top:5px;}
