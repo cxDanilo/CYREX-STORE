@@ -1113,10 +1113,10 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .motion-reduced .currency-toggle .toggle-thumb.to-usd{animation:none!important;}
 
 /* ARMA TU PC */
-.pcb-issue-pill{font-size:12.5px;padding:9px 12px;border-radius:8px;line-height:1.5;}
-.pcb-issue-pill.err{background:rgba(255,92,92,.1);color:#ff8a8a;border:1px solid rgba(255,92,92,.25);}
-.pcb-issue-pill.warn{background:rgba(255,176,32,.1);color:#ffc65c;border:1px solid rgba(255,176,32,.25);}
-.pcb-issue-pill.ok{background:rgba(62,207,110,.1);color:#6fe497;border:1px solid rgba(62,207,110,.25);}
+.pcb-issue-pill{font-size:13.5px;font-weight:600;padding:11px 14px;border-radius:8px;line-height:1.5;}
+.pcb-issue-pill.err{background:rgba(255,92,92,.16);color:#ff8a8a;border:1px solid rgba(255,92,92,.4);}
+.pcb-issue-pill.warn{background:rgba(255,176,32,.16);color:#ffc65c;border:1px solid rgba(255,176,32,.4);}
+.pcb-issue-pill.ok{background:rgba(62,207,110,.14);color:#6fe497;border:1px solid rgba(62,207,110,.35);}
 
 .pcb-layout{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;padding-bottom:80px;}
 @media (max-width:860px){.pcb-layout{grid-template-columns:1fr;}}
@@ -1138,8 +1138,8 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .pcb-step-dot.done .pcb-step-dot-label{color:var(--text-secondary);}
 
 .pcb-wizard-panel{background:var(--bg-elevated);border:1px solid var(--border);border-radius:14px;padding:24px;min-height:340px;display:flex;flex-direction:column;}
-.pcb-step-hint{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-secondary);background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:20px;line-height:1.5;}
-.pcb-step-hint-arrow{flex-shrink:0;color:var(--gold);animation:pcb-hint-bounce 1.4s ease-in-out infinite;}
+.pcb-step-hint{display:flex;align-items:center;gap:10px;font-size:14.5px;color:var(--text-primary);background:var(--bg-elevated-2);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:10px;padding:14px 16px;margin-bottom:20px;line-height:1.55;}
+.pcb-step-hint-arrow{flex-shrink:0;width:18px;height:22px;color:var(--gold);animation:pcb-hint-bounce 1.4s ease-in-out infinite;}
 @keyframes pcb-hint-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(4px);}}
 .motion-reduced .pcb-step-hint-arrow{animation:none;}
 .pcb-step-hint-extra{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
@@ -1286,7 +1286,7 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .pcb-picker-card .opt-name{font-size:12.5px;font-weight:600;margin-bottom:3px;line-height:1.3;}
 .pcb-picker-card .opt-price{font-family:var(--font-mono);font-size:12px;color:var(--gold);}
 .pcb-picker-card .opt-tier{font-size:10px;color:var(--text-muted);margin-top:3px;line-height:1.3;}
-.pcb-picker-card .opt-reason{font-size:10.5px;color:#ff8a8a;margin-top:5px;line-height:1.35;}
+.pcb-picker-card .opt-reason{font-size:11.5px;font-weight:600;color:#ff8a8a;margin-top:5px;line-height:1.4;}
 
 @media (max-width:520px){
   .pcb-picker-grid{grid-template-columns:repeat(2,1fr);}
