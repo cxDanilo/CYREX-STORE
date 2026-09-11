@@ -305,7 +305,7 @@ label.switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;}
    para cargar 50-100 productos de corrido sin que cada uno ocupe una
    card entera (ver sesión de feedback: la versión con cards grandes no
    escalaba). kbd imita una tecla física, solo cosmético. */
-.admin-discount-table{width:100%;border-collapse:collapse;margin-top:14px;}
+.admin-discount-table{width:100%;border-collapse:collapse;margin-top:14px;table-layout:fixed;}
 .admin-discount-table thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted);font-weight:500;padding:0 8px 8px;border-bottom:1px solid var(--border);}
 .admin-discount-table tbody tr{border-bottom:1px solid var(--border);}
 .admin-discount-table tbody tr:last-child{border-bottom:none;}

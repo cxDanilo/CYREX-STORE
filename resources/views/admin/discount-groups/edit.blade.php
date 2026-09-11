@@ -96,7 +96,7 @@
         if (!offer || offer >= p.price) return null;
         return Math.round((1 - offer / p.price) * 100);
       },
-    }" style="max-width:920px;">
+    }" style="max-width:1400px;">
 
   {{-- Sin campaña todavía: un botón nomás, nada de formulario ocupando
        pantalla — recién al tocarlo aparecen nombre/fechas. Sin
@@ -107,13 +107,18 @@
     <button type="button" class="btn btn-primary" @click="creating = true">+ Nueva campaña</button>
   </div>
 
-  <form method="POST" action="{{ $group ? route('admin.descuentos.update', $group) : route('admin.descuentos.store') }}" class="admin-form" x-show="creating" x-cloak>
+  {{-- Sin class="admin-form": esa clase trae un layout multi-columna
+       (columns:420px, pensado para formularios con muchos campos
+       chicos tipo Productos) que forzaba la sección de productos a un
+       solo "carril" angosto sin importar cuánto se ensanche el
+       contenedor de afuera — acá se necesita ancho completo de verdad. --}}
+  <form method="POST" action="{{ $group ? route('admin.descuentos.update', $group) : route('admin.descuentos.store') }}" x-show="creating" x-cloak>
     @csrf
     @if($group)
       @method('PUT')
     @endif
 
-    <div class="form-section">
+    <div class="form-section" style="max-width:620px;">
       @if($group)
         {{-- Campaña ya creada: resumen compacto por default (nombre +
              rango de fechas), con un link para desplegar los campos
@@ -191,6 +196,14 @@
 
         <div style="overflow-x:auto;" x-show="selectedProducts.length" x-cloak>
           <table class="admin-discount-table">
+            <colgroup>
+              <col style="width:56px;">
+              <col>
+              <col style="width:110px;">
+              <col style="width:130px;">
+              <col style="width:64px;">
+              <col style="width:44px;">
+            </colgroup>
             <thead>
               <tr><th></th><th>Producto</th><th>Precio actual</th><th>Precio oferta</th><th>%</th><th></th></tr>
             </thead>
