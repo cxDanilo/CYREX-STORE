@@ -29,12 +29,13 @@ class DiscountGroupController extends Controller
 
         $group = DiscountGroup::create([
             'name' => $data['name'],
-            'ends_at' => $this->parseEndsAt($data['ends_at']),
+            'starts_at' => $this->parseDateTime($data['starts_at']),
+            'ends_at' => $this->parseDateTime($data['ends_at']),
         ]);
 
         $this->applySelection($group, $data);
 
-        return redirect()->route('admin.descuentos.index')->with('status', 'Campaña creada.');
+        return redirect()->route('admin.descuentos.index')->with('status', 'Campaña creada — ahora agregale productos.');
     }
 
     public function update(Request $request, DiscountGroup $discountGroup)
@@ -47,7 +48,8 @@ class DiscountGroupController extends Controller
 
         $discountGroup->update([
             'name' => $data['name'],
-            'ends_at' => $this->parseEndsAt($data['ends_at']),
+            'starts_at' => $this->parseDateTime($data['starts_at']),
+            'ends_at' => $this->parseDateTime($data['ends_at']),
         ]);
 
         // Los que ya no vienen tildados salen del grupo — se les respeta
@@ -77,11 +79,14 @@ class DiscountGroupController extends Controller
     {
         return $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'ends_at' => ['required', 'date'],
+            'starts_at' => ['required', 'date'],
+            'ends_at' => ['required', 'date', 'after:starts_at'],
             'product_ids' => ['array'],
             'product_ids.*' => ['exists:products,id'],
             'offer_price' => ['array'],
             'offer_price.*' => ['nullable', 'numeric', 'min:0.01'],
+        ], [
+            'ends_at.after' => 'La fecha de fin tiene que ser posterior a la de inicio.',
         ]);
     }
 
@@ -117,6 +122,7 @@ class DiscountGroupController extends Controller
         $prices = $data['offer_price'] ?? [];
 
         Setting::set('offer_active', '1');
+        Setting::set('offer_starts_at', $group->starts_at->toIso8601String());
         Setting::set('offer_ends_at', $group->ends_at->toIso8601String());
 
         foreach ($selectedIds as $id) {
@@ -131,9 +137,9 @@ class DiscountGroupController extends Controller
     // La hora que escribe el admin es hora de Bolivia — guardarla tal
     // cual (sin decirle a Carbon en qué zona horaria está) la dejaría
     // corrida contra UTC, que es lo que usa el resto de la app.
-    private function parseEndsAt(string $endsAt): Carbon
+    private function parseDateTime(string $value): Carbon
     {
-        return Carbon::parse($endsAt, 'America/La_Paz')->utc();
+        return Carbon::parse($value, 'America/La_Paz')->utc();
     }
 
     private function categorizedProducts()

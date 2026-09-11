@@ -13,9 +13,10 @@ use Illuminate\Support\Collection;
 // devolver sus productos al precio normal.
 class DiscountGroup extends Model
 {
-    protected $fillable = ['name', 'ends_at'];
+    protected $fillable = ['name', 'starts_at', 'ends_at'];
 
     protected $casts = [
+        'starts_at' => 'datetime',
         'ends_at' => 'datetime',
     ];
 

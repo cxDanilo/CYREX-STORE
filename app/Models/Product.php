@@ -194,7 +194,15 @@ class Product extends Model
             && $this->offer_price !== null
             && (float) $this->offer_price < (float) $this->price
             && Setting::get('offer_active', '0') === '1'
+            && ($this->offerStartsAt()?->isPast() ?? true)
             && $this->offerEndsAt()?->isFuture();
+    }
+
+    public function offerStartsAt(): ?Carbon
+    {
+        $raw = Setting::get('offer_starts_at');
+
+        return $raw ? Carbon::parse($raw) : null;
     }
 
     public function offerEndsAt(): ?Carbon
@@ -207,12 +215,18 @@ class Product extends Model
     // Mismas condiciones que hasActiveOffer() de arriba, pero como
     // filtro de consulta — para la categoría automática de ofertas
     // (Ajustes), que necesita encontrar los productos en oferta sin
-    // cargar todo el catálogo a PHP primero. offer_active/offer_ends_at
-    // son globales (un solo Setting, no una columna por producto), así
-    // que esa parte se resuelve una sola vez acá, no por fila.
+    // cargar todo el catálogo a PHP primero. offer_active/offer_starts_at/
+    // offer_ends_at son globales (un solo Setting, no una columna por
+    // producto), así que esa parte se resuelve una sola vez acá, no por
+    // fila.
     public function scopeHasActiveOffer(Builder $query): Builder
     {
         if (Setting::get('offer_active', '0') !== '1') {
+            return $query->whereRaw('1 = 0');
+        }
+
+        $startsAt = Setting::get('offer_starts_at');
+        if ($startsAt && ! Carbon::parse($startsAt)->isPast()) {
             return $query->whereRaw('1 = 0');
         }
 
