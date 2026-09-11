@@ -159,6 +159,19 @@
     uploadLabel.className = 'cms-media-upload-btn';
     uploadLabel.textContent = 'Subir';
 
+    // Antes, un rechazo del servidor (ej. "el archivo es muy grande")
+    // no mostraba nada — el botón volvía solo a "Subir" en silencio,
+    // como si no hubiera pasado nada. Este texto muestra el motivo real.
+    const errorText = document.createElement('div');
+    errorText.className = 'cms-media-error';
+    errorText.style.display = 'none';
+
+    function showError(message) {
+      errorText.textContent = message;
+      errorText.style.display = 'block';
+      uploadLabel.textContent = 'Subir';
+    }
+
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = kind === 'video' ? 'video/mp4,video/webm,video/quicktime' : 'image/*';
@@ -167,6 +180,7 @@
       const file = fileInput.files[0];
       if (!file) return;
 
+      errorText.style.display = 'none';
       uploadLabel.textContent = 'Subiendo…';
       const formData = new FormData();
       formData.append('files[]', file);
@@ -181,20 +195,28 @@
         headers: { 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json' },
         body: formData,
       })
-        .then((r) => r.json())
-        .then((res) => {
-          const uploaded = (res.items || [])[0];
+        .then((r) => r.json().then((data) => ({ ok: r.ok, data })))
+        .then(({ ok, data }) => {
+          if (!ok) {
+            // Laravel manda { errors: { "files.0": ["mensaje"] } } en un
+            // 422 — se muestra el primer mensaje tal cual (ej. "El
+            // files.0 debe ser un archivo de tipo: ..." o el de "max").
+            const firstError = data.errors && Object.values(data.errors)[0]?.[0];
+            showError(firstError || data.message || 'No se pudo subir el archivo.');
+            return;
+          }
+
+          const uploaded = (data.items || [])[0];
           if (uploaded) {
             textInput.value = uploaded.url;
             updateThumb(uploaded.url);
             onChange(uploaded.url);
+            uploadLabel.textContent = 'Subir';
+          } else {
+            showError('No se pudo subir el archivo.');
           }
-          uploadLabel.textContent = 'Subir';
         })
-        .catch(() => {
-          uploadLabel.textContent = 'Error';
-          setTimeout(() => { uploadLabel.textContent = 'Subir'; }, 1500);
-        });
+        .catch(() => showError('Error de conexión — probá de nuevo.'));
 
       fileInput.value = '';
     });
@@ -206,6 +228,7 @@
     updateThumb(initialValue);
     wrap.appendChild(thumb);
     wrap.appendChild(controls);
+    wrap.appendChild(errorText);
 
     return { wrap, textInput };
   }
