@@ -62,6 +62,7 @@ return [
         'icon' => '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M10 9l5 3-5 3V9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
         'defaults' => [
             'video_url' => '',
+            'video_start' => '',
             'poster_url' => '',
             'poster_url_mobile' => '',
             'titulo' => '',
@@ -70,6 +71,7 @@ return [
         ],
         'fields' => [
             'video_url' => ['type' => 'video', 'label' => 'Video: subilo directo, o pegá un link de YouTube/Vimeo. Para que cargue rápido, que dure poco y esté bien comprimido (unos MB, no cientos).'],
+            'video_start' => ['type' => 'text', 'label' => 'Arranca en (opcional) — minuto:segundo, ej. 0:45. El loop también vuelve a repetir desde acá, no desde el inicio del video. (Solo funciona con YouTube o un video subido directo — en Vimeo no se puede.)'],
             'poster_url' => ['type' => 'media', 'label' => 'Imagen de respaldo — escritorio (se usa mientras carga el video, y en celular si no hay una específica abajo)'],
             'poster_url_mobile' => ['type' => 'media', 'label' => 'Imagen de respaldo — celular (opcional, para que sea una foto distinta a la de escritorio)'],
             'titulo' => ['type' => 'textarea', 'label' => 'Título'],

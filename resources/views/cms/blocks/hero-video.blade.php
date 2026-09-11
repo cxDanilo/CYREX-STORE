@@ -1,6 +1,7 @@
 @php
   $videoUrl = trim($data['video_url'] ?? '');
-  $embedUrl = $videoUrl ? \App\Support\VideoEmbed::backgroundEmbedUrl($videoUrl) : null;
+  $startSeconds = \App\Support\VideoEmbed::parseStartSeconds($data['video_start'] ?? null);
+  $embedUrl = $videoUrl ? \App\Support\VideoEmbed::backgroundEmbedUrl($videoUrl, $startSeconds) : null;
   $isDirectFile = $videoUrl && ! $embedUrl;
 @endphp
 <section class="cms-hero-video @if(!empty($data['poster_url']) || !empty($data['poster_url_mobile'])) cms-hero-video-has-poster @endif">
@@ -8,7 +9,23 @@
     @if($embedUrl)
       <iframe class="cms-hero-video-iframe" src="{{ $embedUrl }}" allow="autoplay; encrypted-media" tabindex="-1" aria-hidden="true"></iframe>
     @elseif($isDirectFile)
-      <video class="cms-hero-video-native" src="{{ $videoUrl }}" @if(!empty($data['poster_url'])) poster="{{ $data['poster_url'] }}" @endif autoplay muted loop playsinline></video>
+      {{-- Sin loop nativo cuando hay un inicio personalizado: el
+           atributo loop del navegador siempre reinicia en 0, no en
+           $startSeconds — el script de abajo maneja el reinicio a mano
+           para que cada vuelta también respete el punto de arranque. --}}
+      <video class="cms-hero-video-native" src="{{ $videoUrl }}" @if(!empty($data['poster_url'])) poster="{{ $data['poster_url'] }}" @endif autoplay muted @if(!$startSeconds) loop @endif playsinline></video>
+      @if($startSeconds)
+        <script>
+          (function () {
+            var v = document.currentScript.previousElementSibling;
+            if (!v || v.tagName !== 'VIDEO') return;
+            var start = {{ $startSeconds }};
+            var applyStart = function () { try { v.currentTime = start; } catch (e) {} };
+            if (v.readyState >= 1) applyStart(); else v.addEventListener('loadedmetadata', applyStart);
+            v.addEventListener('ended', function () { applyStart(); v.play(); });
+          })();
+        </script>
+      @endif
     @endif
     @if(!empty($data['poster_url']))
       <img class="cms-hero-video-poster cms-hero-video-poster-desktop" src="{{ $data['poster_url'] }}" alt="">
