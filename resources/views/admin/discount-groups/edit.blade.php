@@ -22,6 +22,7 @@
           'category' => $p->category->name ?? 'Sin categoría',
           'price' => (float) $p->price,
           'currency' => $p->currency,
+          'image_url' => $p->image_thumb_url,
           'has_variant_override' => $p->has_variants && $p->variants->contains(fn ($v) => $v->price_override !== null),
       ];
   }
@@ -66,8 +67,18 @@
       removeProduct(id) {
         this.selected = this.selected.filter(x => x !== String(id));
       },
-    }" style="max-width:760px;">
 
+      // Solo para la vista previa de al lado — nunca se manda al
+      // servidor, que siempre recalcula el % real a partir del precio
+      // guardado.
+      discountPercent(p) {
+        const offer = parseFloat(this.prices[p.id]);
+        if (!offer || offer >= p.price) return null;
+        return Math.round((1 - offer / p.price) * 100);
+      },
+    }" style="max-width:1100px;display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start;">
+
+  <div style="min-width:0;">
   {{-- Sin campaña todavía: un botón nomás, nada de formulario ocupando
        pantalla — recién al tocarlo aparecen nombre/fechas. Sin
        productos en este paso a propósito: la campaña se crea primero
@@ -199,6 +210,36 @@
       @method('DELETE')
     </form>
   @endif
+  </div>
+
+  {{-- Vista previa en vivo: las mismas clases CSS que usa la tarjeta
+       real de la tienda (.card/.card-media/.card-body — admin.css se
+       carga junto con app.css en todo el admin, así que ya están
+       disponibles acá sin CSS nuevo), actualizándose mientras se
+       escribe el precio de oferta. Sirve además para no dejar todo el
+       lado derecho de la pantalla vacío. --}}
+  <div class="admin-panel" style="position:sticky;top:20px;">
+    <h3>Vista previa</h3>
+    <p class="form-hint" x-show="!selectedProducts.length" x-cloak>Agregá productos para ver cómo se van a ver en la tienda.</p>
+    <div style="display:flex;flex-direction:column;gap:14px;" x-show="selectedProducts.length" x-cloak>
+      <template x-for="p in selectedProducts" :key="'preview-'+p.id">
+        <div class="card" style="pointer-events:none;">
+          <div class="card-media">
+            <img :src="p.image_url" x-show="p.image_url" style="opacity:1;">
+            <div class="card-badges">
+              <span class="card-badge-promo" x-show="discountPercent(p)" x-text="'-' + discountPercent(p) + '%'"></span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-cat" x-text="p.category"></div>
+            <div class="card-name" x-text="p.name"></div>
+            <div class="card-price-original" x-show="discountPercent(p)" x-text="(p.currency === 'USD' ? '$' : 'Bs ') + p.price.toFixed(2)"></div>
+            <div class="card-price" x-text="(p.currency === 'USD' ? '$' : 'Bs ') + (discountPercent(p) ? parseFloat(prices[p.id]) : p.price).toFixed(2)"></div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
 </div>
 
 @endsection
