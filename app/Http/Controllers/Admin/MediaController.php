@@ -45,9 +45,13 @@ class MediaController extends Controller
         // SVG excluido a propósito: puede contener <script>/JS embebido y se
         // sirve tal cual (GD no puede rasterizarlo para optimizarlo), así
         // que sin un sanitizador dedicado es un vector de XSS almacenado.
+        // mp4/webm/mov (video de fondo del hero, ver cms_blocks.php) suman
+        // el límite a 40MB — ImageOptimizer::process() ya no-opea sola con
+        // cualquier mime que no sea de imagen (ver isSupported()), así que
+        // un video sube sin generar miniatura/webp, sin romper nada.
         $request->validate([
             'files' => ['required', 'array'],
-            'files.*' => ['image', 'mimes:jpg,jpeg,png,webp,gif', 'max:8192'],
+            'files.*' => ['file', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,mov', 'max:40960'],
             'folder_id' => ['nullable', 'exists:media_folders,id'],
             'tags' => ['nullable', 'string'],
         ]);
@@ -108,7 +112,7 @@ class MediaController extends Controller
             'alt_text' => ['nullable', 'string', 'max:255'],
             'folder_id' => ['nullable', 'exists:media_folders,id'],
             'tags' => ['nullable', 'string'],
-            'file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:8192'],
+            'file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,mov', 'max:40960'],
         ]);
 
         $medium->alt_text = $request->input('alt_text');

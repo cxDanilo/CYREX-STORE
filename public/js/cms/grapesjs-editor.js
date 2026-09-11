@@ -88,6 +88,10 @@
         return { type: 'media', name: key, label: f.label, changeProp: true, trim: !!f.trim };
       }
 
+      if (f.type === 'video') {
+        return { type: 'video', name: key, label: f.label, changeProp: true };
+      }
+
       if (f.type === 'repeater') {
         return {
           type: 'repeater',
@@ -103,20 +107,30 @@
   }
 
   /**
-   * Campo compartido por el trait 'media' y por las filas de un
+   * Campo compartido por el trait 'media'/'video' y por las filas de un
    * repeater con un subcampo 'media': un input de URL de toda la vida
    * (para pegar un link externo) + un botón que sube el archivo directo
    * a la Biblioteca de Medios y completa la URL solo. Una sola
-   * implementación para no mantener la lógica de subida duplicada.
+   * implementación para no mantener la lógica de subida duplicada —
+   * kind='video' solo cambia la vista previa (<video> en vez de <img>,
+   * que no puede mostrar un archivo de video) y qué tipo de archivo
+   * ofrece el selector.
    */
-  function buildMediaWidget(initialValue, onChange, mediaUploadUrl, csrfToken, trim) {
+  function buildMediaWidget(initialValue, onChange, mediaUploadUrl, csrfToken, trim, kind) {
+    kind = kind || 'image';
     const wrap = document.createElement('div');
     wrap.className = 'cms-media-field';
 
-    const thumb = document.createElement('img');
+    const thumb = document.createElement(kind === 'video' ? 'video' : 'img');
     thumb.className = 'cms-media-thumb';
     thumb.style.display = 'none';
-    thumb.addEventListener('error', () => { thumb.style.display = 'none'; });
+    if (kind === 'video') {
+      thumb.muted = true;
+      thumb.preload = 'metadata';
+      thumb.addEventListener('error', () => { thumb.style.display = 'none'; }, true);
+    } else {
+      thumb.addEventListener('error', () => { thumb.style.display = 'none'; });
+    }
 
     function updateThumb(url) {
       if (url) {
@@ -134,7 +148,7 @@
     const textInput = document.createElement('input');
     textInput.type = 'text';
     textInput.className = 'gjs-field';
-    textInput.placeholder = 'URL de la imagen';
+    textInput.placeholder = kind === 'video' ? 'URL del video' : 'URL de la imagen';
     textInput.value = initialValue || '';
     textInput.addEventListener('input', () => {
       updateThumb(textInput.value);
@@ -147,7 +161,7 @@
 
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
-    fileInput.accept = 'image/*';
+    fileInput.accept = kind === 'video' ? 'video/mp4,video/webm,video/quicktime' : 'image/*';
     fileInput.style.display = 'none';
     fileInput.addEventListener('change', () => {
       const file = fileInput.files[0];
@@ -220,6 +234,36 @@
         // El cambio ya se aplica directo arriba (texto o subida) — igual
         // que el trait 'repeater', no hace falta nada acá.
       },
+      onUpdate({ component, trait }) {
+        this.component = component;
+        if (this.suppressNextUpdate) {
+          this.suppressNextUpdate = false;
+          return;
+        }
+        if (this.input) this.input.value = component.get(trait.get('name')) || '';
+      },
+    });
+
+    // Mismo widget que 'media' (ver buildMediaWidget) con kind:'video' —
+    // solo cambia la vista previa y qué acepta el selector de archivo,
+    // el mecanismo de subida/URL es idéntico.
+    editor.TraitManager.addType('video', {
+      createInput({ trait }) {
+        const { wrap, textInput } = buildMediaWidget(
+          '',
+          (val) => {
+            this.suppressNextUpdate = true;
+            this.component.set(trait.get('name'), val);
+          },
+          mediaUploadUrl,
+          csrfToken,
+          false,
+          'video'
+        );
+        this.input = textInput;
+        return wrap;
+      },
+      onEvent() {},
       onUpdate({ component, trait }) {
         this.component = component;
         if (this.suppressNextUpdate) {

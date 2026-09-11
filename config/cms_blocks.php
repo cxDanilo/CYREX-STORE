@@ -69,7 +69,7 @@ return [
             'boton2_texto' => '', 'boton2_url' => '',
         ],
         'fields' => [
-            'video_url' => ['type' => 'text', 'label' => 'Video: link de YouTube/Vimeo o URL de un archivo .mp4'],
+            'video_url' => ['type' => 'video', 'label' => 'Video: subilo directo, o pegá un link de YouTube/Vimeo. Para que cargue rápido, que dure poco y esté bien comprimido (unos MB, no cientos).'],
             'poster_url' => ['type' => 'media', 'label' => 'Imagen de respaldo — escritorio (se usa mientras carga el video, y en celular si no hay una específica abajo)'],
             'poster_url_mobile' => ['type' => 'media', 'label' => 'Imagen de respaldo — celular (opcional, para que sea una foto distinta a la de escritorio)'],
             'titulo' => ['type' => 'textarea', 'label' => 'Título'],
