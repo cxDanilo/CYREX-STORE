@@ -36,18 +36,31 @@ class AboutPageSeeder extends Seeder
         $page->blocks()->delete();
 
         $whatsappUrl = 'https://wa.me/'.ReferralRouter::whatsappNumber();
-        $html = str_replace('__WHATSAPP_URL__', $whatsappUrl, $this->html());
+        $htmlPart1 = str_replace('__WHATSAPP_URL__', $whatsappUrl, $this->htmlPart1());
+        $htmlPart2 = str_replace('__WHATSAPP_URL__', $whatsappUrl, $this->htmlPart2());
 
-        $page->blocks()->create([
-            'type' => 'html_libre',
-            'data' => ['html' => $html],
-            'sort_order' => 0,
-        ]);
+        // La foto va como bloque 'imagen' aparte (en vez de ir metida en el
+        // HTML crudo) para que se pueda subir/cambiar desde el editor con
+        // el selector de medios normal, como cualquier otra imagen del
+        // sitio — el HTML crudo no tiene un campo de "subir archivo".
+        $blocks = [
+            ['type' => 'html_libre', 'data' => ['html' => $htmlPart1]],
+            ['type' => 'imagen', 'data' => ['url' => '', 'alt' => 'Equipo Cyrex Store', 'leyenda' => '']],
+            ['type' => 'html_libre', 'data' => ['html' => $htmlPart2]],
+        ];
 
-        $this->command?->info('Página "quienes-somos" creada/actualizada (bloque html_libre).');
+        foreach ($blocks as $i => $block) {
+            $page->blocks()->create([
+                'type' => $block['type'],
+                'data' => $block['data'],
+                'sort_order' => $i,
+            ]);
+        }
+
+        $this->command?->info('Página "quienes-somos" creada/actualizada ('.count($blocks).' bloques).');
     }
 
-    private function html(): string
+    private function htmlPart1(): string
     {
         return <<<'HTML'
 <style>
@@ -76,15 +89,13 @@ class AboutPageSeeder extends Seeder
   .qs-kicker{font-family:var(--font-mono);font-size:12px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;}
   .qs-kicker::before{content:'';width:28px;height:1px;background:var(--gold);}
 
-  .qs-about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:center;}
-  .qs-about-copy p{font-size:17px;line-height:1.75;color:var(--text-secondary);margin-bottom:20px;max-width:520px;}
+  .qs-about-copy{max-width:680px;margin:0 auto;}
+  .qs-about-copy p{font-size:17px;line-height:1.75;color:var(--text-secondary);margin-bottom:20px;}
   .qs-about-copy p:last-child{margin-bottom:0;}
   .qs-about-copy strong{color:var(--text-primary);font-weight:600;}
-  .qs-about-photo{position:relative;aspect-ratio:4/5;border-radius:20px;overflow:hidden;background:radial-gradient(circle at 30% 20%, rgba(255,217,0,.12), transparent 55%),linear-gradient(160deg,#1c1c1c,#0a0a0a 70%);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;}
-  .qs-about-photo::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.05) 1px,transparent 1px);background-size:26px 26px;opacity:.5;}
-  .qs-about-photo-label{position:relative;z-index:1;font-family:var(--font-mono);font-size:11.5px;color:var(--text-muted);text-align:center;padding:0 30px;line-height:1.6;}
-  .qs-about-photo-label b{display:block;color:var(--text-secondary);font-size:13px;margin-bottom:6px;}
-  @media (max-width:860px){.qs-about-grid{grid-template-columns:1fr;gap:40px;}.qs-about-photo{order:-1;}}
+
+  .wrap.cms-imagen{max-width:900px;}
+  .wrap.cms-imagen img{aspect-ratio:16/9;object-fit:cover;}
 
   .qs-statement-band{padding:130px 24px;text-align:center;}
   .qs-statement-band .qs-kicker{justify-content:center;}
@@ -125,21 +136,25 @@ class AboutPageSeeder extends Seeder
   </section>
 
   <section class="qs-section">
-    <div class="qs-about-grid">
-      <div class="qs-about-copy">
-        <div class="qs-kicker qs-reveal">Nuestra historia</div>
-        <p class="qs-reveal qs-reveal-delay-1">CYREX Store nació después de la pandemia, en medio de una etapa donde todo estaba cambiando.</p>
-        <p class="qs-reveal qs-reveal-delay-1">Vimos un espacio que todavía podía hacerse diferente. Un lugar donde comprar tecnología no fuera simplemente elegir un producto, pagar y marcharse.</p>
-        <p class="qs-reveal qs-reveal-delay-2"><strong>Queríamos construir algo más.</strong></p>
-        <p class="qs-reveal qs-reveal-delay-2">Un espacio donde cada persona pudiera recibir una recomendación honesta, encontrar el equipo adecuado para lo que realmente necesita y disfrutar el proceso de armar, mejorar o comprar su primera PC.</p>
-        <p class="qs-reveal qs-reveal-delay-2">Desde entonces hemos crecido junto a nuestros clientes, aprendiendo, mejorando y formando una comunidad alrededor de algo que nos apasiona: la tecnología.</p>
-        <p class="qs-reveal qs-reveal-delay-2">Somos CYREX Store. Vendemos tecnología, pero buscamos entregar mucho más que eso: <strong>confianza, experiencia y emoción</strong> en cada compra.</p>
-      </div>
-      <div class="qs-about-photo qs-reveal qs-reveal-delay-1">
-        <div class="qs-about-photo-label"><b>📷 foto pendiente</b>el equipo, la tienda, o uno de los primeros armados</div>
-      </div>
+    <div class="qs-about-copy">
+      <div class="qs-kicker qs-reveal">Nuestra historia</div>
+      <p class="qs-reveal qs-reveal-delay-1">CYREX Store nació después de la pandemia, en medio de una etapa donde todo estaba cambiando.</p>
+      <p class="qs-reveal qs-reveal-delay-1">Vimos un espacio que todavía podía hacerse diferente. Un lugar donde comprar tecnología no fuera simplemente elegir un producto, pagar y marcharse.</p>
+      <p class="qs-reveal qs-reveal-delay-2"><strong>Queríamos construir algo más.</strong></p>
+      <p class="qs-reveal qs-reveal-delay-2">Un espacio donde cada persona pudiera recibir una recomendación honesta, encontrar el equipo adecuado para lo que realmente necesita y disfrutar el proceso de armar, mejorar o comprar su primera PC.</p>
+      <p class="qs-reveal qs-reveal-delay-2">Desde entonces hemos crecido junto a nuestros clientes, aprendiendo, mejorando y formando una comunidad alrededor de algo que nos apasiona: la tecnología.</p>
+      <p class="qs-reveal qs-reveal-delay-2">Somos CYREX Store. Vendemos tecnología, pero buscamos entregar mucho más que eso: <strong>confianza, experiencia y emoción</strong> en cada compra.</p>
     </div>
   </section>
+
+</div>
+HTML;
+    }
+
+    private function htmlPart2(): string
+    {
+        return <<<'HTML'
+<div class="qs-page">
 
   <section class="qs-statement-band qs-band-mision qs-fullbleed">
     <div class="qs-section" style="padding:0;">
