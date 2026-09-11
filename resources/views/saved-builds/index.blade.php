@@ -13,8 +13,9 @@
   <div class="cat-eyebrow">Comunidad</div>
   <h1>Armados de la comunidad</h1>
   <p style="color:var(--text-secondary);font-size:14.5px;max-width:640px;margin-top:10px;line-height:1.6;">
-    PCs armadas por otros clientes con <a href="{{ route('pc-builder') }}">Arma tu PC</a> — mirá combinaciones reales para inspirarte, o <a href="{{ route('pc-builder') }}">publicá la tuya</a>.
+    PCs armadas por otros clientes con Arma tu PC — mirá combinaciones reales para inspirarte.
   </p>
+  <a href="{{ route('pc-builder') }}" class="btn btn-primary" style="margin-top:16px;">Arma tu combinación →</a>
 </div>
 
 <div class="wrap">
