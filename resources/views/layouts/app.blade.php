@@ -185,6 +185,7 @@ window.markCardImageLoaded = function (img) {
 
 <script src="{{ asset('js/product-tilt.js') }}?v={{ filemtime(public_path('js/product-tilt.js')) }}"></script>
 <script src="{{ asset('js/nav-scroll.js') }}?v={{ filemtime(public_path('js/nav-scroll.js')) }}"></script>
+<script src="{{ asset('js/nav-link-indicator.js') }}?v={{ filemtime(public_path('js/nav-link-indicator.js')) }}"></script>
 <script src="{{ asset('js/social-rotator.js') }}?v={{ filemtime(public_path('js/social-rotator.js')) }}"></script>
 <script src="{{ asset('js/marcas-mosaico.js') }}?v={{ filemtime(public_path('js/marcas-mosaico.js')) }}"></script>
 <script src="{{ asset('js/hero-title-decode.js') }}?v={{ filemtime(public_path('js/hero-title-decode.js')) }}"></script>

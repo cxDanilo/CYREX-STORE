@@ -204,9 +204,12 @@ document.addEventListener('alpine:init', () => {
 
       <div class="logo"><a href="{{ route('home') }}"><img src="{{ $logoUrl }}" alt="Cyrex Store" class="logo-full"></a></div>
 
-      @foreach($headerMenuItems as $item)
-        <a href="{{ $item['url'] }}" class="nav-home-link">{{ $item['label'] }}</a>
-      @endforeach
+      <div class="nav-links-wrap">
+        <span class="nav-link-indicator" aria-hidden="true"></span>
+        @foreach($headerMenuItems as $item)
+          <a href="{{ $item['url'] }}" class="nav-home-link">{{ $item['label'] }}</a>
+        @endforeach
+      </div>
     </div>
 
     @include('partials.search-box')
