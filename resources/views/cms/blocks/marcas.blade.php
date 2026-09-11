@@ -1,6 +1,7 @@
 @php($items = $data['items'] ?? [])
 @php($logoSize = (int) ($data['logo_size'] ?? 64))
-<div class="wrap cms-block cms-marcas-wrap" style="--marca-logo-size:{{ $logoSize }}px;">
+@php($speed = (int) ($data['speed'] ?? 28))
+<div class="wrap cms-block cms-marcas-wrap" style="--marca-logo-size:{{ $logoSize }}px;--marca-speed:{{ $speed }}s;">
   <div class="cms-marcas-track">
     @foreach($items as $item)
       <div class="cms-marca-item">

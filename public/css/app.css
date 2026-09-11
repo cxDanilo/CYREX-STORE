@@ -134,21 +134,12 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,10,11,0.92);backdrop-fi
 .nav-search input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text-primary);font-size:14px;padding:0 14px 0 4px;}
 .nav-actions{display:flex;align-items:center;gap:18px;flex-shrink:0;justify-self:end;}
 
-/* Buscador del header de escritorio: un círculo con solo la lupa,
-   anclado al centro exacto de la barra (columna del medio del grid de
-   arriba). Al pasar el mouse o enfocar el input se expande — no reserva
-   espacio fijo de por vida como antes, así el header respira parejo de
-   los dos lados en reposo. La versión del drawer mobile (formClass
-   distinto, ver mobile-drawer .search-wrap) no se toca: ahí no hay
-   hover y conviene que se vea siempre completo. */
-nav > .wrap > .search-wrap{flex:0 0 auto;max-width:none;width:48px;transition:width .32s cubic-bezier(.65,0,.35,1);}
-nav > .wrap > .search-wrap:hover,
-nav > .wrap > .search-wrap:focus-within{width:400px;}
-nav > .wrap > .search-wrap:hover .nav-search,
-nav > .wrap > .search-wrap:focus-within .nav-search{border-color:var(--border-strong);box-shadow:0 16px 40px rgba(0,0,0,.4);}
-nav > .wrap > .search-wrap .nav-search input{width:0;opacity:0;padding-left:0;transition:opacity .18s ease,width .32s cubic-bezier(.65,0,.35,1),padding-left .32s ease;}
-nav > .wrap > .search-wrap:hover .nav-search input,
-nav > .wrap > .search-wrap:focus-within .nav-search input{width:auto;opacity:1;padding-left:4px;}
+/* Buscador del header de escritorio: siempre abierto y visible, ancho
+   fijo, anclado al centro exacto de la barra (columna del medio del
+   grid de arriba). La versión del drawer mobile (formClass distinto,
+   ver mobile-drawer .search-wrap) no se toca. */
+nav > .wrap > .search-wrap{flex:0 0 auto;max-width:none;width:400px;}
+nav > .wrap > .search-wrap .nav-search:focus-within{box-shadow:0 16px 40px rgba(0,0,0,.4);}
 .btn-gold{background:var(--gold);color:#0A0A0B;font-weight:600;font-size:14px;padding:10px 18px;border-radius:100px;border:none;cursor:pointer;}
 .btn-outline-gold{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid var(--gold);color:var(--gold);font-weight:600;font-size:13px;padding:9px 17px;border-radius:100px;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .15s,color .15s;}
 .btn-outline-gold:hover{background:var(--gold);color:#0A0A0B;}
@@ -1048,8 +1039,11 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .trust-badge p{font-size:13px;line-height:1.6;color:var(--text-secondary);}
 
 .cms-marcas-wrap{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);}
-.cms-marcas-track{display:flex;gap:56px;align-items:center;width:max-content;animation:cms-marquee 28s linear infinite;}
-.cms-marcas-wrap:hover .cms-marcas-track{animation-play-state:paused;}
+.cms-marcas-track{display:flex;gap:56px;align-items:center;width:max-content;animation:cms-marquee var(--marca-speed,28s) linear infinite;}
+/* El frenado al pasar el mouse ya NO es un animation-play-state:paused
+   (eso corta en seco, sin transición posible) -- marcas-track.js
+   frena/retoma de forma progresiva bajándole la velocidad real a esta
+   misma animación (Animation.playbackRate) en vez de pausarla de golpe. */
 .cms-marca-item{height:var(--marca-logo-size,64px);width:calc(var(--marca-logo-size,64px) * 2.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 /* width/height:100% en vez de auto+max-*: el contenedor .cms-marca-item
    ya tiene tamaño fijo, así que el navegador puede reservar el espacio
