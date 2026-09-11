@@ -163,6 +163,7 @@ window.markCardImageLoaded = function (img) {
         <h4>Cyrex</h4>
         <a href="{{ route('home') }}">Inicio</a>
         <a href="{{ route('shop') }}">Tienda</a>
+        <a href="{{ route('saved-builds.index') }}">Armados de la comunidad</a>
         @foreach($footerPages as $page)
           <a href="{{ route('page.show', $page->slug) }}">{{ $page->title }}</a>
         @endforeach
