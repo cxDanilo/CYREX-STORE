@@ -197,15 +197,17 @@ document.addEventListener('alpine:init', () => {
 
 <nav class="{{ request()->routeIs('home') ? 'nav-hero-mode' : '' }}">
   <div class="wrap nav-inner">
-    <button type="button" class="hamburger" x-on:click="mobileOpen = true" aria-label="Abrir menú">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="nav-left">
+      <button type="button" class="hamburger" x-on:click="mobileOpen = true" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
 
-    <div class="logo"><a href="{{ route('home') }}"><img src="{{ $logoUrl }}" alt="Cyrex Store" class="logo-full"></a></div>
+      <div class="logo"><a href="{{ route('home') }}"><img src="{{ $logoUrl }}" alt="Cyrex Store" class="logo-full"></a></div>
 
-    @foreach($headerMenuItems as $item)
-      <a href="{{ $item['url'] }}" class="nav-home-link">{{ $item['label'] }}</a>
-    @endforeach
+      @foreach($headerMenuItems as $item)
+        <a href="{{ $item['url'] }}" class="nav-home-link">{{ $item['label'] }}</a>
+      @endforeach
+    </div>
 
     @include('partials.search-box')
 

@@ -98,7 +98,8 @@ body.has-admin-bar nav{top:34px;}
 }
 
 nav{position:sticky;top:0;z-index:200;background:rgba(10,10,11,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);transition:background .6s ease,backdrop-filter .6s ease,border-color .6s ease;}
-.nav-inner{display:flex;align-items:center;justify-content:space-between;min-height:72px;padding-block:12px;gap:28px;transition:min-height .6s ease;}
+.nav-inner{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;min-height:72px;padding-block:12px;gap:28px;transition:min-height .6s ease;}
+.nav-left{display:flex;align-items:center;gap:28px;justify-self:start;min-width:0;}
 
 /* Header flotante y transparente sobre el hero — solo en Home (ver
    partials/nav.blade.php). --nav-progress (0 a 1) lo actualiza
@@ -125,13 +126,29 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,10,11,0.92);backdrop-fi
 .logo a{display:flex;align-items:center;gap:9px;}
 .logo span{color:var(--gold);}
 .logo-full{height:var(--logo-height, 60px);width:auto;display:block;flex-shrink:0;transition:height .6s ease;}
-.search-wrap{position:relative;flex:1;max-width:720px;}
+.search-wrap{position:relative;flex:1;max-width:720px;justify-self:center;}
 .nav-search{width:100%;height:44px;display:flex;align-items:stretch;border:1px solid var(--border);border-radius:100px;overflow:hidden;background:var(--bg-elevated);transition:border-color .15s ease,height .6s ease,background-color .6s ease,backdrop-filter .6s ease;}
 .nav-search:focus-within{border-color:var(--border-strong);}
 .search-icon-btn{display:flex;align-items:center;justify-content:center;padding:0 16px;background:none;border:none;color:var(--text-muted);cursor:pointer;flex-shrink:0;transition:color .15s;}
 .search-icon-btn:hover{color:var(--gold);}
 .nav-search input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text-primary);font-size:14px;padding:0 14px 0 4px;}
-.nav-actions{display:flex;align-items:center;gap:18px;flex-shrink:0;}
+.nav-actions{display:flex;align-items:center;gap:18px;flex-shrink:0;justify-self:end;}
+
+/* Buscador del header de escritorio: un círculo con solo la lupa,
+   anclado al centro exacto de la barra (columna del medio del grid de
+   arriba). Al pasar el mouse o enfocar el input se expande — no reserva
+   espacio fijo de por vida como antes, así el header respira parejo de
+   los dos lados en reposo. La versión del drawer mobile (formClass
+   distinto, ver mobile-drawer .search-wrap) no se toca: ahí no hay
+   hover y conviene que se vea siempre completo. */
+nav > .wrap > .search-wrap{flex:0 0 auto;max-width:none;width:48px;transition:width .32s cubic-bezier(.65,0,.35,1);}
+nav > .wrap > .search-wrap:hover,
+nav > .wrap > .search-wrap:focus-within{width:320px;}
+nav > .wrap > .search-wrap:hover .nav-search,
+nav > .wrap > .search-wrap:focus-within .nav-search{border-color:var(--border-strong);box-shadow:0 16px 40px rgba(0,0,0,.4);}
+nav > .wrap > .search-wrap .nav-search input{width:0;opacity:0;padding-left:0;transition:opacity .18s ease,width .32s cubic-bezier(.65,0,.35,1),padding-left .32s ease;}
+nav > .wrap > .search-wrap:hover .nav-search input,
+nav > .wrap > .search-wrap:focus-within .nav-search input{width:auto;opacity:1;padding-left:4px;}
 .btn-gold{background:var(--gold);color:#0A0A0B;font-weight:600;font-size:14px;padding:10px 18px;border-radius:100px;border:none;cursor:pointer;}
 .btn-outline-gold{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid var(--gold);color:var(--gold);font-weight:600;font-size:13px;padding:9px 17px;border-radius:100px;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .15s,color .15s;}
 .btn-outline-gold:hover{background:var(--gold);color:#0A0A0B;}
@@ -736,7 +753,8 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 @media (max-width:860px){
   .hamburger{display:flex;}
   nav > .wrap > .search-wrap{display:none;}
-  .nav-inner{gap:10px;}
+  .nav-inner{display:flex;justify-content:space-between;gap:10px;}
+  .nav-left{gap:10px;}
   .cat-float{display:none;}
   .nav-home-link{display:none;}
   .nav-inner .logo-full{height:36px;}
