@@ -46,12 +46,14 @@ class MediaController extends Controller
         // sirve tal cual (GD no puede rasterizarlo para optimizarlo), así
         // que sin un sanitizador dedicado es un vector de XSS almacenado.
         // mp4/webm/mov (video de fondo del hero, ver cms_blocks.php) suman
-        // el límite a 40MB — ImageOptimizer::process() ya no-opea sola con
-        // cualquier mime que no sea de imagen (ver isSupported()), así que
-        // un video sube sin generar miniatura/webp, sin romper nada.
+        // el límite a 150MB — ImageOptimizer::process() ya no-opea sola
+        // con cualquier mime que no sea de imagen (ver isSupported()), así
+        // que un video sube sin generar miniatura/webp, sin romper nada.
+        // 150MB es un techo técnico, no una recomendación — para un video
+        // de fondo conviene bastante menos (unos pocos MB, comprimido).
         $request->validate([
             'files' => ['required', 'array'],
-            'files.*' => ['file', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,mov', 'max:40960'],
+            'files.*' => ['file', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,mov', 'max:153600'],
             'folder_id' => ['nullable', 'exists:media_folders,id'],
             'tags' => ['nullable', 'string'],
         ]);
@@ -112,7 +114,7 @@ class MediaController extends Controller
             'alt_text' => ['nullable', 'string', 'max:255'],
             'folder_id' => ['nullable', 'exists:media_folders,id'],
             'tags' => ['nullable', 'string'],
-            'file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,mov', 'max:40960'],
+            'file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,gif,mp4,webm,mov', 'max:153600'],
         ]);
 
         $medium->alt_text = $request->input('alt_text');
