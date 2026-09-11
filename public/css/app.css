@@ -28,6 +28,15 @@ html{background:var(--bg);min-height:100%;}
 body{background:var(--bg) !important;color:var(--text-primary);font-family:var(--font-body);-webkit-font-smoothing:antialiased;min-height:100%;}
 a{color:inherit;text-decoration:none;}
 button,input,select{font-family:inherit;}
+/* Sin flechitas nativas del navegador en los input[type=number] — van
+   contra la regla de "nada de controles por default" del sitio,
+   admin incluido (admin.css se carga junto con este archivo en todo
+   el admin). El input sigue siendo type=number (mantiene el teclado
+   numérico en celular y la validación nativa), solo se le saca el
+   dibujo de las flechitas. */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+input[type=number]{-moz-appearance:textfield;appearance:textfield;}
 .wrap{width:100%;max-width:1440px;margin:0 auto;padding:0 clamp(20px,3.2vw,48px);}
 
 .admin-session-bar{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;background:var(--gold);color:#0A0A0B;font-family:var(--font-mono);font-size:12px;padding:7px 20px;text-align:center;}
