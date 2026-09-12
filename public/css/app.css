@@ -128,7 +128,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(10,10,11,0.92);backdrop-fi
 .logo-full{height:var(--logo-height, 60px);width:auto;display:block;flex-shrink:0;transition:height .6s ease;}
 .search-wrap{position:relative;flex:1;max-width:720px;justify-self:center;}
 .nav-search{width:100%;height:44px;display:flex;align-items:stretch;border:1px solid var(--border);border-radius:100px;overflow:hidden;background:var(--bg-elevated);transition:border-color .15s ease,height .6s ease,background-color .6s ease,backdrop-filter .6s ease;}
-.nav-search:focus-within{border-color:var(--border-strong);}
+.nav-search:focus-within{border-color:var(--gold);}
 .search-icon-btn{display:flex;align-items:center;justify-content:center;padding:0 16px;background:none;border:none;color:var(--text-muted);cursor:pointer;flex-shrink:0;transition:color .15s;}
 .search-icon-btn:hover{color:var(--gold);}
 .nav-search input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text-primary);font-size:14px;padding:0 14px 0 4px;}
@@ -608,7 +608,7 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .offer-countdown-digits{display:inline-flex;align-items:center;gap:6px;animation:offer-pulse 1.6s ease-in-out infinite;border-radius:12px;}
 .offer-countdown-seg{display:flex;flex-direction:column;align-items:center;background:rgba(226,75,74,.14);border:1px solid var(--red);border-radius:10px;padding:8px 12px;min-width:54px;}
 .offer-countdown-seg span{font-family:var(--font-mono);font-size:26px;font-weight:700;color:#fff;line-height:1;font-variant-numeric:tabular-nums;}
-.offer-countdown-seg small{font-family:var(--font-mono);font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-top:4px;}
+.offer-countdown-seg small{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-top:4px;}
 .offer-countdown-colon{font-family:var(--font-mono);font-size:22px;font-weight:700;color:var(--red);animation:offer-blink 1s step-start infinite;}
 @keyframes offer-blink{50%{opacity:.2;}}
 .motion-reduced .offer-countdown-digits,.motion-reduced .offer-countdown-colon{animation:none;}
@@ -1125,7 +1125,11 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 @media (prefers-reduced-motion:reduce){.cms-marcas-mosaico-track{transition:none;}}
 
 /* FLOATING EXCHANGE RATE WIDGET */
-.exchange-rate-float{position:fixed;right:20px;bottom:20px;z-index:190;background:var(--bg-elevated);border:1px solid var(--border);border-radius:14px;padding:12px 16px;box-shadow:0 20px 50px rgba(0,0,0,0.4);}
+.exchange-rate-float{position:fixed;right:20px;bottom:20px;z-index:190;background:var(--bg-elevated);border:1px solid var(--border);border-radius:14px;padding:12px 16px;box-shadow:0 20px 50px rgba(0,0,0,0.4);transition:opacity .2s ease;}
+/* Se desvanece mientras se scrollea (exchange-rate-float.js) -- fijo
+   siempre encima tapaba el título/categoría del producto que caía en
+   esa esquina en la grilla de 2 columnas de mobile. */
+.exchange-rate-float.is-hidden{opacity:0;pointer-events:none;}
 .exchange-rate-float-label{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:5px;}
 .exchange-rate-float-label svg{width:12px;height:12px;flex-shrink:0;}
 .exchange-rate-float-value{font-family:var(--font-mono);font-size:14px;color:var(--text-primary);white-space:nowrap;}

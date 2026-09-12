@@ -183,6 +183,7 @@ window.markCardImageLoaded = function (img) {
 
 @include('partials.exchange-rate-float')
 
+<script src="{{ asset('js/exchange-rate-float.js') }}?v={{ filemtime(public_path('js/exchange-rate-float.js')) }}"></script>
 <script src="{{ asset('js/product-tilt.js') }}?v={{ filemtime(public_path('js/product-tilt.js')) }}"></script>
 <script src="{{ asset('js/hero-video-parallax.js') }}?v={{ filemtime(public_path('js/hero-video-parallax.js')) }}"></script>
 <script src="{{ asset('js/hero-video-youtube.js') }}?v={{ filemtime(public_path('js/hero-video-youtube.js')) }}"></script>
