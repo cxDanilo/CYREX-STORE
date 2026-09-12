@@ -248,6 +248,21 @@
 
       <div class="form-group">
         <label for="brand">Marca (opcional)</label>
+        @if($existingBrands->isNotEmpty())
+          <select id="brand-picker" style="margin-bottom:8px;"
+                  onchange="
+                    var input = document.getElementById('brand');
+                    if (this.value === '__new__') { input.value = ''; input.focus(); }
+                    else if (this.value) { input.value = this.value; }
+                    this.selectedIndex = 0;
+                  ">
+            <option value="">Elegir una marca ya usada…</option>
+            @foreach($existingBrands as $b)
+              <option value="{{ $b }}">{{ $b }}</option>
+            @endforeach
+            <option value="__new__">+ Agregar nueva marca…</option>
+          </select>
+        @endif
         <input type="text" id="brand" name="brand" value="{{ old('brand', $product->brand) }}" placeholder="Ej. Ajazz, Thermalright...">
         <p class="form-hint">Solo si el producto es de una marca puntual que representás — habilita el filtro por marca en la tienda. Dejalo vacío para productos genéricos.</p>
       </div>
