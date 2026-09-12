@@ -24,9 +24,9 @@
    }"
    @click.outside="showVariants = false"
    @endif>
-  <div class="card-media">
+  <div class="card-media {{ $product->is_sold_out ? 'is-sold-out' : '' }}">
     @if($product->image_thumb_url)
-      <img src="{{ $product->image_thumb_url }}" alt="{{ $product->name }}" loading="lazy" style="{{ $product->is_sold_out ? 'filter:grayscale(1);' : '' }}"
+      <img src="{{ $product->image_thumb_url }}" alt="{{ $product->name }}" loading="lazy"
            onload="markCardImageLoaded(this)" onerror="markCardImageLoaded(this)">
     @endif
     <div class="card-badges">

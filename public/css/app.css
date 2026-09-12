@@ -339,6 +339,14 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
 @keyframes card-img-shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
 .motion-reduced .card-media::before{animation:none;}
 .motion-reduced .card-media img{opacity:1;transition:none;}
+
+/* Agotado: la foto se apaga como la pantalla al morir en GTA — blanco y
+   negro con más contraste (no solo grayscale plano, que se ve lavado) y
+   un viñetado oscuro en los bordes. El badge rojo de "Agotado" queda
+   fuera de esto a propósito, como el HUD que sigue nítido con todo lo
+   demás desaturado alrededor. */
+.card-media.is-sold-out img{filter:grayscale(1) contrast(1.25) brightness(.72);}
+.card-media.is-sold-out::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,.6) 100%);pointer-events:none;}
 @media (prefers-reduced-motion:reduce){
   .card-media::before{animation:none;}
   .card-media img{opacity:1;transition:none;}
