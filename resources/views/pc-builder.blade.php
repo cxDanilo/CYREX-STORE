@@ -95,6 +95,46 @@
           return this.partsTotalUsd() + (this.wantsAssembly ? this.assemblyFee : 0);
         },
 
+        // Recomendación por gama dentro del asistente: una vez elegida
+        // la CPU, las opciones de los pasos siguientes (placa, RAM, GPU,
+        // fuente, etc.) que combinan con su gama de precio se marcan como
+        // recomendadas -- no tiene sentido recomendar la placa más cara
+        // del catálogo para una CPU de gama media, ni la más barata para
+        // una de gama alta. La gama de cada pieza se calcula por
+        // percentil DENTRO de su propio tipo (33/66), no con un monto fijo
+        // en dólares como en peripheralTier() de más abajo -- una CPU y
+        // una fuente de poder cuestan órdenes de magnitud distinto, así
+        // que gama alta tiene que ser relativo al propio catálogo de
+        // ese tipo de pieza, no a un número fijo.
+        get typeTierCutoffs() {
+          const cutoffs = {};
+          for (const type of this.stepTypes) {
+            const prices = (this.catalog[type] || []).map(p => p.price_usd).sort((a, b) => a - b);
+            cutoffs[type] = prices.length ? {
+              p33: prices[Math.floor(prices.length * 0.33)],
+              p66: prices[Math.floor(prices.length * 0.66)],
+            } : null;
+          }
+          return cutoffs;
+        },
+
+        tierOf(type, priceUsd) {
+          const c = this.typeTierCutoffs[type];
+          if (!c) return null;
+          if (priceUsd <= c.p33) return 'budget';
+          if (priceUsd <= c.p66) return 'mid';
+          return 'premium';
+        },
+
+        // La CPU es siempre el primer paso real del asistente (después de
+        // elegir plataforma) — para cuando se llega a cualquier paso
+        // posterior ya está elegida, así que sirve de ancla fija para
+        // toda la recomendación del resto del armado.
+        get referenceTier() {
+          const cpu = this.selected.cpu;
+          return cpu ? this.tierOf('cpu', cpu.price_usd) : null;
+        },
+
         // Completa tu setup con: (al final) prioriza periféricos que
         // combinen con la gama del build armado, en vez de mostrar
         // siempre los mismos random de toda la tienda -- un build de
@@ -315,9 +355,13 @@
           if (type === 'cpu' && this.platform) {
             list = list.filter(p => (p.compat?.platform || null) === this.platform);
           }
+          // La CPU no tiene de qué anclarse todavía (es el primer paso) —
+          // recién desde el paso siguiente hay una gama de referencia.
+          const refTier = type !== 'cpu' ? this.referenceTier : null;
           return list.map(product => {
             const errs = this.incompatibleWith(type, product);
-            return { product, blocked: errs.length > 0, reason: errs[0]?.msg || null };
+            const recommended = !!refTier && errs.length === 0 && this.tierOf(type, product.price_usd) === refTier;
+            return { product, blocked: errs.length > 0, reason: errs[0]?.msg || null, recommended };
           });
         },
         get hasIncompatibleOptions() {
@@ -595,6 +639,9 @@
                         @click="!opt.blocked && pick(type, opt.product)"
                         x-transition:enter="pcb-card-enter" x-transition:enter-start="pcb-card-enter-start" x-transition:enter-end="pcb-card-enter-end">
                   <div class="pcb-picker-card-media">
+                    <template x-if="opt.recommended">
+                      <div class="pcb-picker-card-recommended">Recomendado</div>
+                    </template>
                     <img :src="opt.product.image_url" :alt="opt.product.name" x-show="opt.product.image_url" loading="lazy" width="140" height="140"
                          style="width:100%;height:100%;object-fit:cover;"
                          onload="markCardImageLoaded(this)" onerror="markCardImageLoaded(this)">
