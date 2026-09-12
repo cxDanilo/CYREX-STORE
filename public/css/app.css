@@ -1205,7 +1205,17 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 @keyframes pcb-hint-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(4px);}}
 .motion-reduced .pcb-step-hint-arrow{animation:none;}
 .pcb-step-hint-extra{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
-.pcb-ram-qty{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:13px;color:var(--text-secondary);}
+/* max-height en vez de x-collapse (se quedaba pegado en altura 0 en
+   este caso puntual) o grid-template-rows (su animación de fr no se
+   sostenía en todos los navegadores probados) -- con un tope generoso
+   de sobra sobre el contenido real (una sola fila de botones chicos)
+   alcanza para un crecimiento animado prolijo sin depender de medir
+   nada por JS ni de soporte de navegador más nuevo. */
+.pcb-ram-qty-wrap{max-height:0;overflow:hidden;margin-bottom:0;transition:max-height .25s ease,margin-bottom .25s ease;}
+.pcb-ram-qty-wrap.is-open{max-height:80px;margin-bottom:16px;}
+@media (prefers-reduced-motion:reduce){.pcb-ram-qty-wrap{transition:none;}}
+.motion-reduced .pcb-ram-qty-wrap{transition:none;}
+.pcb-ram-qty{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-secondary);}
 .pcb-ram-qty button{background:var(--bg-elevated-2);border:1px solid var(--border);color:var(--text-primary);border-radius:100px;padding:6px 14px;font-size:12.5px;cursor:pointer;transition:border-color .15s ease;}
 .pcb-ram-qty button:hover{border-color:var(--border-strong);}
 .pcb-ram-qty button.active{background:var(--gold);border-color:var(--gold);color:#0A0A0B;font-weight:600;}

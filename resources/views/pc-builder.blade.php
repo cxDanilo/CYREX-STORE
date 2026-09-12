@@ -624,13 +624,20 @@
                 <span>Ocultar opciones no compatibles</span>
               </label>
             </div>
-            <template x-if="type === 'ram' && item('ram')">
+            {{-- Antes era un x-if: al elegir una RAM este bloque aparecía
+                 de golpe, empujando la grilla de un salto seco.
+                 x-collapse (probado acá) se quedaba pegado en altura 0 en
+                 este caso puntual -- en vez de perseguir ese bug, se anima
+                 con grid-template-rows (0fr -> 1fr), que no depende de
+                 medir la altura del contenido por JS y no tiene ese
+                 problema. El div siempre está montado; :class decide. --}}
+            <div class="pcb-ram-qty-wrap" :class="{ 'is-open': type === 'ram' && item('ram') }">
               <div class="pcb-ram-qty">
                 <span>Cantidad:</span>
                 <button type="button" :class="ramQty === 1 && 'active'" @click="ramQty = 1">×1</button>
                 <button type="button" :class="ramQty === 2 && 'active'" @click="ramQty = 2">×2 (dual-channel)</button>
               </div>
-            </template>
+            </div>
             <template x-if="!currentOptions.length">
               <p class="form-hint">
                 <template x-if="type === 'cpu' && platform">
