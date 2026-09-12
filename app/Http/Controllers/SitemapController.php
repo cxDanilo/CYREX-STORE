@@ -31,6 +31,20 @@ class SitemapController extends Controller
                 ];
             }
 
+            $brands = Product::where('status', 'active')
+                ->whereNotNull('brand')
+                ->where('brand', '!=', '')
+                ->distinct()
+                ->pluck('brand');
+
+            foreach ($brands as $brand) {
+                $urls[] = [
+                    'loc' => route('shop', ['marca' => $brand]),
+                    'changefreq' => 'weekly',
+                    'priority' => '0.6',
+                ];
+            }
+
             foreach (Product::where('status', 'active')->get() as $product) {
                 $urls[] = [
                     'loc' => route('product.show', $product->slug),

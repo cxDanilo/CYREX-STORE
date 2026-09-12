@@ -57,6 +57,15 @@ class ShopController extends Controller
             $query->where('compat->'.$filterField, $request->attr);
         }
 
+        // Independiente de la categoría — se puede combinar con ella (ej.
+        // Teclados + Ajazz) o usarse solo (el link de un logo de marca en
+        // el inicio no pasa ninguna categoría).
+        $activeBrand = null;
+        if ($request->filled('marca')) {
+            $activeBrand = $request->marca;
+            $query->whereRaw('LOWER(brand) = ?', [mb_strtolower($activeBrand)]);
+        }
+
         if ($request->filled('q')) {
             $query->where('name', 'like', '%'.$request->q.'%');
         }
@@ -84,10 +93,10 @@ class ShopController extends Controller
         // porque el fragmento también decide si mostrar "Ver todo el
         // catálogo ×" en base a activeCategory.
         if ($request->ajax()) {
-            return view('partials.shop-results', compact('products', 'activeCategory', 'filterField', 'filterLabel', 'filterOptions', 'rate', 'forceBob'));
+            return view('partials.shop-results', compact('products', 'activeCategory', 'activeBrand', 'filterField', 'filterLabel', 'filterOptions', 'rate', 'forceBob'));
         }
 
-        return view('shop', compact('products', 'activeCategory', 'shopBannerImage', 'filterField', 'filterLabel', 'filterOptions', 'rate', 'forceBob'));
+        return view('shop', compact('products', 'activeCategory', 'activeBrand', 'shopBannerImage', 'filterField', 'filterLabel', 'filterOptions', 'rate', 'forceBob'));
     }
 
     /**

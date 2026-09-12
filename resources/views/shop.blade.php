@@ -8,9 +8,15 @@
   $seoTitle = 'Tienda — Cyrex Store';
   $seoDescription = 'Componentes y periféricos gamer en Cyrex Store — envíos a Santa Cruz y Cochabamba, Bolivia.';
 
-  if ($activeCategory) {
+  if ($activeCategory && $activeBrand) {
+      $seoTitle = $activeCategory->name.' '.$activeBrand.' — Cyrex Store';
+      $seoDescription = 'Comprá '.$activeCategory->name.' '.$activeBrand.' en Cyrex Store Bolivia. Envíos a Santa Cruz y Cochabamba.';
+  } elseif ($activeCategory) {
       $seoTitle = $activeCategory->name.' — Cyrex Store';
       $seoDescription = 'Comprá '.$activeCategory->name.' en Cyrex Store Bolivia. Envíos a Santa Cruz y Cochabamba.';
+  } elseif ($activeBrand) {
+      $seoTitle = $activeBrand.' — Cyrex Store';
+      $seoDescription = 'Productos '.$activeBrand.' disponibles en Cyrex Store Bolivia. Envíos a Santa Cruz y Cochabamba.';
   } elseif (request()->filled('q')) {
       $seoTitle = '"'.request('q').'" — Resultados en Cyrex Store';
       $seoDescription = 'Productos de "'.request('q').'" disponibles en Cyrex Store Bolivia.';
@@ -26,8 +32,15 @@
   <div class="breadcrumb">
     <a href="{{ route('home') }}">Inicio</a> / <a href="{{ route('shop') }}">Tienda</a>
     @if($activeCategory) / {{ $activeCategory->name }} @endif
+    @if($activeBrand) / {{ $activeBrand }} @endif
   </div>
-  <h1>{{ $activeCategory ? $activeCategory->name : 'Tienda' }}</h1>
+  <h1>
+    @if($activeCategory && $activeBrand) {{ $activeCategory->name }} — {{ $activeBrand }}
+    @elseif($activeCategory) {{ $activeCategory->name }}
+    @elseif($activeBrand) {{ $activeBrand }}
+    @else Tienda
+    @endif
+  </h1>
 </div>
 
 <div class="wrap shop-layout">

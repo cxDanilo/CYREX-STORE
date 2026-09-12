@@ -40,6 +40,9 @@
            .shop-main, junto con orden/filtro/paginación. --}}
       <a href="{{ route('shop') }}" class="btn btn-sm" data-no-ajax data-page-nav>Ver todo el catálogo ×</a>
     @endif
+    @if($activeBrand)
+      <a href="{{ route('shop', request()->except(['marca', 'page'])) }}" class="btn btn-sm" data-no-ajax data-page-nav>Quitar marca "{{ $activeBrand }}" ×</a>
+    @endif
   </div>
 </div>
 

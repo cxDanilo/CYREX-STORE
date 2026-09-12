@@ -255,6 +255,7 @@ class ProductController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'currency' => ['required', 'in:USD,BOB'],
             'sku' => ['nullable', 'string', 'max:100'],
+            'brand' => ['nullable', 'string', 'max:255'],
             'status' => ['required', 'in:active,inactive'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'gallery_images' => ['nullable', 'array'],

@@ -22,7 +22,7 @@
   $tabErrorFields = [
     'general' => ['name', 'slug', 'category_id', 'category_ids', 'category_ids.*', 'description'],
     'imagenes' => ['image', 'gallery_images.*'],
-    'precio' => ['price', 'currency', 'sku', 'status', 'is_sold_out'],
+    'precio' => ['price', 'currency', 'sku', 'brand', 'status', 'is_sold_out'],
     'specs' => ['compat.*'],
     'variantes' => ['variants.*'],
   ];
@@ -244,6 +244,12 @@
       <div class="form-group">
         <label for="sku">SKU</label>
         <input type="text" id="sku" name="sku" value="{{ old('sku', $product->sku) }}">
+      </div>
+
+      <div class="form-group">
+        <label for="brand">Marca (opcional)</label>
+        <input type="text" id="brand" name="brand" value="{{ old('brand', $product->brand) }}" placeholder="Ej. Ajazz, Thermalright...">
+        <p class="form-hint">Solo si el producto es de una marca puntual que representás — habilita el filtro por marca en la tienda. Dejalo vacío para productos genéricos.</p>
       </div>
 
       <div class="form-group">
