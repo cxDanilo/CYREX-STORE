@@ -28,8 +28,14 @@
   var closeBtn = widget.querySelector('.exchange-rate-float-close');
   if (closeBtn) {
     closeBtn.addEventListener('click', function () {
-      widget.remove();
       try { sessionStorage.setItem(DISMISS_KEY, '1'); } catch (e) {}
+      // Encoge y se desvanece antes de sacarlo del DOM en vez de
+      // desaparecer de golpe -- 200ms iguala la transición de CSS
+      // (.exchange-rate-float.is-dismissing), setTimeout en vez de
+      // transitionend porque este también dispara con la transición
+      // de opacity del scroll (.is-hidden), no solo con esta.
+      widget.classList.add('is-dismissing');
+      setTimeout(function () { widget.remove(); }, 200);
     });
   }
 
