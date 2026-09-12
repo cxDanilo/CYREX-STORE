@@ -17,7 +17,7 @@
 
 @section('content')
 
-<form method="POST" action="{{ route('admin.marcas.update', $brand) }}" enctype="multipart/form-data" class="admin-form" style="columns:none;max-width:900px;">
+<form method="POST" action="{{ route('admin.marcas.update', $brand) }}" enctype="multipart/form-data" class="admin-form brand-page-form">
   @csrf
   @method('PUT')
 
