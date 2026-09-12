@@ -10,6 +10,30 @@ namespace App\Support;
  */
 class VideoEmbed
 {
+    /**
+     * Solo el ID de YouTube, sin armar ninguna URL -- lo usa el bloque
+     * "Hero con video" para instanciar el reproductor via la API de
+     * YouTube en vez de un <iframe src="..."> estático (necesario para
+     * poder tapar el destello de carga y forzar que retome el play
+     * cuando la pestaña vuelve a estar visible).
+     */
+    public static function youtubeId(string $url): ?string
+    {
+        $url = trim($url);
+
+        if ($url === '') {
+            return null;
+        }
+
+        if (preg_match('~youtu\.be/([A-Za-z0-9_-]{6,})~', $url, $m)
+            || preg_match('~youtube\.com/watch\?v=([A-Za-z0-9_-]{6,})~', $url, $m)
+            || preg_match('~youtube\.com/embed/([A-Za-z0-9_-]{6,})~', $url, $m)) {
+            return $m[1];
+        }
+
+        return null;
+    }
+
     public static function embedUrl(string $url): ?string
     {
         $url = trim($url);

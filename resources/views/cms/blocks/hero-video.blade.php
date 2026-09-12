@@ -1,12 +1,21 @@
 @php
   $videoUrl = trim($data['video_url'] ?? '');
   $startSeconds = \App\Support\VideoEmbed::parseStartSeconds($data['video_start'] ?? null);
+  $youtubeId = $videoUrl ? \App\Support\VideoEmbed::youtubeId($videoUrl) : null;
   $embedUrl = $videoUrl ? \App\Support\VideoEmbed::backgroundEmbedUrl($videoUrl, $startSeconds) : null;
   $isDirectFile = $videoUrl && ! $embedUrl;
+  $ytElementId = $youtubeId ? 'cms-hero-yt-'.\Illuminate\Support\Str::random(8) : null;
 @endphp
 <section class="cms-hero-video @if(!empty($data['poster_url']) || !empty($data['poster_url_mobile'])) cms-hero-video-has-poster @endif">
   <div class="cms-hero-video-media">
-    @if($embedUrl)
+    @if($youtubeId)
+      {{-- Reproductor via la API de YouTube (no un <iframe src> fijo)
+           para poder tapar el destello de carga con la cortina de abajo
+           y forzar el play cuando se vuelve a la pestaña -- ver
+           public/js/hero-video-youtube.js. --}}
+      <div id="{{ $ytElementId }}" class="cms-hero-video-yt" data-yt-id="{{ $youtubeId }}" data-yt-start="{{ $startSeconds }}" tabindex="-1" aria-hidden="true"></div>
+      <div class="cms-hero-video-curtain" @if(!empty($data['poster_url'])) style="background-image:url('{{ $data['poster_url'] }}')" @endif></div>
+    @elseif($embedUrl)
       <iframe class="cms-hero-video-iframe" src="{{ $embedUrl }}" allow="autoplay; encrypted-media" tabindex="-1" aria-hidden="true"></iframe>
     @elseif($isDirectFile)
       {{-- Sin loop nativo cuando hay un inicio personalizado: el

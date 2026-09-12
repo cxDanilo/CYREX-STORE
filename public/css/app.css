@@ -834,6 +834,14 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .cms-hero-video-iframe{position:absolute;top:50%;left:50%;width:177.78dvh;height:56.25vw;min-width:100%;min-height:100%;transform:translate(-50%,-50%);border:0;pointer-events:none;}
 .cms-hero-video-native{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .cms-hero-video-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
+/* YouTube tarda un instante en arrancar el autoplay -- mientras tanto
+   muestra su propia UI nativa (como si el video estuviera pausado, con
+   controles de "anterior/play/siguiente" por el truco de loop con
+   playlist de un solo video). Esta cortina tapa ese destello inicial y
+   se desvanece recién cuando hero-video-youtube.js confirma que el
+   video ya está reproduciendo de verdad (evento onStateChange). */
+.cms-hero-video-curtain{position:absolute;inset:0;background:#0A0A0B center/cover no-repeat;opacity:1;transition:opacity .5s ease;pointer-events:none;}
+.cms-hero-video-curtain.is-hidden{opacity:0;}
 .cms-hero-video-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.8) 5%,rgba(0,0,0,.15) 55%,rgba(0,0,0,.5) 100%);}
 .cms-hero-video-content{position:relative;padding-block:64px;width:100%;}
 .cms-hero-video-title{position:relative;font-family:var(--font-display);font-weight:800;text-transform:uppercase;font-size:clamp(28px,5.5vw,56px);line-height:1.06;letter-spacing:-0.01em;color:#fff;max-width:920px;margin-bottom:28px;}
