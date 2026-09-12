@@ -22,6 +22,8 @@
         rate: {{ $rate }},
         types: @js($types),
         catalog: @js($catalog),
+        peripherals: @js($peripherals),
+        peripheralPages: [],
         gpuTiers: @js(\App\Models\PcBuilderOption::optionsFor('gpu_tier')),
         stepHints: @js([
           'platform' => 'AMD e Intel son las dos marcas de procesador que existen — no hay una "mejor" en general, pero elegir una acá define qué procesador y qué placa madre vas a poder comprar después (no se mezclan entre marcas).',
@@ -81,13 +83,73 @@
 
         item(type) { return this.selected[type] || null; },
 
-        totalUsd() {
-          const partsTotal = Object.entries(this.selected).reduce((sum, [type, p]) => {
+        partsTotalUsd() {
+          return Object.entries(this.selected).reduce((sum, [type, p]) => {
             if (!p) return sum;
             const qty = type === 'ram' ? this.ramQty : 1;
             return sum + p.price_usd * qty;
           }, 0);
-          return partsTotal + (this.wantsAssembly ? this.assemblyFee : 0);
+        },
+
+        totalUsd() {
+          return this.partsTotalUsd() + (this.wantsAssembly ? this.assemblyFee : 0);
+        },
+
+        // Completa tu setup con: (al final) prioriza periféricos que
+        // combinen con la gama del build armado, en vez de mostrar
+        // siempre los mismos random de toda la tienda -- un build de
+        // gama alta ve auriculares/monitores más premium primero, uno
+        // de entrada ve opciones más accesibles primero. Los umbrales
+        // son fijos (no percentiles del catálogo, que hoy tiene pocos
+        // periféricos como para sacar una distribución confiable) —
+        // pensados para precios típicos de periféricos gamer y de un
+        // armado completo respectivamente; ajustar acá si el catálogo
+        // cambia mucho.
+        peripheralTier(product) {
+          if (product.price_usd < 60) return 'budget';
+          if (product.price_usd <= 150) return 'mid';
+          return 'premium';
+        },
+
+        get buildTier() {
+          const total = this.partsTotalUsd();
+          if (total < 700) return 'budget';
+          if (total <= 1500) return 'mid';
+          return 'premium';
+        },
+
+        // Se calcula una sola vez al llegar a la revisión final (ver el
+        // $watch de isReviewStep más abajo), no como getter reactivo, para
+        // no estar recalculando esto cada vez que se toca una pieza.
+        //
+        // La rotación entre tandas se maneja acá mismo (peripheralPageIndex
+        // + setInterval) en vez de depender de social-rotator.js como el
+        // resto del sitio: ese script escanea .cms-social-page una sola
+        // vez al cargar la página, y estos nodos recién se crean más
+        // tarde (al llegar a esta pantalla) — a esa altura el script ya
+        // escaneó y no los va a volver a ver nunca.
+        peripheralPageIndex: 0,
+        peripheralRotateTimer: null,
+
+        pickRecommendedPeripherals() {
+          const tier = this.buildTier;
+          const sorted = [...this.peripherals]
+            .sort((a, b) => (this.peripheralTier(a) === tier ? 0 : 1) - (this.peripheralTier(b) === tier ? 0 : 1))
+            .slice(0, 12);
+
+          this.peripheralPages = [];
+          for (let i = 0; i < sorted.length; i += 3) {
+            this.peripheralPages.push(sorted.slice(i, i + 3));
+          }
+
+          this.peripheralPageIndex = 0;
+          clearInterval(this.peripheralRotateTimer);
+          const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.body.classList.contains('motion-reduced');
+          if (!reduced && this.peripheralPages.length > 1) {
+            this.peripheralRotateTimer = setInterval(() => {
+              this.peripheralPageIndex = (this.peripheralPageIndex + 1) % this.peripheralPages.length;
+            }, 6000);
+          }
         },
 
         get gpuTierLabel() {
@@ -361,6 +423,7 @@
           form.submit();
         }
      }"
+     x-init="$watch('isReviewStep', (v) => { if (v) pickRecommendedPeripherals(); })"
      x-effect="prefetchIncompatibleImages()">
 
   <div class="pcb-stepper">
@@ -594,40 +657,36 @@
     @if($peripherals->isNotEmpty())
       <div class="pcb-complete-setup" x-show="isReviewStep && wantsAssembly !== null" x-cloak>
         <h3 style="margin-bottom:18px;">Completa tu setup con:</h3>
-        {{-- cms-social-rotator/-page: mismo mecanismo genérico que ya usa
-             "Descubrí las mejores marcas" del home (public/js/social-rotator.js)
-             para ir cambiando de tanda solo cada tantos segundos — no hace
-             falta JS nuevo, con estas clases alcanza. Tandas de a 3 (no 4):
-             el propio script no rota si solo hay 1 tanda — con exactamente
-             4 periféricos cargados (como ahora mismo), tandas de a 4 metían
-             todo en una sola tanda y nunca se veía rotar nada. Con 3, ya
-             con 4 productos hay 2 tandas (3 y 1) y rota de una. --}}
-        <div class="cms-social-rotator" data-interval="6000">
-          @foreach($peripherals->chunk(3) as $i => $page)
-            <div class="cms-social-page @if($i === 0) is-active @endif">
-              @foreach($page as $product)
-                <a class="card" href="{{ route('product.show', $product->slug) }}">
+        {{-- Reusa las clases .cms-social-rotator/.cms-social-page (mismo
+             CSS de fade entre tandas que "Descubrí las mejores marcas" del
+             home), pero la rotación acá la maneja peripheralPageIndex +
+             setInterval en pickRecommendedPeripherals() en vez de
+             social-rotator.js: ese script escanea .cms-social-page una
+             sola vez al cargar la página, y estos nodos recién se crean
+             al llegar a esta pantalla (ver peripheralPages, calculado
+             según la gama del build armado) — a esa altura ya escaneó y
+             nunca los vería. --}}
+        <div class="cms-social-rotator">
+          <template x-for="(page, i) in peripheralPages" :key="i">
+            <div class="cms-social-page" :class="{ 'is-active': i === peripheralPageIndex }">
+              <template x-for="product in page" :key="product.id">
+                <a class="card" :href="product.url">
                   <div class="card-media">
-                    @if($product->image_thumb_url)
-                      <img src="{{ $product->image_thumb_url }}" alt="{{ $product->name }}" loading="lazy"
-                           onload="markCardImageLoaded(this)" onerror="markCardImageLoaded(this)">
-                    @endif
+                    <img :src="product.image_url" :alt="product.name" loading="lazy"
+                         onload="markCardImageLoaded(this)" onerror="markCardImageLoaded(this)">
                   </div>
                   <div class="card-body">
-                    <div class="card-cat">{{ $product->category->name }}</div>
-                    <div class="card-name">{{ $product->name }}</div>
+                    <div class="card-cat" x-text="product.category"></div>
+                    <div class="card-name" x-text="product.name"></div>
                     <div class="card-price">
-                      @if($product->currency === 'USD')
-                        ${{ number_format($product->price, 2) }} <small>USD</small>
-                      @else
-                        Bs {{ number_format($product->price, 2) }} <small>BOB</small>
-                      @endif
+                      <span x-text="(product.currency === 'USD' ? '$' : 'Bs ') + product.price.toFixed(2)"></span>
+                      <small x-text="product.currency"></small>
                     </div>
                   </div>
                 </a>
-              @endforeach
+              </template>
             </div>
-          @endforeach
+          </template>
         </div>
       </div>
     @endif

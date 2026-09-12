@@ -57,6 +57,12 @@ class PcBuilderController extends Controller
         // Periféricos, así que alcanza con traer productos de ese árbol
         // sin filtrar por component_type (a diferencia del catálogo de
         // arriba, que sí es pieza por pieza).
+        //
+        // Se trae un pool más grande que los ~12 que se terminan
+        // mostrando (antes eran 16 directo) para que el armador tenga
+        // margen de sobra para priorizar por precio (ver
+        // pickRecommendedPeripherals() en el blade) sin quedarse corto
+        // de opciones dentro del tier que le toca al build armado.
         $peripherals = collect();
         $peripheralsCategory = Category::where('slug', 'perifericos')->first();
         if ($peripheralsCategory) {
@@ -65,8 +71,19 @@ class PcBuilderController extends Controller
                 ->whereIn('category_id', $categoryIds)
                 ->with('category')
                 ->inRandomOrder()
-                ->take(16)
-                ->get();
+                ->take(40)
+                ->get()
+                ->map(fn (Product $product) => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'url' => route('product.show', $product->slug),
+                    'image_url' => $product->image_thumb_url,
+                    'category' => $product->category->name,
+                    'price' => (float) $product->price,
+                    'currency' => $product->currency,
+                    'price_usd' => round($product->priceInUsd($rate), 2),
+                ])
+                ->values();
         }
 
         return view('pc-builder', compact('catalog', 'types', 'rate', 'currencyMode', 'defaultCurrency', 'heroImageUrl', 'peripherals'));
