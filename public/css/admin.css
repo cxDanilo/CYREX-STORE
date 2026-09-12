@@ -145,16 +145,21 @@ input[type=file]::file-selector-button:hover{border-color:var(--gold);background
    dispares en altura (ej. "Datos básicos" es corta, "Comparador" puede
    crecer mucho). El masonry por columnas de más arriba balancea la
    altura entre columnas y deja huecos vacíos gigantes dentro de las
-   secciones cortas para "emparejar" con la columna de al lado -- y una
-   sola columna angosta (760px) desperdicia media pantalla en un
-   monitor ancho. Con CSS Grid en vez de columns, cada fila mide lo que
-   necesita SU contenido (no la sección más alta de toda la página) y
-   align-items:start evita que una tarjeta corta se estire para llenar
-   la altura de la de al lado -- entra en 2 columnas en pantallas
-   anchas y cae sola a 1 en angostas, sin tocar .admin-form para el
-   resto del admin. */
-.admin-form.brand-page-form{max-width:1160px;display:grid;grid-template-columns:repeat(auto-fit,minmax(480px,1fr));align-items:start;gap:20px;}
-.admin-form.brand-page-form .form-section{margin-bottom:0;}
+   secciones cortas -- y CSS Grid tampoco alcanza: una fila que empareja
+   una sección corta con una larga bloquea todo lo que sigue debajo de
+   la corta hasta que termina la larga de al lado (viene de cómo Grid
+   sincroniza la altura de fila entre columnas), dejando el mismo tipo
+   de hueco. La solución real son dos columnas armadas a mano en el
+   Blade (.brand-page-form-col, cada una su propio flujo vertical
+   normal, sin sincronizarse entre sí) -- acá solo se las pone lado a
+   lado con flex, cayendo a una sola columna apilada en pantallas
+   angostas, sin tocar .admin-form para el resto del admin. */
+.admin-form.brand-page-form{max-width:1160px;display:flex;gap:20px;align-items:flex-start;}
+.brand-page-form-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:20px;}
+.brand-page-form-col .form-section{margin-bottom:0;}
+@media (max-width:900px){
+  .admin-form.brand-page-form{flex-direction:column;}
+}
 .form-section{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:24px;break-inside:avoid;-webkit-column-break-inside:avoid;margin-bottom:20px;}
 .form-section h3{font-family:var(--font-display);font-size:15px;font-weight:600;margin-bottom:16px;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}

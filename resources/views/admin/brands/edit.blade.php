@@ -21,6 +21,15 @@
   @csrf
   @method('PUT')
 
+  {{--
+    Dos columnas armadas a mano (no CSS Grid/columns automático): con
+    grid, una fila que empareja una sección corta con una larga bloquea
+    todo lo que sigue debajo de la corta hasta que termina la larga de
+    al lado -- cada columna de acá abajo es su propio flujo vertical
+    independiente, así que una sección corta no espera a la de al lado.
+  --}}
+  <div class="brand-page-form-col">
+
   <div class="form-section">
     <h3>Datos básicos</h3>
     <div class="form-row">
@@ -62,23 +71,6 @@
     </div>
   </div>
 
-  {{-- ============ HERO ============ --}}
-  <div class="form-section">
-    <h3>1. Hero</h3>
-    <div class="form-group">
-      <label>Headline (debajo del nombre)</label>
-      <input type="text" name="hero[subheadline]" value="{{ old('hero.subheadline', $hero['subheadline'] ?? '') }}" placeholder="Periféricos diferentes para setups diferentes.">
-    </div>
-    <div class="form-group">
-      <label>Descripción corta</label>
-      <textarea name="hero[description]" rows="2">{{ old('hero.description', $hero['description'] ?? '') }}</textarea>
-    </div>
-    <div class="form-group" x-data="brandProductPicker(@js($productsForPicker), @js(array_map('strval', $hero['product_ids'] ?? [])))">
-      <label>Productos del hero (hasta 3, forman la composición visual)</label>
-      @include('admin.brands._product-picker', ['fieldName' => 'hero[product_ids][]'])
-    </div>
-  </div>
-
   {{-- ============ EDITORIAL ============ --}}
   <div class="form-section">
     <h3>2. {{ Str::upper($brand->name) }} en Cyrex</h3>
@@ -105,6 +97,130 @@
       <label>Texto (por qué Cyrex eligió trabajar con esta marca)</label>
       <textarea name="editorial[body]" rows="4">{{ old('editorial.body', $editorial['body'] ?? '') }}</textarea>
       <div class="form-hint">Evitar "la mejor marca"/"la número uno" — el tono es "seleccionamos esto para distintos usuarios", no venta agresiva.</div>
+    </div>
+  </div>
+
+  {{-- ============ EXPLORE CATEGORIES ============ --}}
+  <div class="form-section" x-data="{ items: {{ collect($exploreCategories)->toJson() ?: '[]' }} }">
+    <h3>4. Explora {{ Str::upper($brand->name) }}</h3>
+    <p class="form-hint" style="margin-bottom:14px;">Bloques grandes por tipo de producto (ej. Teclados / Mouse / Controles).</p>
+    <template x-for="(item, i) in items" :key="i">
+      <div class="admin-panel" style="margin-bottom:14px;padding:16px;">
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom:10px;">
+            <label>Título</label>
+            <input type="text" x-model="item.title" :name="'explore_categories[' + i + '][title]'">
+          </div>
+          <div class="form-group" style="margin-bottom:10px;">
+            <label>Categoría</label>
+            <select x-model="item.category_slug" :name="'explore_categories[' + i + '][category_slug]'">
+              <option value="">— Ninguna (va a todos los productos de la marca) —</option>
+              @foreach($categories as $cat)
+                <option value="{{ $cat->slug }}">{{ $cat->name }}</option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom:10px;">
+            <label>Descripción</label>
+            <input type="text" x-model="item.description" :name="'explore_categories[' + i + '][description]'">
+          </div>
+          <div class="form-group" style="margin-bottom:10px;">
+            <label>Texto del botón</label>
+            <input type="text" x-model="item.cta_label" :name="'explore_categories[' + i + '][cta_label]'" placeholder="Explorar →">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label>Foto</label>
+          <input type="file" :name="'explore_categories[' + i + '][image]'" accept="image/*">
+          <template x-if="item.image">
+            <img :src="'{{ asset('uploads') }}/' + item.image" style="height:60px;border-radius:8px;margin-top:6px;display:block;">
+          </template>
+        </div>
+        <button type="button" class="repeater-remove" style="width:auto;padding:0 14px;height:32px;" @click="items.splice(i, 1)">Quitar bloque</button>
+      </div>
+    </template>
+    <button type="button" class="btn btn-sm" @click="items.push({title:'',description:'',category_slug:'',cta_label:'',image:null})">+ Agregar bloque</button>
+  </div>
+
+  {{-- ============ COMPARISON ============ --}}
+  <div class="form-section" x-data="{ rows: {{ collect($comparisonRows)->toJson() ?: '[]' }} }">
+    <h3>6. Comparador (¿Cuál es para ti?)</h3>
+    <p class="form-hint" style="margin-bottom:14px;">Mínimo 2 productos para que la sección se muestre en la página.</p>
+    <template x-for="(row, i) in rows" :key="i">
+      <div class="admin-panel" style="margin-bottom:14px;padding:16px;">
+        <div class="form-group" style="margin-bottom:10px;">
+          <label>Producto</label>
+          <select x-model="row.product_id" :name="'comparison_rows[' + i + '][product_id]'">
+            <option value="">— Elegir —</option>
+            @foreach($productsForPicker as $p)
+              <option value="{{ $p['id'] }}">{{ $p['name'] }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom:10px;"><label>Formato</label><input type="text" x-model="row.formato" :name="'comparison_rows[' + i + '][formato]'" placeholder="75%"></div>
+          <div class="form-group" style="margin-bottom:10px;"><label>Conectividad</label><input type="text" x-model="row.conectividad" :name="'comparison_rows[' + i + '][conectividad]'" placeholder="Tri-modo"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom:10px;"><label>Para quién</label><input type="text" x-model="row.tipo_usuario" :name="'comparison_rows[' + i + '][tipo_usuario]'" placeholder="Uso diario y gaming"></div>
+          <div class="form-group" style="margin-bottom:10px;"><label>Switch</label><input type="text" x-model="row.switch" :name="'comparison_rows[' + i + '][switch]'" placeholder="Hot-swap"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" style="margin-bottom:10px;"><label>Tamaño</label><input type="text" x-model="row.tamano" :name="'comparison_rows[' + i + '][tamano]'" placeholder="Compacto"></div>
+          <div class="form-group" style="margin-bottom:10px;"><label>Destacado</label><input type="text" x-model="row.destacado" :name="'comparison_rows[' + i + '][destacado]'" placeholder="RGB"></div>
+        </div>
+        <button type="button" class="repeater-remove" style="width:auto;padding:0 14px;height:32px;" @click="rows.splice(i, 1)">Quitar producto</button>
+      </div>
+    </template>
+    <button type="button" class="btn btn-sm" @click="rows.push({product_id:'',formato:'',conectividad:'',tipo_usuario:'',switch:'',tamano:'',destacado:''})">+ Agregar producto al comparador</button>
+  </div>
+
+  {{-- ============ COMMUNITY ============ --}}
+  <div class="form-section" x-data="{ posts: {{ collect($communityPosts)->toJson() ?: '[]' }} }">
+    <h3>8. Comunidad</h3>
+    <p class="form-hint" style="margin-bottom:14px;">Setups reales de clientes — no hace falta que todo el setup sea de esta marca.</p>
+    <template x-for="(post, i) in posts" :key="i">
+      <div class="admin-panel" style="margin-bottom:14px;padding:16px;">
+        <div class="form-group" style="margin-bottom:10px;">
+          <label>Foto</label>
+          <input type="file" :name="'community_posts[' + i + '][image]'" accept="image/*">
+          <template x-if="post.image">
+            <img :src="'{{ asset('uploads') }}/' + post.image" style="height:60px;border-radius:8px;margin-top:6px;display:block;">
+          </template>
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label>Descripción</label>
+          <input type="text" x-model="post.caption" :name="'community_posts[' + i + '][caption]'">
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label>Productos que aparecen (separados por coma)</label>
+          <input type="text" x-model="post.product_tags" :name="'community_posts[' + i + '][product_tags]'" placeholder="AJAZZ AK820 Pro, ATK A9, Monitor MSI">
+        </div>
+        <button type="button" class="repeater-remove" style="width:auto;padding:0 14px;height:32px;" @click="posts.splice(i, 1)">Quitar</button>
+      </div>
+    </template>
+    <button type="button" class="btn btn-sm" @click="posts.push({image:null,caption:'',product_tags:''})">+ Agregar foto de la comunidad</button>
+  </div>
+
+  </div>
+  <div class="brand-page-form-col">
+
+  {{-- ============ HERO ============ --}}
+  <div class="form-section">
+    <h3>1. Hero</h3>
+    <div class="form-group">
+      <label>Headline (debajo del nombre)</label>
+      <input type="text" name="hero[subheadline]" value="{{ old('hero.subheadline', $hero['subheadline'] ?? '') }}" placeholder="Periféricos diferentes para setups diferentes.">
+    </div>
+    <div class="form-group">
+      <label>Descripción corta</label>
+      <textarea name="hero[description]" rows="2">{{ old('hero.description', $hero['description'] ?? '') }}</textarea>
+    </div>
+    <div class="form-group" x-data="brandProductPicker(@js($productsForPicker), @js(array_map('strval', $hero['product_ids'] ?? [])))">
+      <label>Productos del hero (hasta 3, forman la composición visual)</label>
+      @include('admin.brands._product-picker', ['fieldName' => 'hero[product_ids][]'])
     </div>
   </div>
 
@@ -168,50 +284,6 @@
     <button type="button" class="btn btn-sm" @click="cards.push({title:'',description:'',cta_label:'',product_ids:[],_q:''})">+ Agregar tarjeta</button>
   </div>
 
-  {{-- ============ EXPLORE CATEGORIES ============ --}}
-  <div class="form-section" x-data="{ items: {{ collect($exploreCategories)->toJson() ?: '[]' }} }">
-    <h3>4. Explora {{ Str::upper($brand->name) }}</h3>
-    <p class="form-hint" style="margin-bottom:14px;">Bloques grandes por tipo de producto (ej. Teclados / Mouse / Controles).</p>
-    <template x-for="(item, i) in items" :key="i">
-      <div class="admin-panel" style="margin-bottom:14px;padding:16px;">
-        <div class="form-row">
-          <div class="form-group" style="margin-bottom:10px;">
-            <label>Título</label>
-            <input type="text" x-model="item.title" :name="'explore_categories[' + i + '][title]'">
-          </div>
-          <div class="form-group" style="margin-bottom:10px;">
-            <label>Categoría</label>
-            <select x-model="item.category_slug" :name="'explore_categories[' + i + '][category_slug]'">
-              <option value="">— Ninguna (va a todos los productos de la marca) —</option>
-              @foreach($categories as $cat)
-                <option value="{{ $cat->slug }}">{{ $cat->name }}</option>
-              @endforeach
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group" style="margin-bottom:10px;">
-            <label>Descripción</label>
-            <input type="text" x-model="item.description" :name="'explore_categories[' + i + '][description]'">
-          </div>
-          <div class="form-group" style="margin-bottom:10px;">
-            <label>Texto del botón</label>
-            <input type="text" x-model="item.cta_label" :name="'explore_categories[' + i + '][cta_label]'" placeholder="Explorar →">
-          </div>
-        </div>
-        <div class="form-group" style="margin-bottom:10px;">
-          <label>Foto</label>
-          <input type="file" :name="'explore_categories[' + i + '][image]'" accept="image/*">
-          <template x-if="item.image">
-            <img :src="'{{ asset('uploads') }}/' + item.image" style="height:60px;border-radius:8px;margin-top:6px;display:block;">
-          </template>
-        </div>
-        <button type="button" class="repeater-remove" style="width:auto;padding:0 14px;height:32px;" @click="items.splice(i, 1)">Quitar bloque</button>
-      </div>
-    </template>
-    <button type="button" class="btn btn-sm" @click="items.push({title:'',description:'',category_slug:'',cta_label:'',image:null})">+ Agregar bloque</button>
-  </div>
-
   {{-- ============ SELECTION ============ --}}
   <div class="form-section">
     <h3>5. Cyrex Selection</h3>
@@ -240,39 +312,6 @@
     </div>
   </div>
 
-  {{-- ============ COMPARISON ============ --}}
-  <div class="form-section" x-data="{ rows: {{ collect($comparisonRows)->toJson() ?: '[]' }} }">
-    <h3>6. Comparador (¿Cuál es para ti?)</h3>
-    <p class="form-hint" style="margin-bottom:14px;">Mínimo 2 productos para que la sección se muestre en la página.</p>
-    <template x-for="(row, i) in rows" :key="i">
-      <div class="admin-panel" style="margin-bottom:14px;padding:16px;">
-        <div class="form-group" style="margin-bottom:10px;">
-          <label>Producto</label>
-          <select x-model="row.product_id" :name="'comparison_rows[' + i + '][product_id]'">
-            <option value="">— Elegir —</option>
-            @foreach($productsForPicker as $p)
-              <option value="{{ $p['id'] }}">{{ $p['name'] }}</option>
-            @endforeach
-          </select>
-        </div>
-        <div class="form-row">
-          <div class="form-group" style="margin-bottom:10px;"><label>Formato</label><input type="text" x-model="row.formato" :name="'comparison_rows[' + i + '][formato]'" placeholder="75%"></div>
-          <div class="form-group" style="margin-bottom:10px;"><label>Conectividad</label><input type="text" x-model="row.conectividad" :name="'comparison_rows[' + i + '][conectividad]'" placeholder="Tri-modo"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group" style="margin-bottom:10px;"><label>Para quién</label><input type="text" x-model="row.tipo_usuario" :name="'comparison_rows[' + i + '][tipo_usuario]'" placeholder="Uso diario y gaming"></div>
-          <div class="form-group" style="margin-bottom:10px;"><label>Switch</label><input type="text" x-model="row.switch" :name="'comparison_rows[' + i + '][switch]'" placeholder="Hot-swap"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group" style="margin-bottom:10px;"><label>Tamaño</label><input type="text" x-model="row.tamano" :name="'comparison_rows[' + i + '][tamano]'" placeholder="Compacto"></div>
-          <div class="form-group" style="margin-bottom:10px;"><label>Destacado</label><input type="text" x-model="row.destacado" :name="'comparison_rows[' + i + '][destacado]'" placeholder="RGB"></div>
-        </div>
-        <button type="button" class="repeater-remove" style="width:auto;padding:0 14px;height:32px;" @click="rows.splice(i, 1)">Quitar producto</button>
-      </div>
-    </template>
-    <button type="button" class="btn btn-sm" @click="rows.push({product_id:'',formato:'',conectividad:'',tipo_usuario:'',switch:'',tamano:'',destacado:''})">+ Agregar producto al comparador</button>
-  </div>
-
   {{-- ============ CONTENT ITEMS ============ --}}
   <div class="form-section" x-data="{ items: {{ collect($contentItems)->toJson() ?: '[]' }} }">
     <h3>7. Contenido Cyrex (videos)</h3>
@@ -287,31 +326,6 @@
     <button type="button" class="btn btn-sm" @click="items.push({title:'',embed_url:''})">+ Agregar video</button>
   </div>
 
-  {{-- ============ COMMUNITY ============ --}}
-  <div class="form-section" x-data="{ posts: {{ collect($communityPosts)->toJson() ?: '[]' }} }">
-    <h3>8. Comunidad</h3>
-    <p class="form-hint" style="margin-bottom:14px;">Setups reales de clientes — no hace falta que todo el setup sea de esta marca.</p>
-    <template x-for="(post, i) in posts" :key="i">
-      <div class="admin-panel" style="margin-bottom:14px;padding:16px;">
-        <div class="form-group" style="margin-bottom:10px;">
-          <label>Foto</label>
-          <input type="file" :name="'community_posts[' + i + '][image]'" accept="image/*">
-          <template x-if="post.image">
-            <img :src="'{{ asset('uploads') }}/' + post.image" style="height:60px;border-radius:8px;margin-top:6px;display:block;">
-          </template>
-        </div>
-        <div class="form-group" style="margin-bottom:10px;">
-          <label>Descripción</label>
-          <input type="text" x-model="post.caption" :name="'community_posts[' + i + '][caption]'">
-        </div>
-        <div class="form-group" style="margin-bottom:10px;">
-          <label>Productos que aparecen (separados por coma)</label>
-          <input type="text" x-model="post.product_tags" :name="'community_posts[' + i + '][product_tags]'" placeholder="AJAZZ AK820 Pro, ATK A9, Monitor MSI">
-        </div>
-        <button type="button" class="repeater-remove" style="width:auto;padding:0 14px;height:32px;" @click="posts.splice(i, 1)">Quitar</button>
-      </div>
-    </template>
-    <button type="button" class="btn btn-sm" @click="posts.push({image:null,caption:'',product_tags:''})">+ Agregar foto de la comunidad</button>
   </div>
 
   <div class="form-actions">
