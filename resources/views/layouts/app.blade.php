@@ -196,6 +196,7 @@ window.markCardImageLoaded = function (img) {
 <script src="{{ asset('js/hero-title-decode.js') }}?v={{ filemtime(public_path('js/hero-title-decode.js')) }}"></script>
 <script src="{{ asset('js/product-image-zoom.js') }}?v={{ filemtime(public_path('js/product-image-zoom.js')) }}"></script>
 <script src="{{ asset('js/brand-hero-tilt.js') }}?v={{ filemtime(public_path('js/brand-hero-tilt.js')) }}"></script>
+<script src="{{ asset('js/brand-anchor-scroll.js') }}?v={{ filemtime(public_path('js/brand-anchor-scroll.js')) }}"></script>
 {{-- Global (no @section('scripts') en shop.blade.php): shop-ajax.js escucha
      clicks delegados en document y busca .shop-main en cada uno, así que es
      inofensivo en páginas sin tienda. Cargarlo solo desde shop.blade.php

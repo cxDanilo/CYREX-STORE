@@ -1465,6 +1465,13 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .brand-subnav-links a{font-size:13px;color:var(--text-secondary);white-space:nowrap;transition:color .15s;}
 .brand-subnav-links a:hover{color:var(--text-primary);}
 @media (max-width:768px){.brand-subnav{display:none;}}
+/* Los anchors del subnav ("Para ti", "Comparar"...) y el "Descubrir
+   {marca} ↓" del hero apuntan a estas secciones -- sin esto, saltar
+   al ancla deja el título tapado detrás del nav principal (72px) +
+   el subnav sticky (~50px). Ver también brand-anchor-scroll.js, que
+   hace el scroll a mano en vez de confiar en el salto nativo del
+   navegador (más previsible con el header sticky de por medio). */
+#para-ti, #categorias, #seleccion, #comparar, #productos{scroll-margin-top:132px;}
 
 /* 1. HERO */
 .brand-hero{position:relative;min-height:92vh;display:flex;align-items:center;padding-block:64px;background:radial-gradient(ellipse 900px 600px at 85% 15%, color-mix(in srgb, var(--brand-accent) 12%, transparent), transparent 60%), var(--bg);overflow:hidden;}
