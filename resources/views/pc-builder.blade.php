@@ -479,7 +479,12 @@
     </template>
   </div>
 
-  <div style="display:flex;flex-direction:column;gap:6px;margin:20px 0;" x-show="Object.keys(selected).length">
+  {{-- Sticky (no solo más grande): con un catálogo largo, el usuario
+       scrollea la grilla de productos del paso y esta barra quedaba
+       arriba de todo, fuera de vista, justo cuando más importa (viendo
+       opciones, a punto de elegir una incompatible con lo que ya tiene).
+       Se queda pegada bajo el header en vez de perderse al bajar. --}}
+  <div class="pcb-issues-bar" x-show="Object.keys(selected).length">
     <template x-for="issue in currentIssues" :key="issue.msg">
       <div class="pcb-issue-pill" :class="issue.level" x-transition:enter="pcb-card-enter" x-transition:enter-start="pcb-card-enter-start" x-transition:enter-end="pcb-card-enter-end"><span x-text="issue.level === 'err' ? '✕' : '⚠'"></span> <span x-text="issue.msg"></span></div>
     </template>

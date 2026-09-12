@@ -1178,6 +1178,12 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .pcb-issue-pill.err{background:rgba(255,92,92,.16);color:#ff8a8a;border:1px solid rgba(255,92,92,.4);}
 .pcb-issue-pill.warn{background:rgba(255,176,32,.16);color:#ffc65c;border:1px solid rgba(255,176,32,.4);}
 .pcb-issue-pill.ok{background:rgba(62,207,110,.14);color:#6fe497;border:1px solid rgba(62,207,110,.35);}
+/* Sticky bajo el header (mismo top:90px que .gallery en la ficha de
+   producto) -- cada pill ya trae su propio fondo de color, así que se
+   sigue viendo con contenido scrolleando detrás; el backdrop-filter es
+   solo para que las letras del fondo no se mezclen con el texto de la
+   pill cuando hay poco espacio entre ambas. */
+.pcb-issues-bar{display:flex;flex-direction:column;gap:6px;margin:20px 0;position:sticky;top:90px;z-index:15;backdrop-filter:blur(6px);}
 
 .pcb-layout{display:grid;grid-template-columns:1fr 320px;gap:24px;align-items:start;padding-bottom:80px;}
 @media (max-width:860px){.pcb-layout{grid-template-columns:1fr;}}
