@@ -63,6 +63,7 @@
   'image' => $product->image_url,
   'description' => strip_tags($product->description ?? $product->name),
   'sku' => (string) $product->id,
+  ...($product->brand ? ['brand' => ['@type' => 'Brand', 'name' => $product->brand]] : []),
   'offers' => [
     '@type' => 'Offer',
     'url' => $productUrl,

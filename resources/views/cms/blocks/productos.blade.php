@@ -18,6 +18,10 @@
     }
   }
 
+  if (!empty($data['marca'])) {
+    $query->whereRaw('LOWER(brand) = ?', [mb_strtolower($data['marca'])]);
+  }
+
   $limite = (int) ($data['limite'] ?? 4);
 
   if (($data['orden'] ?? 'recientes') === 'aleatorio_diario') {
@@ -33,6 +37,13 @@
   } else {
     $productos = $query->orderByDesc('created_at')->take($limite)->get();
   }
+
+  // Este bloque siempre muestra una vista previa acotada (ver $limite) --
+  // si tiene categoría y/o marca, el link manda a la tienda real filtrada
+  // igual (con paginación de verdad) en vez de duplicar esa lógica acá.
+  $verTodoUrl = (!empty($data['categoria']) || !empty($data['marca']))
+    ? route('shop', array_filter(['category' => $data['categoria'] ?? null, 'marca' => $data['marca'] ?? null]))
+    : null;
 @endphp
 <div class="wrap cms-block">
   @if(!empty($data['eyebrow']) || !empty($data['subtitulo']))
@@ -55,4 +66,9 @@
       @include('partials.product-card', ['product' => $product])
     @endforeach
   </div>
+  @if($verTodoUrl)
+    <div style="text-align:center;margin-top:32px;">
+      <a href="{{ $verTodoUrl }}" class="btn-outline-gold">Ver todo{{ !empty($data['marca']) ? ' '.$data['marca'] : '' }} →</a>
+    </div>
+  @endif
 </div>

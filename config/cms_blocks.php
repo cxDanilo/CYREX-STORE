@@ -296,13 +296,14 @@ return [
         'view' => 'cms.blocks.productos',
         'category' => 'Comercio',
         'icon' => '<svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12l-1 12H7L6 8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.5"/></svg>',
-        'defaults' => ['eyebrow' => '', 'titulo' => '', 'titulo_destacado' => '', 'subtitulo' => '', 'categoria' => '', 'limite' => 4, 'orden' => 'recientes'],
+        'defaults' => ['eyebrow' => '', 'titulo' => '', 'titulo_destacado' => '', 'subtitulo' => '', 'categoria' => '', 'marca' => '', 'limite' => 4, 'orden' => 'recientes'],
         'fields' => [
             'eyebrow' => ['type' => 'text', 'label' => 'Texto pequeño superior (opcional)'],
             'titulo' => ['type' => 'text', 'label' => 'Título (opcional)'],
             'titulo_destacado' => ['type' => 'text', 'label' => 'Palabras finales destacadas en dorado (opcional)'],
             'subtitulo' => ['type' => 'textarea', 'label' => 'Subtítulo (opcional)'],
-            'categoria' => ['type' => 'select', 'label' => 'Categoría', 'options' => 'categories'],
+            'categoria' => ['type' => 'select', 'label' => 'Categoría (opcional)', 'options' => 'categories'],
+            'marca' => ['type' => 'text', 'label' => 'Marca (opcional, ej. Ajazz) — se combina con la categoría si ponés las dos'],
             'limite' => ['type' => 'number', 'label' => 'Cantidad de productos'],
             'orden' => ['type' => 'select', 'label' => 'Orden', 'options' => [
                 ['id' => 'recientes', 'name' => 'Más recientes'],
