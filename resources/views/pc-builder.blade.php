@@ -479,11 +479,17 @@
     </template>
   </div>
 
-  {{-- Sticky (no solo más grande): con un catálogo largo, el usuario
-       scrollea la grilla de productos del paso y esta barra quedaba
-       arriba de todo, fuera de vista, justo cuando más importa (viendo
-       opciones, a punto de elegir una incompatible con lo que ya tiene).
-       Se queda pegada bajo el header en vez de perderse al bajar. --}}
+  {{-- El mensaje completo se queda acá, en su lugar de siempre (recién
+       después del stepper, donde ya está mirando el usuario apenas
+       cambia algo) -- sticky-top no funcionaba bien acá: como no hay
+       nada que le ponga un techo a hasta dónde se queda pegada, con un
+       catálogo largo terminaba con la grilla de productos scrolleando
+       POR ENCIMA de ella y tapándola a la mitad (se veía la franja de
+       "Sin conflictos" cortando el texto del tip de arriba, literal).
+       El recordatorio que se necesita mientras se scrollea vive ahora
+       en la barra de Atrás/Siguiente de abajo (pcb-step-nav-status),
+       que sí tiene un límite natural (deja de estar sticky en cuanto
+       termina el panel del asistente) y ya funcionaba bien. --}}
   <div class="pcb-issues-bar" x-show="Object.keys(selected).length">
     <template x-for="issue in currentIssues" :key="issue.msg">
       <div class="pcb-issue-pill" :class="issue.level" x-transition:enter="pcb-card-enter" x-transition:enter-start="pcb-card-enter-start" x-transition:enter-end="pcb-card-enter-end"><span x-text="issue.level === 'err' ? '✕' : '⚠'"></span> <span x-text="issue.msg"></span></div>
@@ -698,11 +704,33 @@
         </div>
       </template>
 
+      {{-- Recordatorio compacto de conflictos/advertencias, siempre a la
+           vista mientras se elige (a diferencia del mensaje completo de
+           arriba, que queda atrás al scrollear el catálogo) -- vive acá
+           porque .pcb-step-nav ya es sticky:bottom y tiene un límite
+           natural (deja de estarlo en cuanto termina este panel), así
+           que no corre el riesgo de que el contenido lo tape al pasar
+           por encima como pasaba con un sticky:top sobre toda la
+           página. El detalle completo del mensaje sigue arriba —
+           esto es solo el estado, no reemplaza el texto. --}}
       <div class="pcb-step-nav">
-        <button type="button" class="btn" @click="back()" x-show="step > 0">← Atrás</button>
-        <button type="button" class="btn btn-primary" @click="next()" x-show="!isReviewStep && currentType" :disabled="!canProceed" style="margin-left:auto;">
-          <span x-text="optionalSteps.includes(currentType) && !item(currentType) ? 'Saltar este paso →' : 'Siguiente →'"></span>
-        </button>
+        <div class="pcb-step-nav-status" x-show="Object.keys(selected).length" x-cloak>
+          <template x-if="currentIssues.some(i => i.level === 'err')">
+            <span class="pcb-status-pill err">✕ Hay un conflicto de compatibilidad</span>
+          </template>
+          <template x-if="!currentIssues.some(i => i.level === 'err') && currentIssues.length">
+            <span class="pcb-status-pill warn">⚠ Hay una advertencia a revisar</span>
+          </template>
+          <template x-if="!currentIssues.length">
+            <span class="pcb-status-pill ok">✓ Sin conflictos detectados</span>
+          </template>
+        </div>
+        <div class="pcb-step-nav-buttons">
+          <button type="button" class="btn" @click="back()" x-show="step > 0">← Atrás</button>
+          <button type="button" class="btn btn-primary" @click="next()" x-show="!isReviewStep && currentType" :disabled="!canProceed" style="margin-left:auto;">
+            <span x-text="optionalSteps.includes(currentType) && !item(currentType) ? 'Saltar este paso →' : 'Siguiente →'"></span>
+          </button>
+        </div>
       </div>
     </div>
 
