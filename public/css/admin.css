@@ -358,6 +358,10 @@ label.switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;}
 .repeater-row input:focus{border-color:var(--gold);}
 .repeater-remove{background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:8px;width:34px;height:34px;cursor:pointer;flex-shrink:0;transition:border-color .15s,color .15s;}
 .repeater-remove:hover{border-color:var(--red);color:var(--red);}
+/* Chip de producto elegido -- páginas de marca (admin/brands/edit.blade.php) */
+.brand-admin-chip{display:inline-flex;align-items:center;gap:6px;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:100px;padding:5px 6px 5px 12px;font-size:12.5px;color:var(--text-primary);}
+.brand-admin-chip button{background:none;border:none;color:var(--text-muted);cursor:pointer;width:18px;height:18px;line-height:1;border-radius:50%;transition:color .15s,background .15s;}
+.brand-admin-chip button:hover{color:var(--red);background:rgba(226,75,74,.12);}
 
 .variant-thumb{position:relative;width:40px;height:40px;border-radius:8px;background:var(--bg-elevated-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;flex-shrink:0;transition:border-color .15s;}
 .variant-thumb:hover,.variant-thumb:focus-visible{border-color:var(--gold);}

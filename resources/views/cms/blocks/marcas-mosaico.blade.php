@@ -35,6 +35,17 @@
       ['c' => '6 / 7', 'r' => '2 / 3', 'forma' => 'square'],
     ],
   ];
+
+  // Mismo criterio que cms/blocks/marcas.blade.php: si el nombre coincide
+  // con una Brand con página propia publicada, se prioriza /marcas/{slug}
+  // por sobre el link tipeado a mano en el admin.
+  $publishedBrandSlugs = \App\Models\Brand::where('is_page_published', true)->get()
+    ->mapWithKeys(fn ($b) => [mb_strtolower($b->name) => $b->slug]);
+  $resolveLink = function ($item) use ($publishedBrandSlugs) {
+    $slug = $publishedBrandSlugs[mb_strtolower(trim($item['nombre'] ?? ''))] ?? null;
+
+    return $slug ? route('brand.show', $slug) : ($item['link'] ?? null);
+  };
 @endphp
 <div class="wrap cms-block cms-marcas-mosaico" data-interval="{{ $intervaloMs }}">
   @if(!empty($data['titulo']))
@@ -50,8 +61,9 @@
         <div class="cms-marcas-mosaico-page">
           @foreach($pagina as $i => $item)
             @php($slot = $patron[$i % count($patron)])
-            @if(!empty($item['link']))
-              <a class="cms-marcas-mosaico-tile" data-shape="{{ $slot['forma'] }}" style="grid-column:{{ $slot['c'] }};grid-row:{{ $slot['r'] }};" href="{{ $item['link'] }}">
+            @php($link = $resolveLink($item))
+            @if(!empty($link))
+              <a class="cms-marcas-mosaico-tile" data-shape="{{ $slot['forma'] }}" style="grid-column:{{ $slot['c'] }};grid-row:{{ $slot['r'] }};" href="{{ $link }}">
             @else
               <div class="cms-marcas-mosaico-tile" data-shape="{{ $slot['forma'] }}" style="grid-column:{{ $slot['c'] }};grid-row:{{ $slot['r'] }};">
             @endif
@@ -59,7 +71,7 @@
               @if(!empty($item['nombre']))
                 <span class="cms-marcas-mosaico-tile-label">{{ $item['nombre'] }}</span>
               @endif
-            @if(!empty($item['link']))
+            @if(!empty($link))
               </a>
             @else
               </div>

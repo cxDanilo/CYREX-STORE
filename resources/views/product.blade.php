@@ -423,6 +423,16 @@
     </div>
 
     <div class="cat-eyebrow">{{ $product->category->name }}</div>
+    @if($product->brand)
+      @php(
+        $productBrandPage = \App\Models\Brand::where('is_page_published', true)
+          ->whereRaw('LOWER(name) = ?', [mb_strtolower($product->brand)])
+          ->first()
+      )
+      @if($productBrandPage)
+        <a href="{{ route('brand.show', $productBrandPage->slug) }}" class="product-brand-link">{{ strtoupper($productBrandPage->name) }} — Conoce la marca →</a>
+      @endif
+    @endif
     <h1 x-show="!editing" x-text="editName">{{ $product->name }}</h1>
     <template x-if="isAdmin">
       <input type="text" x-show="editing" x-cloak x-model="editName" class="admin-edit-input admin-edit-input-name" x-transition>

@@ -26,6 +26,7 @@
         <tr>
           <th>Marca</th>
           <th>Productos con esta marca</th>
+          <th>Página propia</th>
           <th></th>
         </tr>
       </thead>
@@ -34,7 +35,15 @@
           <tr>
             <td class="admin-table-title">{{ $brand->name }}</td>
             <td class="mono" data-label="Productos" style="color:var(--text-secondary);">{{ $counts[$brand->name] ?? 0 }}</td>
+            <td data-label="Página propia">
+              @if($brand->is_page_published)
+                <a href="{{ route('brand.show', $brand->slug) }}" target="_blank" class="status-badge active">/marcas/{{ $brand->slug }} ↗</a>
+              @else
+                <span class="status-badge inactive">Sin publicar</span>
+              @endif
+            </td>
             <td class="cell-actions">
+              <a href="{{ route('admin.marcas.edit', $brand) }}" class="btn btn-sm">Editar página</a>
               <form method="POST" action="{{ route('admin.marcas.destroy', $brand) }}" onsubmit="return confirm('¿Eliminar la marca &quot;{{ $brand->name }}&quot;? Los productos que ya la tengan cargada no cambian, solo deja de aparecer para elegir en productos nuevos.');">
                 @csrf @method('DELETE')
                 <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>

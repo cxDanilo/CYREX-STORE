@@ -564,6 +564,8 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .gallery-thumb:hover{border-color:var(--border-strong);}
 .gallery-thumb.active{border-color:var(--gold);}
 .cat-eyebrow{font-family:var(--font-mono);font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;}
+.product-brand-link{display:inline-block;font-family:var(--font-mono);font-size:11.5px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.04em;margin:-2px 0 10px;text-decoration:none;transition:color .15s;}
+.product-brand-link:hover{color:var(--gold);}
 .product-info h1{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,3vw,36px);letter-spacing:-0.01em;line-height:1.15;margin-bottom:14px;}
 .variant-options{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
 .variant-swatch{padding:8px 16px;border-radius:100px;border:1px solid var(--border);background:var(--bg-elevated);cursor:pointer;font-size:13px;transition:border-color .15s,background .15s,color .15s,transform .15s;}
@@ -1435,3 +1437,163 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .build-publish-form{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:16px;}
 .build-publish-form input[type=text]{width:100%;background:var(--bg-elevated-2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text-primary);font-size:14px;outline:none;transition:border-color .15s;margin:10px 0 14px;}
 .build-publish-form input[type=text]:focus{border-color:var(--gold);}
+
+/* ============================================================
+   PÁGINAS DE MARCA (/marcas/{slug}) -- primera: Ajazz.
+   Prefijo .brand- en todo; --brand-accent la define cada página
+   inline según Brand.accent_color (fallback al dorado de Cyrex).
+   El acento se usa con moderación (bordes, algún texto, tags) nunca
+   como fondo dominante -- Cyrex sigue siendo evidente, la marca es
+   lo que se está descubriendo, no el dueño de la página.
+   ============================================================ */
+.brand-page{background:var(--bg);}
+
+/* El scroll-reveal usa [data-reveal]/.is-revealed, el mismo mecanismo
+   sitewide de public/js/scroll-reveal.js (ver product.blade.php) --
+   ya tiene su CSS global más arriba, nada nuevo que declarar acá. */
+
+/* Sub-nav interna: top:72px (no 0) porque el <nav> principal de Cyrex
+   ya es sticky:top:0 -- si esta también fuera top:0 competirían por el
+   mismo lugar. Se esconde en mobile a propósito (el pedido explícito
+   era "debe desaparecer o simplificarse en móvil"), el header
+   principal ya cubre la navegación ahí. */
+.brand-subnav{position:sticky;top:72px;z-index:150;background:rgba(8,8,8,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);}
+.brand-subnav-inner{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-block:14px;}
+.brand-subnav-name{font-family:var(--font-display);font-weight:700;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--brand-accent);flex-shrink:0;}
+.brand-subnav-links{display:flex;gap:22px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;}
+.brand-subnav-links::-webkit-scrollbar{display:none;}
+.brand-subnav-links a{font-size:13px;color:var(--text-secondary);white-space:nowrap;transition:color .15s;}
+.brand-subnav-links a:hover{color:var(--text-primary);}
+@media (max-width:768px){.brand-subnav{display:none;}}
+
+/* 1. HERO */
+.brand-hero{position:relative;min-height:92vh;display:flex;align-items:center;padding-block:64px;background:radial-gradient(ellipse 900px 600px at 85% 15%, color-mix(in srgb, var(--brand-accent) 12%, transparent), transparent 60%), var(--bg);overflow:hidden;}
+.brand-hero-inner{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;}
+.brand-hero-logo{height:38px;width:auto;object-fit:contain;margin-bottom:26px;}
+.brand-hero-title{font-family:var(--font-display);font-weight:800;font-size:clamp(52px,9vw,128px);line-height:.94;letter-spacing:-0.02em;margin-bottom:22px;}
+.brand-hero-headline{font-size:clamp(18px,2vw,23px);font-weight:500;color:var(--text-primary);max-width:520px;margin-bottom:14px;line-height:1.4;}
+.brand-hero-desc{font-size:15px;color:var(--text-secondary);max-width:460px;line-height:1.65;margin-bottom:34px;}
+.brand-hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+.brand-hero-composition{position:relative;height:460px;}
+.brand-hero-product{position:absolute;border-radius:22px;overflow:hidden;background:var(--bg-elevated);border:1px solid var(--border);box-shadow:0 24px 60px rgba(0,0,0,.5);transition:transform .35s cubic-bezier(.22,1,.36,1);will-change:transform;}
+.brand-hero-product img{width:100%;height:100%;object-fit:cover;display:block;}
+.brand-hero-product-1{width:64%;height:66%;top:0;right:0;z-index:3;}
+.brand-hero-product-2{width:48%;height:48%;bottom:0;left:0;z-index:2;}
+.brand-hero-product-3{width:36%;height:36%;bottom:8%;right:18%;z-index:1;}
+@media (max-width:900px){
+  .brand-hero{min-height:auto;padding-block:48px 40px;}
+  .brand-hero-inner{grid-template-columns:1fr;}
+  .brand-hero-title{font-size:clamp(44px,14vw,64px);}
+  .brand-hero-composition{height:300px;margin-top:36px;order:-1;}
+}
+
+/* 2. MARCA EN CYREX */
+.brand-editorial{padding-block:120px;}
+.brand-editorial-inner{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+.brand-editorial-title{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,4vw,44px);line-height:1.15;letter-spacing:-0.01em;margin:14px 0 20px;text-wrap:balance;}
+.brand-editorial-body{font-size:16px;color:var(--text-secondary);line-height:1.75;max-width:440px;}
+.brand-editorial-media{aspect-ratio:4/5;border-radius:24px;overflow:hidden;background:var(--bg-elevated);border:1px solid var(--border);}
+.brand-editorial-media img{width:100%;height:100%;object-fit:cover;}
+@media (max-width:860px){.brand-editorial{padding-block:72px;}.brand-editorial-inner{grid-template-columns:1fr;gap:32px;}.brand-editorial-media{order:-1;aspect-ratio:16/10;}}
+
+/* 3. ¿QUÉ ESTÁS BUSCANDO? */
+.brand-finder{padding-block:110px;}
+.brand-section-title{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,4vw,42px);letter-spacing:-0.01em;margin-bottom:44px;text-wrap:balance;}
+.brand-finder-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.brand-finder-card{position:relative;border-radius:20px;overflow:hidden;background:var(--bg-elevated);border:1px solid var(--border);cursor:pointer;min-height:420px;display:flex;flex-direction:column;justify-content:flex-end;transition:border-color .25s ease;}
+.brand-finder-card:hover{border-color:var(--border-strong);}
+.brand-finder-card-media{position:absolute;inset:0;opacity:.5;transition:opacity .4s ease,transform .5s ease;}
+.brand-finder-card-media img{width:100%;height:100%;object-fit:cover;}
+.brand-finder-card::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,var(--bg-elevated) 15%,rgba(19,19,19,.55) 55%,rgba(19,19,19,.15) 100%);}
+.brand-finder-card-body{position:relative;z-index:2;padding:28px 24px;}
+.brand-finder-card-body h3{font-family:var(--font-display);font-weight:700;font-size:19px;letter-spacing:.01em;margin-bottom:10px;}
+.brand-finder-card-body p{font-size:13.5px;color:var(--text-secondary);line-height:1.55;margin-bottom:16px;}
+.brand-finder-card-products{display:flex;flex-direction:column;gap:6px;max-height:0;overflow:hidden;transition:max-height .3s ease,margin-bottom .3s ease;margin-bottom:0;}
+.brand-finder-product-chip{font-size:12.5px;color:var(--text-secondary);padding:8px 10px;background:rgba(255,255,255,.04);border-radius:8px;transition:color .15s,background .15s;}
+.brand-finder-product-chip:hover{color:var(--text-primary);background:rgba(255,255,255,.08);}
+.brand-finder-cta{display:inline-flex;align-items:center;font-size:13px;font-weight:600;color:var(--brand-accent);}
+/* Desktop: hover revela (zoom sutil de la imagen + opacity + lista de
+   productos). Mobile: tap alterna la misma lista vía Alpine (:class
+   is-open) -- por eso .is-open repite el mismo max-height que el
+   :hover de acá abajo, así funciona igual sin depender del hover. */
+@media (hover:hover){
+  .brand-finder-card:hover .brand-finder-card-media{opacity:.85;transform:scale(1.05);}
+  .brand-finder-card:hover .brand-finder-card-products{max-height:220px;margin-bottom:16px;}
+}
+.brand-finder-card-products.is-open{max-height:220px;margin-bottom:16px;}
+@media (max-width:860px){.brand-finder-grid{grid-template-columns:1fr;}.brand-finder-card{min-height:320px;}}
+
+/* 4. EXPLORA [MARCA] */
+.brand-explore{padding-block:0 0;}
+.brand-explore .wrap{display:flex;flex-direction:column;gap:2px;}
+.brand-explore-block{position:relative;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:48px;min-height:340px;padding:48px 8px;border-top:1px solid var(--border);color:inherit;overflow:hidden;}
+.brand-explore-block:last-child{border-bottom:1px solid var(--border);}
+.brand-explore-media{aspect-ratio:16/11;border-radius:18px;overflow:hidden;background:var(--bg-elevated);order:2;transition:transform .5s cubic-bezier(.22,1,.36,1);}
+.brand-explore-media img{width:100%;height:100%;object-fit:cover;}
+.brand-explore-block:nth-child(even) .brand-explore-media{order:0;}
+@media (hover:hover){.brand-explore-block:hover .brand-explore-media{transform:scale(1.03);}}
+.brand-explore-num{font-family:var(--font-mono);font-size:13px;color:var(--text-muted);letter-spacing:.05em;}
+.brand-explore-body h3{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,3.4vw,38px);margin:10px 0 12px;}
+.brand-explore-body p{color:var(--text-secondary);font-size:15px;line-height:1.6;max-width:380px;margin-bottom:16px;}
+.brand-explore-cta{font-size:13.5px;font-weight:600;color:var(--brand-accent);}
+@media (max-width:860px){.brand-explore-block{grid-template-columns:1fr;gap:24px;padding-block:36px;min-height:auto;}.brand-explore-media{order:-1 !important;aspect-ratio:16/10;}}
+
+/* 5. CYREX SELECTION */
+.brand-selection{padding-block:120px;}
+.brand-selection-inner{display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:center;}
+.brand-selection-media{aspect-ratio:1/1;border-radius:24px;overflow:hidden;background:var(--bg-elevated);border:1px solid var(--border);}
+.brand-selection-media img{width:100%;height:100%;object-fit:cover;}
+.brand-selection-copy h2{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,3.6vw,38px);margin:8px 0 18px;}
+.brand-selection-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px;}
+.brand-selection-tag{font-family:var(--font-mono);font-size:11.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;padding:6px 12px;border-radius:100px;border:1px solid color-mix(in srgb, var(--brand-accent) 40%, var(--border));color:var(--brand-accent);}
+.brand-selection-why-title{font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:8px;}
+.brand-selection-why{color:var(--text-secondary);font-size:15px;line-height:1.7;margin-bottom:28px;max-width:440px;}
+@media (max-width:860px){.brand-selection{padding-block:64px;}.brand-selection-inner{grid-template-columns:1fr;gap:28px;}}
+
+/* 6. COMPARADOR */
+.brand-compare{padding-block:110px;}
+.brand-compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;}
+.brand-compare-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:18px;padding:22px;}
+.brand-compare-media{aspect-ratio:1/1;border-radius:12px;overflow:hidden;background:var(--bg-elevated-2);margin-bottom:16px;}
+.brand-compare-media img{width:100%;height:100%;object-fit:cover;}
+.brand-compare-card h4{font-family:var(--font-display);font-weight:700;font-size:16px;margin-bottom:14px;}
+.brand-compare-specs{margin-bottom:18px;}
+.brand-compare-spec-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--border);font-size:12.5px;}
+.brand-compare-spec-row dt{color:var(--text-muted);}
+.brand-compare-spec-row dd{color:var(--text-primary);text-align:right;}
+
+/* 7. CONTENIDO CYREX */
+.brand-content{padding-block:110px;}
+.brand-content-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:32px;margin-top:44px;align-items:start;}
+.brand-content-embed{aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:var(--bg-elevated);}
+.brand-content-embed iframe{width:100%;height:100%;border:0;display:block;}
+.brand-content-main h4{margin-top:14px;font-size:15px;font-weight:600;}
+.brand-content-list{display:flex;flex-direction:column;gap:20px;}
+.brand-content-item span{display:block;margin-top:8px;font-size:13px;color:var(--text-secondary);}
+@media (max-width:900px){.brand-content-grid{grid-template-columns:1fr;}.brand-content-list{flex-direction:row;overflow-x:auto;gap:14px;}.brand-content-item{flex:0 0 220px;}}
+
+/* 8. COMUNIDAD */
+.brand-community{padding-block:110px;}
+.brand-community-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
+.brand-community-card{border-radius:16px;overflow:hidden;background:var(--bg-elevated);border:1px solid var(--border);}
+.brand-community-media{aspect-ratio:4/5;}
+.brand-community-media img{width:100%;height:100%;object-fit:cover;display:block;}
+.brand-community-body{padding:16px;}
+.brand-community-body p{font-size:13.5px;color:var(--text-secondary);line-height:1.5;margin-bottom:10px;}
+.brand-community-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.brand-community-tags span{font-size:11px;color:var(--text-muted);background:var(--bg-elevated-2);padding:4px 9px;border-radius:100px;}
+
+/* 9. CATÁLOGO */
+.brand-catalog{padding-block:110px 90px;}
+.brand-catalog-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;}
+.brand-filter-chip{font-size:13px;padding:9px 18px;border-radius:100px;border:1px solid var(--border);color:var(--text-secondary);transition:border-color .15s,color .15s;}
+.brand-filter-chip:hover{color:var(--text-primary);border-color:var(--border-strong);}
+.brand-filter-chip.is-active{background:var(--brand-accent);border-color:var(--brand-accent);color:#0A0A0B;font-weight:600;}
+
+/* 10. CTA FINAL */
+.brand-final-cta{padding-block:130px;border-top:1px solid var(--border);}
+.brand-final-cta-inner{max-width:720px;margin:0 auto;text-align:center;}
+.brand-final-cta-inner h2{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,4.5vw,46px);line-height:1.15;letter-spacing:-0.01em;margin:14px 0 20px;text-wrap:balance;}
+.brand-final-cta-inner p{color:var(--text-secondary);font-size:15.5px;line-height:1.65;max-width:520px;margin:0 auto 34px;}
+.brand-final-cta-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+@media (max-width:600px){.brand-final-cta{padding-block:80px;}}

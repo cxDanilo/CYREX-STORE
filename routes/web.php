@@ -46,6 +46,7 @@ Route::post('/armados', [App\Http\Controllers\SavedBuildController::class, 'stor
 Route::get('/tienda', [ShopController::class, 'index'])->name('shop');
 Route::get('/producto/{slug}', [ShopController::class, 'show'])->name('product.show');
 Route::get('/combo/{slug}', [ComboController::class, 'show'])->name('combo.show');
+Route::get('/marcas/{brand:slug}', [App\Http\Controllers\BrandPageController::class, 'show'])->name('brand.show');
 Route::get('/buscar-sugerencias', [ShopController::class, 'suggest'])->name('shop.suggest');
 
 // --- PREVIEW TEMPORAL, sacar junto con resources/views/dev/liquid-preview.blade.php,
@@ -54,6 +55,20 @@ Route::get('/buscar-sugerencias', [ShopController::class, 'suggest'])->name('sho
 // en el sitio en vivo por accidente.
 if (app()->environment('local')) {
     Route::get('/dev/liquid-preview', fn () => view('dev.liquid-preview'))->name('dev.liquid-preview');
+
+    // --- PREVIEW TEMPORAL, sacar junto con resources/views/dev/liquid-search-preview.blade.php,
+    // public/css/liquid-search-preview.css y public/js/liquid-search-preview.js cuando ya no
+    // haga falta. Reusa el motor de liquid-preview.css/js para el ícono del buscador del header.
+    Route::get('/dev/liquid-search-preview', fn () => view('dev.liquid-search-preview', [
+        'logoUrl' => \App\Models\Setting::logoUrl(),
+    ]))->name('dev.liquid-search-preview');
+
+    // --- PREVIEW TEMPORAL, sacar junto con resources/views/dev/liquid-header-options.blade.php,
+    // public/css/liquid-header-options.css y public/js/liquid-header-options.js cuando ya no
+    // haga falta. 3 formas de meter movimiento en el header sin esconder el buscador.
+    Route::get('/dev/liquid-header-options', fn () => view('dev.liquid-header-options', [
+        'logoUrl' => \App\Models\Setting::logoUrl(),
+    ]))->name('dev.liquid-header-options');
 }
 
 Route::middleware(['auth', 'admin'])->patch('/producto/{product}/edicion-rapida', [ProductQuickEditController::class, 'update'])->name('product.quick-update');
@@ -111,6 +126,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::get('marcas', [AdminBrandController::class, 'index'])->name('marcas.index');
         Route::post('marcas', [AdminBrandController::class, 'store'])->name('marcas.store');
+        Route::get('marcas/{brand}/editar', [AdminBrandController::class, 'edit'])->name('marcas.edit');
+        Route::put('marcas/{brand}', [AdminBrandController::class, 'update'])->name('marcas.update');
         Route::delete('marcas/{brand}', [AdminBrandController::class, 'destroy'])->name('marcas.destroy');
 
         // Promociones/Descuentos tocan precios/campañas de todo el sitio (y
