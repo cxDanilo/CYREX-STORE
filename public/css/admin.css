@@ -143,12 +143,18 @@ input[type=file]::file-selector-button:hover{border-color:var(--gold);background
 .admin-form{max-width:1400px;flex:1;min-width:0;columns:420px;column-gap:20px;}
 /* La página de marca (admin/brands/edit.blade.php) tiene secciones muy
    dispares en altura (ej. "Datos básicos" es corta, "Comparador" puede
-   crecer mucho) -- el masonry por columnas de más arriba balancea la
-   altura entre columnas y termina dejando huecos vacíos gigantes dentro
-   de las secciones cortas para "emparejar" con la columna de al lado.
-   Acá se pisa esa regla (una sola columna, ancho de formulario normal)
-   en vez de tocar .admin-form para todo el admin. */
-.admin-form.brand-page-form{columns:auto;column-count:1;max-width:760px;}
+   crecer mucho). El masonry por columnas de más arriba balancea la
+   altura entre columnas y deja huecos vacíos gigantes dentro de las
+   secciones cortas para "emparejar" con la columna de al lado -- y una
+   sola columna angosta (760px) desperdicia media pantalla en un
+   monitor ancho. Con CSS Grid en vez de columns, cada fila mide lo que
+   necesita SU contenido (no la sección más alta de toda la página) y
+   align-items:start evita que una tarjeta corta se estire para llenar
+   la altura de la de al lado -- entra en 2 columnas en pantallas
+   anchas y cae sola a 1 en angostas, sin tocar .admin-form para el
+   resto del admin. */
+.admin-form.brand-page-form{max-width:1160px;display:grid;grid-template-columns:repeat(auto-fit,minmax(480px,1fr));align-items:start;gap:20px;}
+.admin-form.brand-page-form .form-section{margin-bottom:0;}
 .form-section{background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;padding:24px;break-inside:avoid;-webkit-column-break-inside:avoid;margin-bottom:20px;}
 .form-section h3{font-family:var(--font-display);font-size:15px;font-weight:600;margin-bottom:16px;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
