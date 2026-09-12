@@ -21,7 +21,7 @@
     <button type="submit" class="search-icon-btn" aria-label="Buscar">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
     </button>
-    <input type="text" name="q" x-model="q" x-on:input="search()" placeholder="Buscar en todo Cyrex Store" autocomplete="off" />
+    <input type="text" name="q" x-model="q" x-on:input="search()" placeholder="Buscar en todo Cyrex Store" aria-label="Buscar productos" autocomplete="off" />
   </form>
 
   <div class="search-suggestions" x-show="open" x-transition.opacity.duration.150ms x-cloak>

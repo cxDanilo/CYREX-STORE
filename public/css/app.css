@@ -5,7 +5,7 @@
 :root{
   --bg:#080808;--bg-elevated:#131313;--bg-elevated-2:#1C1C1C;
   --gold:#FFD900;--gold-dim:#3A3300;
-  --text-primary:#F5F5F3;--text-secondary:#8E8E93;--text-muted:#5C5C60;
+  --text-primary:#F5F5F3;--text-secondary:#8E8E93;--text-muted:#848484;
   --border:rgba(255,255,255,0.08);--border-strong:rgba(255,255,255,0.16);
   --green:#3DDC84;--red:#E24B4A;
   /* Mismos tonos que .pcb-platform-amd/.pcb-platform-intel más abajo
@@ -179,7 +179,7 @@ nav > .wrap > .search-wrap > .search-suggestions{left:-90px;right:-90px;}
 
 [x-cloak]{display:none!important;}
 
-.hamburger{display:none;flex-direction:column;justify-content:center;gap:4px;width:32px;height:32px;background:none;border:none;cursor:pointer;flex-shrink:0;}
+.hamburger{display:none;flex-direction:column;justify-content:center;gap:4px;width:44px;height:44px;background:none;border:none;cursor:pointer;flex-shrink:0;}
 .hamburger span{display:block;width:18px;height:1.5px;background:var(--text-primary);border-radius:1px;}
 
 .mega-icon{display:inline-flex;color:var(--gold);width:18px;height:18px;flex-shrink:0;}
@@ -360,7 +360,13 @@ footer{padding:64px 0 32px;border-top:1px solid var(--border);}
    la tarjeta ya entrando, la foto simplemente se muestra. */
 .page-nav-enter .card-media img{opacity:1;transition:none;}
 .badge{position:absolute;top:12px;left:12px;font-family:var(--font-mono);font-size:10px;padding:4px 10px;border-radius:100px;background:var(--gold);color:#0A0A0B;font-weight:600;}
+/* El círculo visible se queda en 34px (no compite visualmente con la
+   miniatura del producto, sobre todo en la grilla de 2 columnas en
+   mobile) -- el ::before agranda el área táctil real a 44x44 sin
+   agrandar el dibujo, siguiendo la zona de tap ampliada en vez de
+   agrandar el botón entero. */
 .card-quick-add{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(8,8,8,.75);backdrop-filter:blur(4px);border:1px solid var(--border);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .15s,opacity .2s;z-index:3;}
+.card-quick-add::before{content:'';position:absolute;inset:-5px;}
 /* Ocultar/revelar solo en hover-reveal en dispositivos con mouse real —
    en touch (hover:none) esto obligaba a "doble tap" en toda la card
    (el navegador trata el primer toque como si fuera a revelar el
@@ -783,7 +789,7 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 }
 
 /* CART */
-.cart-icon-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:none;border:none;color:var(--text-primary);cursor:pointer;}
+.cart-icon-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:none;border:none;color:var(--text-primary);cursor:pointer;}
 .cart-badge{position:absolute;top:0;right:0;background:var(--gold);color:#0A0A0B;font-family:var(--font-mono);font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:100px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
 .cart-badge.pulse{animation:badge-pulse .35s ease;}
 @keyframes badge-pulse{0%{transform:scale(1);}40%{transform:scale(1.35);}100%{transform:scale(1);}}

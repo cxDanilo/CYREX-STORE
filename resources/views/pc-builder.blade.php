@@ -532,7 +532,7 @@
                         @click="!opt.blocked && pick(type, opt.product)"
                         x-transition:enter="pcb-card-enter" x-transition:enter-start="pcb-card-enter-start" x-transition:enter-end="pcb-card-enter-end">
                   <div class="pcb-picker-card-media">
-                    <img :src="opt.product.image_url" x-show="opt.product.image_url" loading="lazy" width="140" height="140"
+                    <img :src="opt.product.image_url" :alt="opt.product.name" x-show="opt.product.image_url" loading="lazy" width="140" height="140"
                          style="width:100%;height:100%;object-fit:cover;"
                          onload="markCardImageLoaded(this)" onerror="markCardImageLoaded(this)">
                   </div>
