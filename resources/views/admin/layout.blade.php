@@ -127,17 +127,6 @@
       @if($adminVersion)
         <div class="mono" style="padding:2px 12px 10px;color:var(--text-muted);font-size:11px;letter-spacing:.03em;">v{{ $adminVersion }}</div>
       @endif
-      <a href="{{ route('home') }}" target="_blank" data-tour="ver-sitio">@include('partials.admin-icon', ['name' => 'ver-sitio']) Ver sitio ↗</a>
-      @if(auth()->user()->isAdmin())
-        <form method="POST" action="{{ route('admin.cache.purge') }}">
-          @csrf
-          <button type="submit" class="admin-nav-foot-btn">@include('partials.admin-icon', ['name' => 'purgar']) Purgar caché</button>
-        </form>
-        <form method="POST" action="{{ route('admin.backup.trigger') }}" onsubmit="return confirm('¿Disparar un backup ahora? Tarda uno o dos minutos.');">
-          @csrf
-          <button type="submit" class="admin-nav-foot-btn">@include('partials.admin-icon', ['name' => 'backup']) Backup ahora</button>
-        </form>
-      @endif
       <form method="POST" action="{{ route('admin.logout') }}">
         @csrf
         <button type="submit" class="admin-nav-foot-btn admin-nav-logout">@include('partials.admin-icon', ['name' => 'salir']) Cerrar sesión</button>
@@ -157,6 +146,10 @@
             <div class="admin-topbar-description">@yield('page-description')</div>
           @endif
         </div>
+        <a href="{{ route('home') }}" target="_blank" data-tour="ver-sitio" class="btn btn-ghost admin-topbar-viewsite">
+          @include('partials.admin-icon', ['name' => 'ver-sitio'])
+          <span class="admin-topbar-viewsite-label">Ver sitio ↗</span>
+        </a>
         @hasSection('topbar-actions')
           <div>@yield('topbar-actions')</div>
         @endif

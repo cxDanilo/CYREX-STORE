@@ -321,4 +321,27 @@
   </div>
 </form>
 
+@if(auth()->user()->isAdmin())
+  {{-- Fuera del <form> de ajustes a propósito: son acciones puntuales
+       (disparan algo ahora mismo), no campos que se guardan con el
+       resto — iban antes en el pie del sidebar, mezcladas con la
+       navegación, y no era su lugar. --}}
+  <div class="admin-form" style="margin-top:20px;">
+    <div class="form-section">
+      <h3>Mantenimiento</h3>
+      <p class="form-hint" style="margin-bottom:16px;">Acciones sobre el sitio en vivo — no dependen de "Guardar ajustes" de arriba.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <form method="POST" action="{{ route('admin.cache.purge') }}">
+          @csrf
+          <button type="submit" class="btn">@include('partials.admin-icon', ['name' => 'purgar']) Purgar caché</button>
+        </form>
+        <form method="POST" action="{{ route('admin.backup.trigger') }}" onsubmit="return confirm('¿Disparar un backup ahora? Tarda uno o dos minutos.');">
+          @csrf
+          <button type="submit" class="btn">@include('partials.admin-icon', ['name' => 'backup']) Backup ahora</button>
+        </form>
+      </div>
+    </div>
+  </div>
+@endif
+
 @endsection
