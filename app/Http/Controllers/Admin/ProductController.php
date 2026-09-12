@@ -29,6 +29,10 @@ class ProductController extends Controller
         $products = $query->paginate(15)->withQueryString();
         $activeDiscountGroup = DiscountGroup::first();
 
+        if ($request->ajax()) {
+            return view('admin.products._table', compact('products', 'activeDiscountGroup'));
+        }
+
         return view('admin.products.index', compact('products', 'activeDiscountGroup'));
     }
 
