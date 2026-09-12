@@ -246,25 +246,26 @@
         <input type="text" id="sku" name="sku" value="{{ old('sku', $product->sku) }}">
       </div>
 
+      @php
+        $currentBrand = old('brand', $product->brand);
+        // Si el producto ya tenía cargada una marca que después se borró
+        // de Admin -> Marcas, se muestra igual (marcada aparte) para no
+        // perderla de golpe si se guarda el formulario sin tocar este
+        // campo -- pero ya no aparece para elegirla en otro producto.
+        $isOrphanBrand = $currentBrand && !$brands->contains($currentBrand);
+      @endphp
       <div class="form-group">
         <label for="brand">Marca (opcional)</label>
-        @if($existingBrands->isNotEmpty())
-          <select id="brand-picker" style="margin-bottom:8px;"
-                  onchange="
-                    var input = document.getElementById('brand');
-                    if (this.value === '__new__') { input.value = ''; input.focus(); }
-                    else if (this.value) { input.value = this.value; }
-                    this.selectedIndex = 0;
-                  ">
-            <option value="">Elegir una marca ya usada…</option>
-            @foreach($existingBrands as $b)
-              <option value="{{ $b }}">{{ $b }}</option>
-            @endforeach
-            <option value="__new__">+ Agregar nueva marca…</option>
-          </select>
-        @endif
-        <input type="text" id="brand" name="brand" value="{{ old('brand', $product->brand) }}" placeholder="Ej. Ajazz, Thermalright...">
-        <p class="form-hint">Solo si el producto es de una marca puntual que representás — habilita el filtro por marca en la tienda. Dejalo vacío para productos genéricos.</p>
+        <select id="brand" name="brand">
+          <option value="">— Sin marca —</option>
+          @if($isOrphanBrand)
+            <option value="{{ $currentBrand }}" selected>{{ $currentBrand }} (ya no está en Marcas)</option>
+          @endif
+          @foreach($brands as $b)
+            <option value="{{ $b }}" {{ $currentBrand === $b ? 'selected' : '' }}>{{ $b }}</option>
+          @endforeach
+        </select>
+        <p class="form-hint">Solo si el producto es de una marca puntual que representás — habilita el filtro por marca en la tienda. ¿Falta una? <a href="{{ route('admin.marcas.index') }}" target="_blank">Agregala en Marcas</a>.</p>
       </div>
 
       <div class="form-group">

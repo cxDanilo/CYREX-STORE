@@ -66,6 +66,7 @@
       <div class="admin-nav-group" x-show="openGroup === 'catalogo'" x-collapse x-cloak>
         <a href="{{ route('admin.productos.index') }}" class="{{ request()->routeIs('admin.productos.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'productos']) Productos</a>
         <a href="{{ route('admin.categorias.index') }}" class="{{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'categorias']) Categorías</a>
+        <a href="{{ route('admin.marcas.index') }}" class="{{ request()->routeIs('admin.marcas.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'marcas']) Marcas</a>
         @if(auth()->user()->isAdmin())
           <a href="{{ route('admin.promociones.index') }}" class="{{ request()->routeIs('admin.promociones.*') ? 'active' : '' }}">@include('partials.admin-icon', ['name' => 'promociones']) Promociones</a>
         @endif

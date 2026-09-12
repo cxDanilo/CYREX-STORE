@@ -6,6 +6,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
@@ -107,6 +108,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('categorias/{category}/editar', [AdminCategoryController::class, 'edit'])->name('categorias.edit');
         Route::put('categorias/{category}', [AdminCategoryController::class, 'update'])->name('categorias.update');
         Route::delete('categorias/{category}', [AdminCategoryController::class, 'destroy'])->name('categorias.destroy');
+
+        Route::get('marcas', [AdminBrandController::class, 'index'])->name('marcas.index');
+        Route::post('marcas', [AdminBrandController::class, 'store'])->name('marcas.store');
+        Route::delete('marcas/{brand}', [AdminBrandController::class, 'destroy'])->name('marcas.destroy');
 
         // Promociones/Descuentos tocan precios/campañas de todo el sitio (y
         // Promociones además guarda custom_css que se imprime sin escapar

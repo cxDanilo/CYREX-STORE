@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\DiscountGroup;
 use App\Models\Product;
@@ -34,12 +35,12 @@ class ProductController extends Controller
     public function create()
     {
         $categories = $this->categoriesForForm();
-        $existingBrands = $this->existingBrands();
+        $brands = $this->brands();
         $product = new Product(['status' => 'active', 'currency' => 'USD']);
         $activityLogs = collect();
         $backUrl = null;
 
-        return view('admin.products.form', compact('categories', 'existingBrands', 'product', 'activityLogs', 'backUrl'));
+        return view('admin.products.form', compact('categories', 'brands', 'product', 'activityLogs', 'backUrl'));
     }
 
     public function store(Request $request)
@@ -73,12 +74,12 @@ class ProductController extends Controller
     public function edit(Request $request, Product $product)
     {
         $categories = $this->categoriesForForm();
-        $existingBrands = $this->existingBrands();
+        $brands = $this->brands();
         $product->load('variants', 'categories');
         $activityLogs = ProductActivityLog::where('product_id', $product->id)->orderByDesc('created_at')->limit(20)->get();
         $backUrl = $this->sanitizeBackUrl($request->query('back'));
 
-        return view('admin.products.form', compact('product', 'categories', 'existingBrands', 'activityLogs', 'backUrl'));
+        return view('admin.products.form', compact('product', 'categories', 'brands', 'activityLogs', 'backUrl'));
     }
 
     public function update(Request $request, Product $product)
@@ -147,17 +148,12 @@ class ProductController extends Controller
             ->flatMap(fn ($parent) => collect([$parent])->concat($parent->children));
     }
 
-    // Marcas ya cargadas en algún producto — para elegirlas desde un
-    // desplegable en vez de tener que escribirlas de nuevo cada vez.
-    // El campo sigue siendo texto libre en la base (ver migración de
-    // "brand"), esto es solo una ayuda en el formulario.
-    private function existingBrands()
+    // Lista administrada en Admin -> Marcas (App\Models\Brand) — el campo
+    // sigue siendo texto libre en products.brand, esto solo alimenta el
+    // desplegable del formulario para no escribirlo cada vez.
+    private function brands()
     {
-        return Product::whereNotNull('brand')
-            ->where('brand', '!=', '')
-            ->distinct()
-            ->orderBy('brand')
-            ->pluck('brand');
+        return Brand::orderBy('name')->pluck('name');
     }
 
     /**
