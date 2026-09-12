@@ -10,7 +10,7 @@
     @csrf
     <div class="form-group" style="flex:1;margin-bottom:0;">
       <label for="name">Nueva marca</label>
-      <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="Ej. Ajazz" required autofocus>
+      <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="Ej. Ajazz" required autofocus autocomplete="off">
       @error('name')
         <p class="form-hint" style="color:var(--red);">{{ $message }}</p>
       @enderror
