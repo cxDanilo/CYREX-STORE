@@ -831,7 +831,15 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 
 .cms-hero-video{position:relative;min-height:100dvh;display:flex;align-items:flex-end;overflow:hidden;background:#0A0A0B;border-bottom:1px solid var(--border);}
 .cms-hero-video-media{position:absolute;inset:0;overflow:hidden;will-change:transform;}
-.cms-hero-video-iframe{position:absolute;top:50%;left:50%;width:177.78dvh;height:56.25vw;min-width:100%;min-height:100%;transform:translate(-50%,-50%);border:0;pointer-events:none;}
+/* 199.1dvh/63vw en vez de los 177.78dvh/56.25vw "justos" (16:9 exacto)
+   -- ese ~12% de más es a propósito, para tapar la marca/título que
+   YouTube superpone arriba del video incluso con modestbranding=1. Se
+   logra agrandando el tamaño fijo del iframe, NO con un transform:
+   scale() (así estaba antes, aplicado por hero-video-parallax.js) --
+   un scale() sobre este iframe le mostraba a Chrome una costura fina
+   horizontal (bug de compositing de video con GPU al escalar), bien
+   visible al pasar el mouse. Mismo recorte final, sin la costura. */
+.cms-hero-video-iframe{position:absolute;top:50%;left:50%;width:199.1dvh;height:63vw;min-width:112%;min-height:112%;transform:translate(-50%,-50%);border:0;pointer-events:none;}
 .cms-hero-video-native{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .cms-hero-video-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
 /* YouTube tarda un instante en arrancar el autoplay -- mientras tanto
