@@ -25,7 +25,13 @@
 
   <aside class="admin-sidebar" :class="{ 'is-open': navOpen }">
     <div class="admin-logo-row">
-      <div class="admin-logo" data-tour="logo"><a href="{{ route('admin.dashboard') }}" style="color:inherit;">CYREX<span>.</span> ADMIN</a></div>
+      <a href="{{ route('admin.dashboard') }}" class="admin-logo" data-tour="logo" style="color:inherit;">
+        <span class="admin-logo-mark"><img src="{{ asset('favicon-32.png') }}" alt=""></span>
+        <span class="admin-logo-text">
+          <span class="admin-logo-word">CYREX<span>.</span> ADMIN</span>
+          <span class="admin-logo-sub">Panel de administración</span>
+        </span>
+      </a>
       <button type="button" class="admin-nav-close" aria-label="Cerrar menú" x-on:click="navOpen = false">
         @include('partials.admin-icon', ['name' => 'cerrar'])
       </button>
