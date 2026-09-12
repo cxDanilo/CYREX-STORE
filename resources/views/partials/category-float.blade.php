@@ -2,6 +2,8 @@
     @if($categoryMenuScope !== 'all' && !request()->routeIs('shop')) style="display:none;" @endif
     x-data="{
       hoverCat: null,
+      pendingCat: null,
+      openTimer: null,
       expanded: false,
       closeTimer: null,
       collapseTimer: null,
@@ -23,7 +25,28 @@
       // handleTap corre ya sabemos con certeza qué disparó ESTE toque
       // puntual, sin adivinar por las capacidades generales del equipo.
       lastPointerType: 'mouse',
-      openCat(id) { clearTimeout(this.closeTimer); this.hoverCat = id; },
+      // Antes cambiaba de categoría apenas el mouse entraba a otro
+      // ítem de la lista de la izquierda — el problema es que para
+      // llegar a un hijo del final del flyout abierto (ej. Gabinete en
+      // Componentes, que queda a la altura de Periféricos en la lista),
+      // el mouse cruza de paso por encima de ese otro ítem, y el flyout
+      // se cerraba de golpe antes de llegar a hacer clic. Ahora, si ya
+      // hay un flyout abierto, cambiar de categoría espera un toque
+      // (ver leaveCat) — si el mouse se va de ese ítem antes de que
+      // pase el tiempo, fue solo de paso y no cambia nada.
+      openCat(id) {
+        clearTimeout(this.closeTimer);
+        clearTimeout(this.openTimer);
+        this.pendingCat = null;
+        if (this.hoverCat === id) return;
+        if (this.hoverCat === null) { this.hoverCat = id; return; }
+        this.pendingCat = id;
+        this.openTimer = setTimeout(() => { this.hoverCat = id; this.pendingCat = null; }, 220);
+      },
+      leaveCat(id) {
+        if (this.pendingCat === id) { clearTimeout(this.openTimer); this.pendingCat = null; }
+        this.scheduleClose(id);
+      },
       scheduleClose(id) { clearTimeout(this.closeTimer); this.closeTimer = setTimeout(() => { if (this.hoverCat === id) this.hoverCat = null; }, 300); },
       expand() { clearTimeout(this.collapseTimer); this.expanded = true; if (this.showHint) this.dismissHint(); },
       scheduleCollapse() { clearTimeout(this.collapseTimer); this.collapseTimer = setTimeout(() => { this.expanded = false; this.hoverCat = null; }, 350); },
@@ -41,7 +64,14 @@
         if (this.hoverCat !== id) {
           event.preventDefault();
           this.expand();
-          this.openCat(id);
+          // Directo, sin el margen de espera de openCat() -- ese margen
+          // es para no confundir un cruce accidental del mouse con un
+          // cambio de categoría a propósito, algo que no existe en
+          // touch (cada toque ya es una acción deliberada).
+          clearTimeout(this.closeTimer);
+          clearTimeout(this.openTimer);
+          this.pendingCat = null;
+          this.hoverCat = id;
         }
       },
       // En touch no hay mouseleave que colapse el menú solo al alejar
@@ -76,7 +106,7 @@
   </div>
   <div class="cat-float-list" :class="expanded && 'expanded'">
     @foreach($navCategories as $parent)
-      <div class="cat-float-item" x-on:pointerenter="$event.pointerType === 'mouse' && (expand(), openCat({{ $parent->id }}))" x-on:pointerleave="$event.pointerType === 'mouse' && scheduleClose({{ $parent->id }})">
+      <div class="cat-float-item" x-on:pointerenter="$event.pointerType === 'mouse' && (expand(), openCat({{ $parent->id }}))" x-on:pointerleave="$event.pointerType === 'mouse' && leaveCat({{ $parent->id }})">
         <a href="{{ route('shop', ['category' => $parent->slug]) }}" class="cat-float-link" :class="hoverCat === {{ $parent->id }} && 'active'" x-on:click="handleTap($event, {{ $parent->id }})">
           <span class="mega-icon">@include('partials.category-icon', ['icon' => $parent->icon, 'iconImage' => $parent->icon_image_url])</span>
           <span class="cat-float-label">{{ $parent->name }}</span>
