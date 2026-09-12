@@ -5,12 +5,24 @@
   <div class="cms-marcas-track">
     @foreach($items as $item)
       <div class="cms-marca-item">
-        <img src="{{ $item['url'] ?? '' }}" alt="{{ $item['nombre'] ?? '' }}" class="cms-marca-logo">
+        @if(!empty($item['link']))
+          <a href="{{ $item['link'] }}" class="cms-marca-link" aria-label="Ver productos {{ $item['nombre'] ?? '' }}">
+            <img src="{{ $item['url'] ?? '' }}" alt="{{ $item['nombre'] ?? '' }}" class="cms-marca-logo">
+          </a>
+        @else
+          <img src="{{ $item['url'] ?? '' }}" alt="{{ $item['nombre'] ?? '' }}" class="cms-marca-logo">
+        @endif
       </div>
     @endforeach
     @foreach($items as $item)
       <div class="cms-marca-item" aria-hidden="true">
-        <img src="{{ $item['url'] ?? '' }}" alt="{{ $item['nombre'] ?? '' }}" class="cms-marca-logo">
+        @if(!empty($item['link']))
+          <a href="{{ $item['link'] }}" class="cms-marca-link" tabindex="-1">
+            <img src="{{ $item['url'] ?? '' }}" alt="" class="cms-marca-logo">
+          </a>
+        @else
+          <img src="{{ $item['url'] ?? '' }}" alt="" class="cms-marca-logo">
+        @endif
       </div>
     @endforeach
   </div>

@@ -1053,6 +1053,7 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
    causa del salto de layout (CLS) que midió PageSpeed. */
 .cms-marca-logo{width:100%;height:100%;object-fit:contain;opacity:.55;filter:grayscale(1);transition:opacity .2s;}
 .cms-marca-item:hover .cms-marca-logo{opacity:.9;}
+.cms-marca-link{display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
 @keyframes cms-marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
 .cms-marcas-mosaico-viewport{overflow:hidden;}

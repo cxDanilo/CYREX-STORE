@@ -52,6 +52,29 @@
   $displaySpecs = $compatDisplay + ($product->specs ?? []);
 @endphp
 
+{{-- Datos estructurados (schema.org) — sin esto Google no tiene forma de
+     mostrar precio/disponibilidad directo en el resultado de búsqueda
+     (los "rich snippets"). No cambia nada visible en la página. --}}
+<script type="application/ld+json">
+{!! json_encode([
+  '@@context' => 'https://schema.org',
+  '@type' => 'Product',
+  'name' => $product->name,
+  'image' => $product->image_url,
+  'description' => strip_tags($product->description ?? $product->name),
+  'sku' => (string) $product->id,
+  'offers' => [
+    '@type' => 'Offer',
+    'url' => $productUrl,
+    'priceCurrency' => $product->currency,
+    'price' => number_format($product->effectivePrice(), 2, '.', ''),
+    'availability' => $product->is_sold_out
+      ? 'https://schema.org/OutOfStock'
+      : 'https://schema.org/InStock',
+  ],
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+</script>
+
 <div class="wrap breadcrumb">
   <a href="{{ route('home') }}">Inicio</a> / <a href="{{ route('shop', ['category' => $product->category->slug]) }}">{{ $product->category->name }}</a> / {{ $product->name }}
 </div>

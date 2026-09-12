@@ -230,6 +230,7 @@ return [
             'items' => ['type' => 'repeater', 'label' => 'Logos', 'fields' => [
                 'url' => ['type' => 'media', 'label' => 'Logo', 'trim' => true],
                 'nombre' => ['type' => 'text', 'label' => 'Nombre de la marca'],
+                'link' => ['type' => 'text', 'label' => 'Link al hacer clic (opcional) — ej: /tienda?q=ajazz para mostrar todo lo de esa marca'],
             ]],
             'logo_size' => ['type' => 'range', 'label' => 'Tamaño de los logos', 'min' => 32, 'max' => 120, 'step' => 4, 'unit' => 'px'],
             'speed' => ['type' => 'range', 'label' => 'Velocidad del desplazamiento (más bajo = más rápido)', 'min' => 8, 'max' => 60, 'step' => 2, 'unit' => 's'],
