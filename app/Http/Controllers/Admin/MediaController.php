@@ -99,6 +99,7 @@ class MediaController extends Controller
                 'items' => collect($created)->map(fn (Media $m) => [
                     'id' => $m->id,
                     'url' => $m->url,
+                    'webp_url' => $m->webp_url,
                     'thumb_url' => $m->thumb_url,
                     'original_name' => $m->original_name,
                 ])->values(),

@@ -44,6 +44,19 @@
     ExpiresByType font/woff "access plus 1 year"
 </IfModule>
 
+# mod_expires de arriba ya manda un Expires/Cache-Control de 1 año, pero
+# sin "immutable" el navegador puede igual mandar una revalidación
+# condicional (If-None-Match) en algunos casos (ej. recarga manual) --
+# con el cache-busting por versión (?v=filemtime) que ya usa cada
+# <link>/<script>, esa revalidación no hace falta nunca: si el archivo
+# cambió, la URL cambió sola. "immutable" se lo dice directo al
+# navegador para que ni intente. Mismo criterio de no tocar text/html.
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js|jpg|jpeg|png|webp|svg|ico|woff2?)$">
+        Header append Cache-Control "immutable"
+    </FilesMatch>
+</IfModule>
+
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
 </IfModule>

@@ -208,9 +208,17 @@
 
           const uploaded = (data.items || [])[0];
           if (uploaded) {
-            textInput.value = uploaded.url;
-            updateThumb(uploaded.url);
-            onChange(uploaded.url);
+            // webp_url es la versión optimizada (mismo tamaño que el
+            // original, mucho menos peso) -- se prioriza para todo lo que
+            // se guarda/muestra a tamaño completo (ej. la imagen de
+            // respaldo del hero de video). url (el original tal cual se
+            // subió) solo queda como respaldo cuando ImageOptimizer no
+            // genera webp -- el caso normal acá es subir un video de fondo
+            // (mp4/webm/mov), que no es una imagen y no tiene webp.
+            const bestUrl = uploaded.webp_url || uploaded.url;
+            textInput.value = bestUrl;
+            updateThumb(bestUrl);
+            onChange(bestUrl);
             uploadLabel.textContent = 'Subir';
           } else {
             showError('No se pudo subir el archivo.');
