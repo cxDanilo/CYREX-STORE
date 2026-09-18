@@ -388,6 +388,7 @@
            class="gallery-main-img"
            x-init="if (mainImage) $el.src = mainImage;"
            x-effect="if (mainImage && $el.src !== mainImage) swapMainImage($el, mainImage)"
+           onload="markCardImageLoaded(this)" onerror="markCardImageLoaded(this)"
            style="width:100%;height:100%;object-fit:cover;border-radius:20px;{{ $product->is_sold_out ? 'filter:grayscale(1);' : '' }}">
       <template x-if="isAdmin && editing">
         <label class="admin-edit-image-overlay">

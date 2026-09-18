@@ -540,6 +540,27 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .product-hero{display:grid;grid-template-columns:1fr 1fr;gap:56px;padding-top:8px;padding-bottom:60px;align-items:start;}
 .gallery{position:sticky;top:90px;}
 .gallery-main{position:relative;aspect-ratio:1/1;background:var(--bg-elevated);border:1px solid var(--border);border-radius:20px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:zoom-in;}
+/* Misma idea que .card-media de la tienda: la foto grande del producto
+   podía "aparecer de golpe" en cuanto terminaba de bajar de la red
+   (más notorio ahora que el contenedor mismo ya no anima su entrada en
+   celular, ver .page-nav-enter .gallery de más abajo). Shimmer de
+   fondo mientras carga (reusa @keyframes card-img-shimmer, ya definido
+   para las cards) + fade-in por opacity vía la misma clase is-loaded
+   (puesta por markCardImageLoaded, ver product.blade.php). El
+   selector es .gallery-main-img (no ".gallery-main img") a propósito,
+   con la MISMA especificidad que .gallery-main-img.img-fading de más
+   abajo -- así, estando esa regla más abajo en el archivo, sigue
+   ganando durante un cambio de variante (fade a 0 aunque la imagen ya
+   esté "cargada" de antes), y esta solo gobierna la carga inicial. */
+.gallery-main:has(img):not(:has(img.is-loaded))::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--bg-elevated-2) 25%,var(--bg-elevated) 50%,var(--bg-elevated-2) 75%);background-size:200% 100%;animation:card-img-shimmer 1.4s ease-in-out infinite;}
+.gallery-main-img{opacity:0;}
+.gallery-main-img.is-loaded{opacity:1;}
+@media (prefers-reduced-motion:reduce){
+  .gallery-main:has(img):not(:has(img.is-loaded))::before{animation:none;}
+  .gallery-main-img{opacity:1;}
+}
+.motion-reduced .gallery-main:has(img):not(:has(img.is-loaded))::before{animation:none;}
+.motion-reduced .gallery-main-img{opacity:1;}
 /* Al cambiar de variante (o de miniatura, o la imagen de una edición
    rápida del admin), la foto principal se reemplaza de golpe — sin
    esto se siente como un salto brusco. No es un crossfade real

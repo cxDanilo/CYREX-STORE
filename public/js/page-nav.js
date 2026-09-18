@@ -136,6 +136,27 @@ window.addEventListener('DOMContentLoaded', function () {
     void main.offsetWidth;
     main.classList.add('page-nav-enter');
     enterCleanupTimer = setTimeout(function () {
+      // Elementos como "también te puede interesar" tienen [data-reveal]
+      // (para el scroll-reveal normal cuando se llega por carga real) Y
+      // ADEMÁS los pisa esta misma cascada de .page-nav-enter (con más
+      // especificidad, para que entren en el momento justo al navegar
+      // suave). Sin esto: al sacar .page-nav-enter acá, un [data-reveal]
+      // que ya se mostró por la cascada pero que el IntersectionObserver
+      // todavía no marcó como .is-revealed (porque en ese instante seguía
+      // fuera del viewport) se queda sin NINGUNA regla que le imponga
+      // opacity -- vuelve a su [data-reveal]{opacity:0} de base y
+      // "desaparece" hasta que el usuario hace scroll y el observer lo
+      // revela de verdad. Acá se marca .is-revealed a mano en todo lo que
+      // ya está a la vista en este momento, para que sacar la clase de la
+      // cascada nunca sea un paso atrás -- lo que sigue fuera de vista
+      // queda igual para el observer, que lo revela normalmente al
+      // scrollear.
+      main.querySelectorAll('[data-reveal]:not(.is-revealed)').forEach(function (el) {
+        var rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          el.classList.add('is-revealed');
+        }
+      });
       main.classList.remove('page-nav-enter');
     }, 1150);
     fadeInImages(main);
