@@ -475,7 +475,12 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 /* En celular la galería es el elemento más grande y prominente de la
    pantalla -- el mismo deslizamiento de 14px que se ve sutil en el
    resto de las secciones ahí se nota mucho más ("salta"). Aparece
-   directo, sin la animación de entrada. */
+   directo, sin la animación de entrada. Mismo motivo para
+   .product-info: en celular es una sola columna angosta debajo de la
+   galería, así que el título/precio/botones entrando uno atrás de
+   otro (hasta ~0.8s en productos con más elementos) se ve como que
+   "todo salta a su lugar" en vez del efecto sutil que es en desktop
+   con la galería al lado. */
 @media (max-width:680px){
   .page-nav-enter .gallery{opacity:1;animation:none;}
 }
@@ -490,6 +495,16 @@ body.page-nav-loading main{opacity:.5;pointer-events:none;transition:opacity .2s
 .page-nav-enter .product-info > *:nth-child(7){animation-delay:.34s;}
 .page-nav-enter .product-info > *:nth-child(8){animation-delay:.38s;}
 .page-nav-enter .product-info > *:nth-child(n+9){animation-delay:.42s;}
+/* Ver comentario de arriba (junto a .gallery) -- misma corrección,
+   tiene que ir DESPUÉS de la regla sin media query de arriba: como
+   ambas reglas apuntan al mismo selector con la misma especificidad,
+   si esta va antes en el archivo, la de abajo (sin media query) gana
+   siempre y la excepción de mobile queda pisada sin ningún error
+   visible -- exactamente lo que pasó la primera vez que se escribió
+   este bloque. */
+@media (max-width:680px){
+  .page-nav-enter .product-info > *{opacity:1;animation:none;}
+}
 
 .page-nav-enter .related{opacity:0;animation:page-nav-section-in .4s ease-out forwards;animation-delay:.46s;}
 
